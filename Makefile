@@ -10,7 +10,7 @@ DOCKER_TAG := latest
 
 .PHONY: build-%
 build-%: ## Build the docker image
-	docker build --platform linux/$* -o $(MAKEFILE_DIR)/dist $(MAKEFILE_DIR)
+	docker buildx build --platform linux/$* -o $(MAKEFILE_DIR)/dist $(MAKEFILE_DIR)
 
 .PHONY: build
 build: build-amd64 build-arm64 ## Build the docker image for all supported platforms
