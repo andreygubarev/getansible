@@ -2,7 +2,6 @@
 
 WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
-
 export PATH=$WORKDIR/bin:$PATH
 
 case "$1" in
