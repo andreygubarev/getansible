@@ -38,6 +38,9 @@ jobs:
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
 
+    permissions:
+      contents: write
+
     steps:
       - id: prerelease
         run: |
