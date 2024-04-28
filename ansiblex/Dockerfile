@@ -8,8 +8,8 @@ RUN apt-get update -yq && apt-get install -yq --no-install-recommends \
     curl \
     makeself
 
-ARG ANSIBLE_VERSION=9.5.1
-ENV ANSIBLE_VERSION=${ANSIBLE_VERSION}
+ARG ANSIBLE_CORE_VERSION=2.16.6
+ENV ANSIBLE_CORE_VERSION=${ANSIBLE_CORE_VERSION}
 
 ARG PYTHON_RELEASE=20240415
 ENV PYTHON_RELEASE=${PYTHON_RELEASE}
@@ -25,7 +25,8 @@ RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linu
     rm -f "${PYTHON}" && \
     mv python ansiblex
 
-RUN ansiblex/bin/pip install -q --upgrade ansible=="${ANSIBLE_VERSION}"
+RUN ansiblex/bin/pip install -q --upgrade ansible-core=="${ANSIBLE_CORE_VERSION}"
+RUN sed -i 's|#!/opt/ansiblex/bin/python3.12|#!/usr/bin/env python3|' /opt/ansiblex/bin/ansible*
 COPY --chmod=0755 ansiblex.sh /opt/ansiblex/ansiblex.sh
 RUN rm -r /opt/ansiblex/share/ && \
     find /opt/ansiblex -type d -name "__pycache__" -print | xargs rm -rf && \
@@ -37,6 +38,7 @@ RUN makeself $MAKESELF_ARGS \
     /opt/ansiblex.run \
     "Ansible ${ANSIBLE_VERSION} with Python ${PYTHON_VERSION}" \
     ./ansiblex.sh
+RUN chmod 0755 /opt/ansiblex.run
 
 FROM scratch AS release
 ARG TARGETARCH

@@ -2,26 +2,20 @@
 
 WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
+export PATH=$WORKDIR/bin:$PATH
 
 case "$1" in
-    ansible)
+    exec)
         shift
-        $WORKDIR/bin/python3 -m ansible.cli.adhoc $@
+        exec $@
         ;;
-    ansible-playbook)
+    ansible|ansible-galaxy|ansible-playbook|ansible-*)
+        command=$1
         shift
-        $WORKDIR/bin/python3 -m ansible.cli.playbook $@
-        ;;
-    ansible-galaxy)
-        shift
-        $WORKDIR/bin/python3 -m ansible.cli.galaxy $@
-        ;;
-    ansible-vault)
-        shift
-        $WORKDIR/bin/python3 -m ansible.cli.vault $@
+        exec $WORKDIR/bin/$command $@
         ;;
     *)
-        echo "Usage: ansiblex -- ansible|ansible-playbook|ansible-galaxy|ansible-vault [args]"
+        echo "Usage: ansiblex -- exec|ansible|ansible-galaxy|ansible-playbook|ansible-* [args]"
         exit 1
         ;;
 esac
