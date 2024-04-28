@@ -7,27 +7,15 @@ export PATH=$WORKDIR/bin:$PATH
 case "$1" in
     exec)
         shift
-        source $WORKDIR/bin/activate
         exec $@
         ;;
-    ansible)
+    ansible|ansible-galaxy|ansible-playbook|ansible-*)
+        command=$1
         shift
-        python3 -m ansible.cli.adhoc $@
-        ;;
-    ansible-playbook)
-        shift
-        python3 -m ansible.cli.playbook $@
-        ;;
-    ansible-galaxy)
-        shift
-        python3 -m ansible.cli.galaxy $@
-        ;;
-    ansible-vault)
-        shift
-        python3 -m ansible.cli.vault $@
+        exec $WORKDIR/bin/$command $@
         ;;
     *)
-        echo "Usage: ansiblex -- ansible|ansible-playbook|ansible-galaxy|ansible-vault [args]"
+        echo "Usage: ansiblex -- exec|ansible|ansible-galaxy|ansible-playbook|ansible-* [args]"
         exit 1
         ;;
 esac
