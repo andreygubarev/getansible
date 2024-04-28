@@ -27,6 +27,9 @@ RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linu
 
 RUN ansiblex/bin/pip install -q --upgrade ansible=="${ANSIBLE_VERSION}"
 COPY --chmod=0755 ansiblex.sh /opt/ansiblex/ansiblex.sh
+RUN rm -r /opt/ansiblex/share/ && \
+    find /opt/ansiblex -type d -name "__pycache__" -print | xargs rm -rf && \
+    find /opt/ansiblex -type d -name "tests" -print | xargs rm -rf
 
 ENV MAKESELF_ARGS="--complevel 6 --tar-format gnu --tar-quietly"
 RUN makeself $MAKESELF_ARGS \
