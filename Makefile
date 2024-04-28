@@ -8,6 +8,21 @@ help: ## Show this help
 DOCKER_IMAGE := ansiblex
 DOCKER_TAG := latest
 
+ANSIBLE_VERSION ?= 9.5.1
+PYTHON_RELEASE ?= 20240415
+PYTHON_VERSION ?= 3.12.3
+
 .PHONY: build-%
-build-%: ## Build the docker image
-	docker build --platform linux/$* -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+build-%:  ## Build the docker image
+	docker buildx build --progress=plain --platform linux/$* -o $(MAKEFILE_DIR)/dist \
+		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
+		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
+		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
+	   $(MAKEFILE_DIR)/ansiblex
+
+.PHONY: build
+build: build-amd64 build-arm64 ## Build ansiblex for amd64 and arm64
+
+.PHONY: clean
+clean:  ## Clean up
+	rm -rf $(MAKEFILE_DIR)/dist

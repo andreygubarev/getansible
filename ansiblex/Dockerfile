@@ -21,19 +21,20 @@ WORKDIR /opt
 
 RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linux-gnu-install_only.tar.gz" && \
     curl -fsSLo "${PYTHON}" "https://github.com/indygreg/python-build-standalone/releases/download/${PYTHON_RELEASE}/${PYTHON}" && \
-    tar xvzf "${PYTHON}" && \
+    tar xzf "${PYTHON}" && \
     rm -f "${PYTHON}" && \
     mv python ansiblex
 
-RUN ansiblex/bin/pip install --upgrade ansible=="${ANSIBLE_VERSION}"
-COPY --chmod=0755 src/ansiblex.sh /opt/ansiblex/ansiblex.sh
+RUN ansiblex/bin/pip install -q --upgrade ansible=="${ANSIBLE_VERSION}"
+COPY --chmod=0755 ansiblex.sh /opt/ansiblex/ansiblex.sh
 
-ENV MAKESELF_ARGS="--tar-format gnu --complevel 6"
+ENV MAKESELF_ARGS="--complevel 6 --tar-format gnu --tar-quietly"
 RUN makeself $MAKESELF_ARGS \
     /opt/ansiblex \
     /opt/ansiblex.run \
     "Ansible ${ANSIBLE_VERSION} with Python ${PYTHON_VERSION}" \
     ./ansiblex.sh
 
-FROM debian:bookworm-slim AS runtime
-COPY --from=build --chown=root:root --chmod=0755 /opt/ansiblex.run /usr/local/bin/ansiblex
+FROM scratch AS release
+ARG TARGETARCH
+COPY --from=build --chown=root:root --chmod=0755 /opt/ansiblex.run /ansiblex-$TARGETARCH
