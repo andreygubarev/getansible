@@ -24,7 +24,7 @@ run:  ## Build the docker image
 .PHONY: build-%
 build-%:  ## Build the docker image
 	docker buildx build --progress=plain --platform linux/$* -o $(MAKEFILE_DIR)/dist \
-		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
+		--build-arg ANSIBLE_CORE_VERSION=$(ANSIBLE_CORE_VERSION) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
 	   $(MAKEFILE_DIR)/ansiblex
