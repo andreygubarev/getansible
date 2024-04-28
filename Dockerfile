@@ -35,5 +35,6 @@ RUN makeself $MAKESELF_ARGS \
     "Ansible ${ANSIBLE_VERSION} with Python ${PYTHON_VERSION}" \
     ./ansiblex.sh
 
-FROM debian:bookworm-slim AS runtime
-COPY --from=build --chown=root:root --chmod=0755 /opt/ansiblex.run /usr/local/bin/ansiblex
+FROM scratch AS release
+ARG TARGETARCH
+COPY --from=build --chown=root:root --chmod=0755 /opt/ansiblex.run /ansiblex-$TARGETARCH
