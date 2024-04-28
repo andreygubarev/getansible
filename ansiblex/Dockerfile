@@ -26,6 +26,7 @@ RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linu
     mv python ansiblex
 
 RUN ansiblex/bin/pip install -q --upgrade ansible-core=="${ANSIBLE_CORE_VERSION}"
+RUN sed -i 's|#!/opt/ansiblex/bin/python3.12|#!/usr/bin/env python3|' /opt/ansiblex/bin/ansible*
 COPY --chmod=0755 ansiblex.sh /opt/ansiblex/ansiblex.sh
 RUN rm -r /opt/ansiblex/share/ && \
     find /opt/ansiblex -type d -name "__pycache__" -print | xargs rm -rf && \
