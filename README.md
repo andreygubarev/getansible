@@ -1,4 +1,4 @@
-# AnsibleX - Portable Ansible Environment
+# `ansiblex` - Portable Ansible Environment
 
 # Reference
 
