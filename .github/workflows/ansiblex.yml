@@ -54,6 +54,8 @@ jobs:
         with:
           name: ansiblex-arm64
 
+      - run: chmod 0755 ansiblex-amd64 ansiblex-arm64
+
       - uses: softprops/action-gh-release@v2
         with:
           prerelease: ${{ steps.prerelease.outputs.prerelease }}
