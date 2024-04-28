@@ -6,6 +6,11 @@ export WORKDIR
 export PATH=$WORKDIR/bin:$PATH
 
 case "$1" in
+    exec)
+        shift
+        source $WORKDIR/bin/activate
+        exec $@
+        ;;
     ansible)
         shift
         python3 -m ansible.cli.adhoc $@
