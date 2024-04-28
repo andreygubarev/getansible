@@ -8,14 +8,14 @@ help: ## Show this help
 DOCKER_IMAGE := ansiblex
 DOCKER_TAG := latest
 
-ANSIBLE_VERSION ?= 9.5.1
+ANSIBLE_CORE_VERSION ?= 2.16.6
 PYTHON_RELEASE ?= 20240415
 PYTHON_VERSION ?= 3.12.3
 
 .PHONY: run
 run:  ## Build the docker image
 	docker build --target build -t ansiblex:latest \
-		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
+		--build-arg ANSIBLE_CORE_VERSION=$(ANSIBLE_CORE_VERSION) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
 	   $(MAKEFILE_DIR)/ansiblex
