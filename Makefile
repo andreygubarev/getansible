@@ -12,6 +12,15 @@ ANSIBLE_VERSION ?= 9.5.1
 PYTHON_RELEASE ?= 20240415
 PYTHON_VERSION ?= 3.12.3
 
+.PHONY: run
+run:  ## Build the docker image
+	docker build --target build -t ansiblex:latest \
+		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
+		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
+		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
+	   $(MAKEFILE_DIR)/ansiblex
+	docker run -it --rm ansiblex:latest
+
 .PHONY: build-%
 build-%:  ## Build the docker image
 	docker buildx build --progress=plain --platform linux/$* -o $(MAKEFILE_DIR)/dist \
