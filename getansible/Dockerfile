@@ -23,23 +23,23 @@ RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linu
     curl -fsSLo "${PYTHON}" "https://github.com/indygreg/python-build-standalone/releases/download/${PYTHON_RELEASE}/${PYTHON}" && \
     tar xzf "${PYTHON}" && \
     rm -f "${PYTHON}" && \
-    mv python ansiblex
+    mv python getansible
 
-RUN ansiblex/bin/pip install -q --upgrade ansible-core=="${ANSIBLE_CORE_VERSION}"
-RUN sed -i 's|#!/opt/ansiblex/bin/python3.12|#!/usr/bin/env python3|' /opt/ansiblex/bin/ansible*
-COPY --chmod=0755 ansiblex.sh /opt/ansiblex/ansiblex.sh
-RUN rm -r /opt/ansiblex/share/ && \
-    find /opt/ansiblex -type d -name "__pycache__" -print | xargs rm -rf && \
-    find /opt/ansiblex -type d -name "tests" -print | xargs rm -rf
+RUN getansible/bin/pip install -q --upgrade ansible-core=="${ANSIBLE_CORE_VERSION}"
+RUN sed -i 's|#!/opt/getansible/bin/python3.12|#!/usr/bin/env python3|' /opt/getansible/bin/ansible*
+COPY --chmod=0755 getansible.sh /opt/getansible/getansible.sh
+RUN rm -r /opt/getansible/share/ && \
+    find /opt/getansible -type d -name "__pycache__" -print | xargs rm -rf && \
+    find /opt/getansible -type d -name "tests" -print | xargs rm -rf
 
 ENV MAKESELF_ARGS="--complevel 6 --tar-format gnu --tar-quietly"
 RUN makeself $MAKESELF_ARGS \
-    /opt/ansiblex \
-    /opt/ansiblex.run \
+    /opt/getansible \
+    /opt/getansible.run \
     "Ansible ${ANSIBLE_VERSION} with Python ${PYTHON_VERSION}" \
-    ./ansiblex.sh
-RUN chmod 0755 /opt/ansiblex.run
+    ./getansible.sh
+RUN chmod 0755 /opt/getansible.run
 
 FROM scratch AS release
 ARG TARGETARCH
-COPY --from=build --chown=root:root --chmod=0755 /opt/ansiblex.run /ansiblex-$TARGETARCH
+COPY --from=build --chown=root:root --chmod=0755 /opt/getansible.run /getansible-$TARGETARCH
