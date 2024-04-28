@@ -8,9 +8,9 @@ help: ## Show this help
 DOCKER_IMAGE := ansiblex
 DOCKER_TAG := latest
 
-ANSIBLE_VERSION := 9.5.1
-PYTHON_RELEASE := 20240415
-PYTHON_VERSION := 3.12.3
+ANSIBLE_VERSION ?= 9.5.1
+PYTHON_RELEASE ?= 20240415
+PYTHON_VERSION ?= 3.12.3
 
 .PHONY: build-%
 build-%:  ## Build the docker image
