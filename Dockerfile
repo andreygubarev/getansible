@@ -21,7 +21,7 @@ WORKDIR /opt
 
 RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linux-gnu-install_only.tar.gz" && \
     curl -fsSLo "${PYTHON}" "https://github.com/indygreg/python-build-standalone/releases/download/${PYTHON_RELEASE}/${PYTHON}" && \
-    tar xvzf "${PYTHON}" && \
+    tar xzf "${PYTHON}" && \
     rm -f "${PYTHON}" && \
     mv python ansiblex
 
