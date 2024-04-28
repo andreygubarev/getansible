@@ -15,7 +15,7 @@ case "$1" in
         exec $WORKDIR/bin/$command $@
         ;;
     *)
-        echo "Usage: ansiblex -- exec|ansible|ansible-galaxy|ansible-playbook|ansible-* [args]"
+        echo "Usage: getansible -- exec|ansible|ansible-galaxy|ansible-playbook|ansible-* [args]"
         exit 1
         ;;
 esac
