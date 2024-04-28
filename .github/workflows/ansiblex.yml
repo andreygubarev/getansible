@@ -19,3 +19,7 @@ jobs:
       - uses: docker/setup-buildx-action@v3
       - uses: actions/checkout@v4
       - run: make build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ansiblex
+          path: "dist/*"
