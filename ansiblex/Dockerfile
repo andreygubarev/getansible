@@ -26,7 +26,7 @@ RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linu
     mv python ansiblex
 
 RUN ansiblex/bin/pip install -q --upgrade ansible=="${ANSIBLE_VERSION}"
-COPY --chmod=0755 src/ansiblex.sh /opt/ansiblex/ansiblex.sh
+COPY --chmod=0755 ansiblex.sh /opt/ansiblex/ansiblex.sh
 
 ENV MAKESELF_ARGS="--complevel 6 --tar-format gnu --tar-quietly"
 RUN makeself $MAKESELF_ARGS \
