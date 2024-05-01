@@ -41,7 +41,6 @@ elif [ ! -w "$(dirname "$GETANSIBLE_PATH")" ]; then
     exit 1
 fi
 
-### pre-installation ##########################################################
 if [ -z "$GETANSIBLE_ARCH" ]; then
     GETANSIBLE_ARCH=$(uname -m)
 fi
