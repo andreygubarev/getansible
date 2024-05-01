@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
