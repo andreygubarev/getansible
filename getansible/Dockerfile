@@ -35,11 +35,11 @@ RUN rm -r /opt/getansible/share/ && \
 ENV MAKESELF_ARGS="--complevel 6 --tar-format gnu --tar-quietly"
 RUN makeself $MAKESELF_ARGS \
     /opt/getansible \
-    /opt/getansible.run \
+    /opt/getansible.sh \
     "Ansible ${ANSIBLE_VERSION} with Python ${PYTHON_VERSION}" \
     ./getansible.sh
-RUN chmod 0755 /opt/getansible.run
+RUN chmod 0755 /opt/getansible.sh
 
 FROM scratch AS release
 ARG TARGETARCH
-COPY --from=build --chown=root:root --chmod=0755 /opt/getansible.run /getansible-$TARGETARCH
+COPY --from=build --chown=root:root --chmod=0755 /opt/getansible.sh /getansible-$TARGETARCH.sh
