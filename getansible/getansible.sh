@@ -4,6 +4,8 @@ WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
 export PATH=$WORKDIR/bin:$PATH
 
+cd $USER_PWD
+
 case "$1" in
     exec)
         shift
