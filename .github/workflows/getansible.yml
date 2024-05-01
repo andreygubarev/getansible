@@ -1,4 +1,4 @@
-name: Package - getansible
+name: Release - getansible.sh
 
 on:
   pull_request:
