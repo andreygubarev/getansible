@@ -31,16 +31,6 @@ if [ "$(uname)" != "Linux" ]; then
     exit 1
 fi
 
-if [ -e "$GETANSIBLE_PATH" ]; then
-    if [ ! -w "$GETANSIBLE_PATH" ]; then
-        echo "path is not writable: $GETANSIBLE_PATH"
-        exit 1
-    fi
-elif [ ! -w "$(dirname "$GETANSIBLE_PATH")" ]; then
-    echo "path is not writable: $(dirname "$GETANSIBLE_PATH")"
-    exit 1
-fi
-
 if [ -z "$GETANSIBLE_ARCH" ]; then
     GETANSIBLE_ARCH=$(uname -m)
 fi
@@ -60,6 +50,16 @@ esac
 ### functions #################################################################
 getansible_install() {
     local getansible_path=$1
+
+    if [ -e "$getansible_path" ]; then
+        if [ ! -w "$getansible_path" ]; then
+            echo "path is not writable: $getansible_path"
+            exit 1
+        fi
+    elif [ ! -w "$(dirname "$getansible_path")" ]; then
+        echo "path is not writable: $(dirname "$getansible_path")"
+        exit 1
+    fi
 
     GITHUB_OWNER="andreygubarev"
     GITHUB_REPO="getansible"
