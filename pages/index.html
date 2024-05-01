@@ -71,10 +71,17 @@ install() {
     chmod +x "$GETANSIBLE_PATH"
 }
 
+help() {
+    echo "Usage: $0 [install]"
+}
+
 ### main ######################################################################
 case ${1:-} in
     install)
         install
+        ;;
+    help|--help|-h)
+        help
         ;;
     *)
         install
