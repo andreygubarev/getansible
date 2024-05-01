@@ -59,7 +59,7 @@ case $GETANSIBLE_ARCH in
 esac
 
 ### functions #################################################################
-function getansible::install() {
+getansible_install() {
     local getansible_path=$1
 
     GITHUB_OWNER="andreygubarev"
@@ -70,33 +70,35 @@ function getansible::install() {
 
     GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
     curl -sL "$GITHUB_DOWNLOAD_URL" -o "$getansible_path"
-    chmod +x "$GETANSIBLE_PATH"
+    chmod +x "$getansible_path"
 }
 
-function getansible::help() {
+getansible_help() {
     echo "Usage: $0 [install]"
 }
 
-function getansible::ansible-playbook() {
+getansible_ansible_playbook() {
+    shift
+
     local tmpdir=$(mktemp -d)
     trap "rm -rf $tmpdir" EXIT
 
-    getansible::install "$tmpdir/getansible.sh"
+    getansible_install "$tmpdir/getansible.sh"
     $tmpdir/getansible.sh -- ansible-playbook "$@"
 }
 
 ### main ######################################################################
 case ${1:-} in
     ansible-playbook)
-        getansible::ansible-playbook "${@:2}"
+        getansible_ansible_playbook "${@}"
         ;;
     install)
-        getansible::install "$GETANSIBLE_PATH"
+        getansible_install "$GETANSIBLE_PATH"
         ;;
     help|--help|-h)
-        getansible::help
+        getansible_help
         ;;
     *)
-        getansible::install "$GETANSIBLE_PATH"
+        getansible_install "$GETANSIBLE_PATH"
         ;;
 esac
