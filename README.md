@@ -1,4 +1,4 @@
-# `getansible` - Portable Ansible Environment
+# `getansible.sh` - Portable Ansible
 
 # Reference
 
