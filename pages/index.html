@@ -59,7 +59,7 @@ case $GETANSIBLE_ARCH in
 esac
 
 ### functions #################################################################
-install() {
+function getansible::install() {
     local getansible_path=$1
 
     GITHUB_OWNER="andreygubarev"
@@ -73,19 +73,19 @@ install() {
     chmod +x "$GETANSIBLE_PATH"
 }
 
-help() {
+function getansible::help() {
     echo "Usage: $0 [install]"
 }
 
 ### main ######################################################################
 case ${1:-} in
     install)
-        install "$GETANSIBLE_PATH"
+        getansible::install "$GETANSIBLE_PATH"
         ;;
     help|--help|-h)
-        help
+        getansible::help
         ;;
     *)
-        install "$GETANSIBLE_PATH"
+        getansible::install "$GETANSIBLE_PATH"
         ;;
 esac
