@@ -73,6 +73,12 @@ getansible_install() {
     chmod +x "$getansible_path"
 }
 
+getansible_uninstall() {
+    local getansible_path=$1
+
+    rm -f "$getansible_path"
+}
+
 getansible_help() {
     echo "Usage: $0 [install]"
 }
@@ -94,6 +100,9 @@ case ${1:-} in
         ;;
     install)
         getansible_install "$GETANSIBLE_PATH"
+        ;;
+    uninstall)
+        getansible_uninstall "$GETANSIBLE_PATH"
         ;;
     help|--help|-h)
         getansible_help
