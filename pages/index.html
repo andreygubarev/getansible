@@ -82,20 +82,18 @@ getansible_help() {
     echo "Usage: $0 [install]"
 }
 
-getansible_ansible_playbook() {
-    shift
-
+getansible_ansible() {
     local tmpdir=$(mktemp -d)
     trap "rm -rf $tmpdir" EXIT
 
     getansible_install "$tmpdir/getansible.sh"
-    $tmpdir/getansible.sh -- ansible-playbook "$@"
+    $tmpdir/getansible.sh -- "$@"
 }
 
 ### main ######################################################################
 case ${1:-} in
-    ansible-playbook)
-        getansible_ansible_playbook "${@}"
+    ansible|ansible-galaxy|ansible-playbook|ansible-*)
+        getansible_ansible "${@}"
         ;;
     install)
         getansible_install "$GETANSIBLE_PATH"
