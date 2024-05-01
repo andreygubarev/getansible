@@ -60,6 +60,8 @@ esac
 
 ### functions #################################################################
 install() {
+    local getansible_path=$1
+
     GITHUB_OWNER="andreygubarev"
     GITHUB_REPO="getansible"
     GITHUB_RELEASE=$(curl -s "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -67,7 +69,7 @@ install() {
     GITHUB_DOWNLOAD_URL="https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/$GITHUB_ARTIFACT"
 
     GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
-    curl -sL "$GITHUB_DOWNLOAD_URL" -o "$GETANSIBLE_PATH"
+    curl -sL "$GITHUB_DOWNLOAD_URL" -o "$getansible_path"
     chmod +x "$GETANSIBLE_PATH"
 }
 
@@ -78,12 +80,12 @@ help() {
 ### main ######################################################################
 case ${1:-} in
     install)
-        install
+        install "$GETANSIBLE_PATH"
         ;;
     help|--help|-h)
         help
         ;;
     *)
-        install
+        install "$GETANSIBLE_PATH"
         ;;
 esac
