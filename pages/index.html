@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+### variables #################################################################
+GETANSIBLE_ARCH="${GETANSIBLE_ARCH:-}"
+GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
+
 ### pre-requisites #############################################################
 if ! command -v curl > /dev/null; then
     echo "missing dependency: curl"
@@ -27,9 +31,15 @@ if [ "$(uname)" != "Linux" ]; then
     exit 1
 fi
 
-### variables #################################################################
-GETANSIBLE_ARCH="${GETANSIBLE_ARCH:-}"
-GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
+if [ -e "$GETANSIBLE_PATH" ]; then
+    if [ ! -w "$GETANSIBLE_PATH" ]; then
+        echo "path is not writable: $GETANSIBLE_PATH"
+        exit 1
+    fi
+elif [ ! -w "$(dirname "$GETANSIBLE_PATH")" ]; then
+    echo "path is not writable: $(dirname "$GETANSIBLE_PATH")"
+    exit 1
+fi
 
 ### pre-installation ##########################################################
 if [ -z "$GETANSIBLE_ARCH" ]; then
