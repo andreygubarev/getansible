@@ -3,8 +3,11 @@
 ## Usage
 
 ```bash
+# execute without installing
+curl -s https://getansible.sh/ | sh -s -- ansible-playbook playbook.yml
+
+# install and execute
 curl -s https://getansible.sh/ | sh
-getansible.sh -- ansible --version
 getansible.sh -- ansible-playbook playbook.yml
 ```
 
