@@ -48,18 +48,11 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: getansible-amd64
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: getansible-arm64
-
-      - run: chmod 0755 getansible-amd64 getansible-arm64
+          merge-multiple: true
 
       - uses: softprops/action-gh-release@v2
         with:
           prerelease: ${{ steps.prerelease.outputs.prerelease }}
           generate_release_notes: true
           files: |
-            getansible-amd64
-            getansible-arm64
+            getansible-*
