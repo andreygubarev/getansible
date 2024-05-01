@@ -1,11 +1,12 @@
 #!/bin/sh
 set -euo pipefail
 
-GITHUB_OWNER="andreygubarev"
-GITHUB_REPO="getansible"
-GITHUB_RELEASE=$(curl -s "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+GETANSIBLE_ARCH="${GETANSIBLE_ARCH:-}"
+GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
 
-GETANSIBLE_ARCH=$(uname -m)
+if [ -z "$GETANSIBLE_ARCH" ]; then
+    GETANSIBLE_ARCH=$(uname -m)
+fi
 case $GETANSIBLE_ARCH in
     x86_64)
         GETANSIBLE_ARCH="amd64"
@@ -18,5 +19,25 @@ case $GETANSIBLE_ARCH in
         exit 1
         ;;
 esac
-GITHUB_ARTIFACT="getansible-$GETANSIBLE_ARCH.sh"
-curl -sLO "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/$GITHUB_ARTIFACT"
+
+
+install() {
+    GITHUB_OWNER="andreygubarev"
+    GITHUB_REPO="getansible"
+    GITHUB_RELEASE=$(curl -s "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    GITHUB_ARTIFACT="getansible-$GETANSIBLE_ARCH.sh"
+    GITHUB_DOWNLOAD_URL="https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/$GITHUB_ARTIFACT"
+
+    GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
+    curl -sL "$GITHUB_DOWNLOAD_URL" -o "$GETANSIBLE_PATH"
+    chmod +x "$GETANSIBLE_PATH"
+}
+
+case $1 in
+    install)
+        install
+        ;;
+    *)
+        install
+        ;;
+esac
