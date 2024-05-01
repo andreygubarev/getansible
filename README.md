@@ -1,5 +1,12 @@
 # `getansible.sh` - Portable Ansible
 
+## Usage
+
+```bash
+curl -s https://getansible.sh/ | sh
+getansible.sh -- ansible --version
+```
+
 # Reference
 
 - [Ansible](https://www.ansible.com/)
