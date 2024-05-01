@@ -48,6 +48,8 @@ In this case, the new instance may not have Ansible installed, until it was bake
 
 # Reference
 
+The project is possible huge thanks to the following projects:
+
 - [Ansible](https://www.ansible.com/)
 - [Makeself](https://makeself.io/)
 - [python-build-standalone](https://github.com/indygreg/python-build-standalone)
