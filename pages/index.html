@@ -5,7 +5,7 @@ set -eu
 GETANSIBLE_ARCH="${GETANSIBLE_ARCH:-}"
 GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
 
-### pre-requisites #############################################################
+### pre-requisites ############################################################
 if ! command -v curl > /dev/null; then
     echo "missing dependency: curl"
     exit 1
