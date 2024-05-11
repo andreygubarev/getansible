@@ -47,10 +47,11 @@ shell:
 
 .PHONY: test
 test:  ## Test getansible.sh
+	docker build -t getansible/bats:latest $(MAKEFILE_DIR)/tests
 	docker run -it --rm \
 		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_VERSION)-$(DOCKER_PLATFORM).sh:/usr/local/bin/getansible.sh \
-		-v $(MAKEFILE_DIR)/tests:/usr/src/getansible/tests \
-		bats/bats:latest /usr/src/getansible/tests
+		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
+		getansible/bats:latest /usr/src/bats
 
 .PHONY: clean
 clean:  ## Clean up
