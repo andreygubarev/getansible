@@ -19,14 +19,30 @@ jobs:
 
     strategy:
       matrix:
-        platform: [amd64, arm64]
-
+        platform:
+          - amd64
+          - arm64
+        version:
+          - ansible_version: 3.0
+            python_version: 3.8.19
+          - ansible_version: 4.0
+            python_version: 3.8.19
+          - ansible_version: 5.0
+            python_version: 3.8.19
+          - ansible_version: 6.0
+            python_version: 3.8.19
+          - ansible_version: 7.0
+            python_version: 3.11.9
+          - ansible_version: 8.0
+            python_version: 3.11.9
+          - ansible_version: 9.0
+            python_version: 3.11.9
     steps:
       - uses: docker/setup-buildx-action@v3
 
       - uses: actions/checkout@v4
 
-      - run: make build-${{ matrix.platform }}
+      - run: make build-${{ matrix.platform }} ANSIBLE_VERSION=${{ matrix.version.ansible_version }} PYTHON_VERSION=${{ matrix.version.python_version }}
 
       - uses: actions/upload-artifact@v4
         with:
