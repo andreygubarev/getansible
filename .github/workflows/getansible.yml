@@ -56,10 +56,10 @@ jobs:
           tags: andreygubarev/getansible:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args:
-            - ANSIBLE_VERSION=${{ matrix.version.ANSIBLE_VERSION }}
-            - PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
-            - PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
+          build-args: |
+            ANSIBLE_VERSION=${{ matrix.version.ANSIBLE_VERSION }}
+            PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
+            PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
           platforms: linux/amd64,linux/arm64
 
       - uses: actions/upload-artifact@v4
