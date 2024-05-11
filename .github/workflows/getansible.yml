@@ -88,6 +88,12 @@ jobs:
         with:
           merge-multiple: true
 
+      - name: Create SHA512SUMS
+        run: |
+          cd dist
+          sha512sum getansible-* > SHA512SUMS
+          cd ..
+
       - uses: softprops/action-gh-release@v2
         with:
           prerelease: ${{ steps.prerelease.outputs.prerelease }}
