@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        platforms:
+        platform:
           - amd64
           - arm64
         version:
