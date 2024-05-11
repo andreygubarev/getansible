@@ -26,7 +26,7 @@ RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linu
     mv python getansible
 
 RUN getansible/bin/pip install -q --upgrade ansible~="${ANSIBLE_VERSION}"
-RUN sed -i 's|#!/opt/getansible/bin/python3.12|#!/usr/bin/env python3|' /opt/getansible/bin/ansible*
+RUN sed -i 's|#!/opt/getansible/bin/python3.*|#!/usr/bin/env python3|' /opt/getansible/bin/ansible*
 COPY --chmod=0755 getansible.sh /opt/getansible/getansible.sh
 RUN rm -r /opt/getansible/share/ && \
     find /opt/getansible -type d -name "__pycache__" -print | xargs rm -rf && \
