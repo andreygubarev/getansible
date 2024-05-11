@@ -89,7 +89,7 @@ jobs:
         with:
           context: tests
           push: false
-          tags: andreygubarev/getansible/bats:latest
+          tags: bats:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/${{ matrix.platform }}
