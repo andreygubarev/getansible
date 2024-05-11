@@ -12,6 +12,10 @@ ANSIBLE_VERSION ?= 9.0
 PYTHON_RELEASE ?= 20240415
 PYTHON_VERSION ?= 3.11.9
 
+.PHONY: lint
+lint: ## Lint the code
+	shellcheck getansible/*.sh pages/*
+
 .PHONY: run
 run:  ## Build the docker image
 	docker build --target build -t getansible:latest \
