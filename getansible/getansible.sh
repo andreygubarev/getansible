@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
 export PATH="$WORKDIR/bin:$PATH"
+sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
 cd "$USER_PWD" || exit 1
 
