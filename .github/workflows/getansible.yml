@@ -19,7 +19,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Lint shell scripts
         run: |
@@ -59,13 +60,17 @@ jobs:
             PYTHON_RELEASE: "20240415"
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: docker/setup-qemu-action@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - uses: docker/build-push-action@v5
+      - name: Build Distribution
+        uses: docker/build-push-action@v5
         with:
           context: getansible
           push: false
@@ -83,7 +88,8 @@ jobs:
         run: |
           make test ANSIBLE_VERSION=${{ matrix.version.ANSIBLE_VERSION }} ANSIBLE_PLATFORM=${{ matrix.platform }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: getansible-${{ matrix.version.ansible_version }}-${{ matrix.platform }}
           path: "dist/*"
@@ -101,7 +107,8 @@ jobs:
         run: |
           echo "prerelease=$(if [[ "${{ github.ref }}" == *"-rc"* ]]; then echo "true"; else echo "false"; fi)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/download-artifact@v4
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
         with:
           merge-multiple: true
 
@@ -111,7 +118,8 @@ jobs:
           sha512sum getansible-* > SHA512SUMS
           cd ..
 
-      - uses: softprops/action-gh-release@v2
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
           prerelease: ${{ steps.prerelease.outputs.prerelease }}
           generate_release_notes: true
