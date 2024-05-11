@@ -84,6 +84,16 @@ jobs:
           platforms: linux/${{ matrix.platform }}
           outputs: type=local,dest=dist
 
+      - name: Build BATS
+        uses: docker/build-push-action@v5
+        with:
+          context: tests
+          push: false
+          tags: andreygubarev/getansible/bats:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/${{ matrix.platform }}
+
       - name: Test with BATS
         run: |
           make test ANSIBLE_VERSION=${{ matrix.version.ANSIBLE_VERSION }} ANSIBLE_PLATFORM=${{ matrix.platform }}

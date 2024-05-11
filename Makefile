@@ -39,6 +39,12 @@ build:  ## Build the docker image
 		--progress=plain \
 		$(MAKEFILE_DIR)/getansible
 
+
+.PHONY: build-bats
+build-bats:  ## Build the docker image for bats
+	docker build -t andreygubarev/getansible/bats:latest $(MAKEFILE_DIR)/tests
+
+
 .PHONY: shell
 shell:
 	docker run -it --rm \
@@ -47,11 +53,10 @@ shell:
 
 .PHONY: test
 test:  ## Test getansible.sh
-	docker build -t getansible/bats:latest $(MAKEFILE_DIR)/tests
 	docker run -it --rm \
 		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_VERSION)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
-		getansible/bats:latest /usr/src/bats
+		andreygubarev/getansible/bats:latest /usr/src/bats
 
 .PHONY: clean
 clean:  ## Clean up
