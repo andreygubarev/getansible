@@ -39,11 +39,9 @@ build:  ## Build the docker image
 		--progress=plain \
 		$(MAKEFILE_DIR)/getansible
 
-
 .PHONY: build-bats
 build-bats:  ## Build the docker image for bats
 	docker build -t andreygubarev/getansible/bats:latest $(MAKEFILE_DIR)/tests
-
 
 .PHONY: shell
 shell:
