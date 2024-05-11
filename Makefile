@@ -27,8 +27,6 @@ build-%:  ## Build the docker image
 		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
-		--cache-to type=gha \
-		--cache-from type=gha \
 	   $(MAKEFILE_DIR)/getansible
 
 .PHONY: build
