@@ -37,6 +37,7 @@ jobs:
             python_version: "3.11.9"
           - ansible_version: "9.0"
             python_version: "3.11.9"
+
     steps:
       - uses: docker/setup-buildx-action@v3
 
@@ -46,7 +47,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: getansible-${{ matrix.platform }}
+          name: getansible-${{ matrix.version.ansible_version }}-${{ matrix.platform }}
           path: "dist/*"
 
   release:
