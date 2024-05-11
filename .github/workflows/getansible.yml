@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install shellcheck
+      - name: Lint shell scripts
         run: |
           sudo apt-get install shellcheck
           shellcheck getansible/*.sh pages/*
