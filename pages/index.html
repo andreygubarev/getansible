@@ -5,6 +5,8 @@ set -eu
 GETANSIBLE_ARCH="${GETANSIBLE_ARCH:-}"
 GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
 
+ANSIBLE_VERSION="${ANSIBLE_VERSION:-9.0}"
+
 ### pre-requisites ############################################################
 if ! command -v curl > /dev/null; then
     echo "missing dependency: curl"
@@ -49,7 +51,8 @@ esac
 
 ### functions #################################################################
 getansible_install() {
-    local getansible_path=$1
+    local ansible_version=$1
+    local getansible_path=$2
 
     if [ -e "$getansible_path" ]; then
         if [ ! -w "$getansible_path" ]; then
@@ -64,10 +67,9 @@ getansible_install() {
     GITHUB_OWNER="andreygubarev"
     GITHUB_REPO="getansible"
     GITHUB_RELEASE=$(curl -s "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-    GITHUB_ARTIFACT="getansible-$GETANSIBLE_ARCH.sh"
+    GITHUB_ARTIFACT="getansible-$ansible_version-$GETANSIBLE_ARCH.sh"
     GITHUB_DOWNLOAD_URL="https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/$GITHUB_ARTIFACT"
 
-    GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
     curl -sL "$GITHUB_DOWNLOAD_URL" -o "$getansible_path"
     chmod +x "$getansible_path"
 }
@@ -86,7 +88,7 @@ getansible_ansible() {
     local tmpdir=$(mktemp -d)
     trap "rm -rf $tmpdir" EXIT
 
-    getansible_install "$tmpdir/getansible.sh"
+    getansible_install "$ANSIBLE_VERSION" "$tmpdir/getansible.sh"
     $tmpdir/getansible.sh -- "$@"
 }
 
@@ -96,10 +98,10 @@ case ${1:-} in
         getansible_ansible "${@}"
         ;;
     install)
-        getansible_install "$GETANSIBLE_PATH"
+        getansible_install "$ANSIBLE_VERSION" "$GETANSIBLE_PATH"
         ;;
     uninstall)
-        getansible_uninstall "$GETANSIBLE_PATH"
+        getansible_uninstall "$ANSIBLE_VERSION" "$GETANSIBLE_PATH"
         ;;
     help|--help|-h)
         getansible_help
