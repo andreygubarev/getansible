@@ -1,4 +1,4 @@
-# `getansible.sh` - Portable Ansible
+# `getansible.sh` - Ansible Installer (Portable)
 
 ## Getting Started
 
