@@ -89,6 +89,7 @@ jobs:
         with:
           context: tests
           push: false
+          load: true
           tags: bats:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

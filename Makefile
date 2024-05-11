@@ -54,7 +54,7 @@ shell:
 		debian:bookworm-slim
 
 .PHONY: test
-test: build-bats  ## Test getansible.sh
+test:  ## Test getansible.sh
 	docker run --rm \
 		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_VERSION)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
