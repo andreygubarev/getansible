@@ -19,6 +19,9 @@ jobs:
 
     strategy:
       matrix:
+        platforms:
+          - amd64
+          - arm64
         version:
           - ANSIBLE_VERSION: "3.0"
             PYTHON_VERSION: "3.8.19"
@@ -60,7 +63,7 @@ jobs:
             ANSIBLE_VERSION=${{ matrix.version.ANSIBLE_VERSION }}
             PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
             PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/${{ matrix.platform }}
           outputs: type=local,dest=dist
 
       - uses: actions/upload-artifact@v4
