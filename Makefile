@@ -8,6 +8,7 @@ help: ## Show this help
 DOCKER_IMAGE := getansible
 DOCKER_TAG := latest
 
+ANSIBLE_PLATFORM ?= arm64
 ANSIBLE_VERSION ?= 9.0
 PYTHON_RELEASE ?= 20240415
 PYTHON_VERSION ?= 3.11.9
@@ -18,23 +19,47 @@ lint: ## Lint the code
 
 .PHONY: run
 run:  ## Build the docker image
-	docker build --target build -t getansible:latest \
+	docker buildx build \
 		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
-	   $(MAKEFILE_DIR)/getansible
+		--tag getansible:latest \
+		--target build \
+		$(MAKEFILE_DIR)/getansible
 	docker run -it --rm getansible:latest
 
-.PHONY: build-%
-build-%:  ## Build the docker image
-	docker buildx build --progress=plain --platform linux/$* -o $(MAKEFILE_DIR)/dist \
+.PHONY: build
+build:  ## Build the docker image
+	docker buildx build \
 		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
-	   $(MAKEFILE_DIR)/getansible
+		--output $(MAKEFILE_DIR)/dist \
+		--platform linux/$(ANSIBLE_PLATFORM) \
+		--progress=plain \
+		$(MAKEFILE_DIR)/getansible
 
-.PHONY: build
-build: build-amd64 build-arm64 ## Build getansible for amd64 and arm64
+.PHONY: build-bats
+build-bats:  ## Build the docker image for bats
+	docker buildx build \
+		--platform linux/$(ANSIBLE_PLATFORM) \
+		--progress=plain \
+		--tag bats:latest \
+		$(MAKEFILE_DIR)/tests
+
+.PHONY: shell
+shell:
+	docker run --rm \
+		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_VERSION)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
+		debian:bookworm-slim
+
+.PHONY: test
+test:  ## Test getansible.sh
+	docker run --rm \
+		--platform linux/$(ANSIBLE_PLATFORM) \
+		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_VERSION)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
+		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
+		bats:latest /usr/src/bats
 
 .PHONY: clean
 clean:  ## Clean up
