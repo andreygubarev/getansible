@@ -11,13 +11,13 @@ case "$1" in
         shift
         exec $@
         ;;
-    ansible|ansible-galaxy|ansible-playbook|ansible-*)
+    ansible|ansible-*)
         command=$1
         shift
         exec $WORKDIR/bin/$command $@
         ;;
     *)
-        echo "Usage: getansible -- exec|ansible|ansible-galaxy|ansible-playbook|ansible-* [args]"
+        echo "Usage: getansible -- exec|ansible|ansible-* [args]"
         exit 1
         ;;
 esac
