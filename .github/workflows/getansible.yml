@@ -125,9 +125,7 @@ jobs:
 
       - name: Create SHA512SUMS
         run: |
-          cd dist
           sha512sum getansible-* > SHA512SUMS
-          cd ..
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
