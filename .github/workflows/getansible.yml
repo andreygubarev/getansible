@@ -19,18 +19,56 @@ jobs:
 
     strategy:
       matrix:
-        platform: [amd64, arm64]
+        platform:
+          - amd64
+          - arm64
+        version:
+          - ANSIBLE_VERSION: "3.0"
+            PYTHON_VERSION: "3.8.19"
+            PYTHON_RELEASE: "20240415"
+          - ANSIBLE_VERSION: "4.0"
+            PYTHON_VERSION: "3.8.19"
+            PYTHON_RELEASE: "20240415"
+          - ANSIBLE_VERSION: "5.0"
+            PYTHON_VERSION: "3.8.19"
+            PYTHON_RELEASE: "20240415"
+          - ANSIBLE_VERSION: "6.0"
+            PYTHON_VERSION: "3.8.19"
+            PYTHON_RELEASE: "20240415"
+          - ANSIBLE_VERSION: "7.0"
+            PYTHON_VERSION: "3.11.9"
+            PYTHON_RELEASE: "20240415"
+          - ANSIBLE_VERSION: "8.0"
+            PYTHON_VERSION: "3.11.9"
+            PYTHON_RELEASE: "20240415"
+          - ANSIBLE_VERSION: "9.0"
+            PYTHON_VERSION: "3.11.9"
+            PYTHON_RELEASE: "20240415"
 
     steps:
-      - uses: docker/setup-buildx-action@v3
-
       - uses: actions/checkout@v4
 
-      - run: make build-${{ matrix.platform }}
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/build-push-action@v5
+        with:
+          context: getansible
+          push: false
+          tags: andreygubarev/getansible:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            ANSIBLE_VERSION=${{ matrix.version.ANSIBLE_VERSION }}
+            PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
+            PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
+          platforms: linux/${{ matrix.platform }}
+          outputs: type=local,dest=dist
 
       - uses: actions/upload-artifact@v4
         with:
-          name: getansible-${{ matrix.platform }}
+          name: getansible-${{ matrix.version.ansible_version }}-${{ matrix.platform }}
           path: "dist/*"
 
   release:

@@ -8,14 +8,14 @@ help: ## Show this help
 DOCKER_IMAGE := getansible
 DOCKER_TAG := latest
 
-ANSIBLE_CORE_VERSION ?= 2.16.6
+ANSIBLE_VERSION ?= 9.0
 PYTHON_RELEASE ?= 20240415
-PYTHON_VERSION ?= 3.12.3
+PYTHON_VERSION ?= 3.11.9
 
 .PHONY: run
 run:  ## Build the docker image
 	docker build --target build -t getansible:latest \
-		--build-arg ANSIBLE_CORE_VERSION=$(ANSIBLE_CORE_VERSION) \
+		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
 	   $(MAKEFILE_DIR)/getansible
@@ -24,7 +24,7 @@ run:  ## Build the docker image
 .PHONY: build-%
 build-%:  ## Build the docker image
 	docker buildx build --progress=plain --platform linux/$* -o $(MAKEFILE_DIR)/dist \
-		--build-arg ANSIBLE_CORE_VERSION=$(ANSIBLE_CORE_VERSION) \
+		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
 	   $(MAKEFILE_DIR)/getansible
