@@ -41,7 +41,11 @@ build:  ## Build the docker image
 
 .PHONY: build-bats
 build-bats:  ## Build the docker image for bats
-	docker build -t bats:latest $(MAKEFILE_DIR)/tests
+	docker buildx build \
+		--platform linux/$(ANSIBLE_PLATFORM) \
+		--progress=plain \
+		--tag bats:latest \
+		$(MAKEFILE_DIR)/tests
 
 .PHONY: shell
 shell:
@@ -50,7 +54,7 @@ shell:
 		debian:bookworm-slim
 
 .PHONY: test
-test:  ## Test getansible.sh
+test: build-bats  ## Test getansible.sh
 	docker run --rm \
 		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_VERSION)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
