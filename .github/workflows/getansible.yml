@@ -39,6 +39,8 @@ jobs:
             python_version: "3.11.9"
 
     steps:
+        uses: docker/setup-qemu-action@v3
+
       - uses: docker/setup-buildx-action@v3
 
       - uses: actions/checkout@v4
