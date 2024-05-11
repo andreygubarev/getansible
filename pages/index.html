@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -eu
 
 ### variables #################################################################
@@ -85,11 +85,13 @@ getansible_help() {
 }
 
 getansible_ansible() {
-    local tmpdir=$(mktemp -d)
+    tmpdir="$(mktemp -d)"
+
+    # shellcheck disable=SC2064
     trap "rm -rf $tmpdir" EXIT
 
     getansible_install "$ANSIBLE_VERSION" "$tmpdir/getansible.sh"
-    $tmpdir/getansible.sh -- "$@"
+    "$tmpdir/getansible.sh" -- "$@"
 }
 
 ### main ######################################################################
