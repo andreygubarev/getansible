@@ -56,6 +56,7 @@ shell:
 .PHONY: test
 test:  ## Test getansible.sh
 	docker run --rm \
+		--platform linux/$(ANSIBLE_PLATFORM) \
 		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_VERSION)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
 		bats:latest /usr/src/bats
