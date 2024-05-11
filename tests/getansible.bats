@@ -1,16 +1,21 @@
+setup() {
+    bats_load_library bats-support
+    bats_load_library bats-assert
+}
+
 @test "getansible.sh -- ansible" {
   run getansible.sh -- ansible --version
-  [ "$status" -eq 0 ]
+  assert_success
 }
 
 
 @test "getansible.sh -- ansible-playbook" {
   run getansible.sh -- ansible-playbook --version
-  [ "$status" -eq 0 ]
+  assert_success
 }
 
 
 @test "getansible.sh -- ansible-galaxy" {
   run getansible.sh -- ansible-galaxy --version
-  [ "$status" -eq 0 ]
+  assert_success
 }
