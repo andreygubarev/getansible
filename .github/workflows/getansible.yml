@@ -60,9 +60,7 @@ jobs:
             - ANSIBLE_VERSION=${{ matrix.version.ANSIBLE_VERSION }}
             - PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
             - PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
-          platforms:
-            - linux/amd64
-            - linux/arm64
+          platforms: linux/amd64,linux/arm64
 
       - uses: actions/upload-artifact@v4
         with:
