@@ -8,13 +8,13 @@ RUN apt-get update -yq && apt-get install -yq --no-install-recommends \
     curl \
     makeself
 
-ARG ANSIBLE_CORE_VERSION=2.16.6
-ENV ANSIBLE_CORE_VERSION=${ANSIBLE_CORE_VERSION}
+ARG ANSIBLE_VERSION=9.0
+ENV ANSIBLE_VERSION=${ANSIBLE_VERSION}
 
 ARG PYTHON_RELEASE=20240415
 ENV PYTHON_RELEASE=${PYTHON_RELEASE}
 
-ARG PYTHON_VERSION=3.12.3
+ARG PYTHON_VERSION=3.11.9
 ENV PYTHON_VERSION=${PYTHON_VERSION}
 
 WORKDIR /opt
@@ -25,7 +25,7 @@ RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linu
     rm -f "${PYTHON}" && \
     mv python getansible
 
-RUN getansible/bin/pip install -q --upgrade ansible-core=="${ANSIBLE_CORE_VERSION}"
+RUN getansible/bin/pip install -q --upgrade ansible~="${ANSIBLE_VERSION}"
 RUN sed -i 's|#!/opt/getansible/bin/python3.12|#!/usr/bin/env python3|' /opt/getansible/bin/ansible*
 COPY --chmod=0755 getansible.sh /opt/getansible/getansible.sh
 RUN rm -r /opt/getansible/share/ && \
@@ -41,5 +41,8 @@ RUN makeself $MAKESELF_ARGS \
 RUN chmod 0755 /opt/getansible.sh
 
 FROM scratch AS release
+
+ARG ANSIBLE_VERSION
 ARG TARGETARCH
-COPY --from=build --chown=root:root --chmod=0755 /opt/getansible.sh /getansible-$TARGETARCH.sh
+
+COPY --from=build --chown=root:root --chmod=0755 /opt/getansible.sh /getansible-$ANSIBLE_VERSION-$TARGETARCH.sh
