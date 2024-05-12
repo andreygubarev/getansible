@@ -31,6 +31,11 @@ curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
 
 You can configure the following environment variables:
 
+`GETANSIBLE_PATH` - Path to install `getansible.sh` (default: `/usr/local/bin/getansible.sh`):
+```bash
+curl -sL https://getansible.sh/ | GETANSIBLE_PATH=/opt/getansible.sh bash -
+```
+
 `ANSIBLE_RELEASE` - Ansible release to install (default: `9.0`):
 ```bash
 curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash -
