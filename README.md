@@ -45,8 +45,8 @@ Supported Ansible Versions:
 
 Supported Linux with GLIBC 2.17+:
 
-- `Debian` starting from `jessie`
-- `Ubuntu` starting from `trusty`
+- `Debian` starting from `8` (`jessie`)
+- `Ubuntu` starting from `14.04` (`trusty`)
 - `Fedora` starting from `21`
 - `openSUSE` starting from `13.2`
 - `RHEL` or `CentOS` starting from `7`
