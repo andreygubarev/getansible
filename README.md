@@ -68,6 +68,6 @@ The project is possible only because of the following tools:
 
 Additional references:
 
-- [Ansible Supported Releases](https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html)
+- [Ansible Releases Explained](https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html)
 - [Linux Support Explained](https://gregoryszorc.com/docs/python-build-standalone/20220227/running.html#linux)
 - [Python Lifecycle](https://devguide.python.org/versions/#versions)
