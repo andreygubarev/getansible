@@ -11,6 +11,11 @@ Additionally, you can specify the Ansible release to install:
 curl -s https://getansible.sh/ | ANSIBLE_RELEASE=9.0 sh -
 ```
 
+Alternatively, you can download distribution from the [releases page](https://github.com/andreygubarev/getansible/releases):
+```bash
+curl -sL https://github.com/andreygubarev/getansible/releases/download/v0.3.2/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
+```
+
 Then, you can execute Ansible commands:
 ```bash
 getansible.sh -- ansible-playbook playbook.yml
