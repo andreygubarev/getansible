@@ -27,6 +27,21 @@ Or, you can execute Ansible commands using curl piping:
 curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
 ```
 
+### Configuration
+
+You can configure the following environment variables:
+
+`ANSIBLE_RELEASE` - Ansible release to install (default: `9.0`):
+```bash
+curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash -
+```
+
+`TMPDIR` - Temporary directory to extract Ansible (default: `/tmp`):
+```bash
+curl -sL https://getansible.sh/ | TMPDIR=/opt/ bash -
+```
+`getansible.sh` requires at least 1GB of free space in the temporary directory. You may need to change default `TMPDIR` if you have limited space in `/tmp`.
+
 ## Overview
 
 `getansible.sh` is a shell script that contains a self-extracting archive of Ansible (including dependencies) and Python interpreter. It is designed to be executed on any Linux machine without the need to install packages or dependencies.
