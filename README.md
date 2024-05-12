@@ -1,4 +1,4 @@
-# `getansible.sh` - Ansible Installer
+# `getansible.sh` - self-contained, portable, isolated, and reproducible Ansible installation
 
 ## Getting Started
 
