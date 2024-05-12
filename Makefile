@@ -15,7 +15,7 @@ PYTHON_VERSION ?= 3.11.9
 
 .PHONY: lint
 lint: ## Lint the code
-	shellcheck getansible/*.sh pages/*
+	shellcheck getansible/*.sh pages/*.sh
 
 .PHONY: run
 run:  ## Build the docker image
