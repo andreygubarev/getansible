@@ -58,9 +58,12 @@ Setting up Ansible using package manager means sticking to the version provided 
 
 # Reference
 
-The project is possible huge thanks to the following projects:
+The project is possible only because of the following tools:
 
 - [Ansible](https://www.ansible.com/)
 - [Makeself](https://makeself.io/)
 - [python-build-standalone](https://github.com/indygreg/python-build-standalone)
-- [Linux Support](https://gregoryszorc.com/docs/python-build-standalone/20220227/running.html#linux)
+
+Additional references:
+
+- [Linux Support Explained](https://gregoryszorc.com/docs/python-build-standalone/20220227/running.html#linux)
