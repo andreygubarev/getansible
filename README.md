@@ -45,6 +45,8 @@ Supported Linux with GLIBC 2.17+:
 - openSUSE 13.2+
 - RHEL/CentOS 7+
 
+Note: Linux distributions with MUSL (e.g. Alpine) are not supported.
+
 Supported Platforms:
 
 - `amd64`
