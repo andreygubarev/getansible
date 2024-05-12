@@ -13,7 +13,7 @@ curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash -
 
 Alternatively, you can download distribution from the [releases page](https://github.com/andreygubarev/getansible/releases):
 ```bash
-curl -fsSL https://github.com/andreygubarev/getansible/releases/download/v0.3.3/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
+curl -fsSL https://github.com/andreygubarev/getansible/releases/download/v0.3.4/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
 chmod +x /usr/local/bin/getansible.sh
 ```
 
