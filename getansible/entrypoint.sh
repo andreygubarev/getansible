@@ -8,7 +8,7 @@ sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible
 
 cd "$USER_PWD" || exit 1
 
-case "$1" in
+case "${1:-}" in
     exec)
         shift
         exec "$@"
@@ -20,6 +20,6 @@ case "$1" in
         ;;
     *)
         echo "Usage: getansible -- exec|ansible|ansible-* [args]"
-        exit 1
+        exit 2
         ;;
 esac

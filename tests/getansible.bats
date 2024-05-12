@@ -3,6 +3,12 @@ setup() {
     bats_load_library bats-assert
 }
 
+@test "getansible.sh" {
+  run getansible.sh
+  assert_failure 2
+  assert_output --partial "Usage: getansible"
+}
+
 @test "getansible.sh -- ansible" {
   run getansible.sh -- ansible --version
   assert_success
