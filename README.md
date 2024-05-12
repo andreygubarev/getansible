@@ -1,4 +1,4 @@
-# `getansible.sh` - Ansible Installer (Portable)
+# `getansible.sh` - Ansible Installer
 
 ## Getting Started
 
@@ -44,6 +44,8 @@ Supported Linux with GLIBC 2.17+:
 - Fedora 21+
 - openSUSE 13.2+
 - RHEL/CentOS 7+
+
+Note: Linux distributions with MUSL (e.g. Alpine) are not supported.
 
 Supported Platforms:
 
