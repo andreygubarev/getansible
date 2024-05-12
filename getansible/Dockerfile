@@ -32,8 +32,12 @@ RUN rm -r /opt/getansible/share/ && \
     find /opt/getansible -type d -name "__pycache__" -print | xargs rm -rf && \
     find /opt/getansible -type d -name "tests" -print | xargs rm -rf
 
-ENV MAKESELF_ARGS="--complevel 6 --tar-format gnu --tar-quietly"
-RUN makeself $MAKESELF_ARGS \
+RUN makeself \
+    --complevel 6 \
+    --tar-format gnu \
+    --tar-quietly \
+    --tar-extra '--mtime=2024-01-01' \
+    --packaging-date '2024-01-01T00:00:00Z' \
     /opt/getansible \
     /opt/getansible.sh \
     "Ansible ${ANSIBLE_RELEASE} (Python ${PYTHON_VERSION})" \
