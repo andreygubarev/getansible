@@ -52,7 +52,7 @@ Supported Platforms:
 
 ## Motivation
 
-Author always wanted Ansible to be distributed as single binary, so it can be easily executed on any Linux machine without the need to install packages or dependencies.
+Author always wanted Ansible to be distributed as a single binary, so it can be easily executed on any Linux machine without the need to install packages or dependencies.
 
 Setting up Ansible using package manager means sticking to the version provided by the OS, which always lags behind the latest release. Setting up Ansible using Python package manager means relying on the PYPI repository, which may be down.
 
