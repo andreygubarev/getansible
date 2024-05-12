@@ -62,4 +62,4 @@ jobs:
 
       - name: Test with BATS
         run: |
-          make test-remote
+          make test-curlpipe
