@@ -8,7 +8,7 @@ curl -s https://getansible.sh/ | sh -
 
 Additionally, you can specify the Ansible version to install:
 ```bash
-curl -s https://getansible.sh/ | ANSIBLE_VERSION=9.0 sh -
+curl -s https://getansible.sh/ | ANSIBLE_RELEASE=9.0 sh -
 ```
 
 Then, you can execute Ansible commands:

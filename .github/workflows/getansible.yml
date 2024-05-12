@@ -37,25 +37,25 @@ jobs:
           - amd64
           - arm64
         version:
-          - ANSIBLE_VERSION: "3.0"
+          - ANSIBLE_RELEASE: "3.0"
             PYTHON_VERSION: "3.8.19"
             PYTHON_RELEASE: "20240415"
-          - ANSIBLE_VERSION: "4.0"
+          - ANSIBLE_RELEASE: "4.0"
             PYTHON_VERSION: "3.8.19"
             PYTHON_RELEASE: "20240415"
-          - ANSIBLE_VERSION: "5.0"
+          - ANSIBLE_RELEASE: "5.0"
             PYTHON_VERSION: "3.8.19"
             PYTHON_RELEASE: "20240415"
-          - ANSIBLE_VERSION: "6.0"
+          - ANSIBLE_RELEASE: "6.0"
             PYTHON_VERSION: "3.8.19"
             PYTHON_RELEASE: "20240415"
-          - ANSIBLE_VERSION: "7.0"
+          - ANSIBLE_RELEASE: "7.0"
             PYTHON_VERSION: "3.11.9"
             PYTHON_RELEASE: "20240415"
-          - ANSIBLE_VERSION: "8.0"
+          - ANSIBLE_RELEASE: "8.0"
             PYTHON_VERSION: "3.11.9"
             PYTHON_RELEASE: "20240415"
-          - ANSIBLE_VERSION: "9.0"
+          - ANSIBLE_RELEASE: "9.0"
             PYTHON_VERSION: "3.11.9"
             PYTHON_RELEASE: "20240415"
 
@@ -78,7 +78,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            ANSIBLE_VERSION=${{ matrix.version.ANSIBLE_VERSION }}
+            ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }}
             PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
             PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
           platforms: linux/${{ matrix.platform }}
@@ -97,12 +97,12 @@ jobs:
 
       - name: Test with BATS
         run: |
-          make test ANSIBLE_VERSION=${{ matrix.version.ANSIBLE_VERSION }} ANSIBLE_PLATFORM=${{ matrix.platform }}
+          make test ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }} ANSIBLE_PLATFORM=${{ matrix.platform }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: getansible-${{ matrix.version.ansible_version }}-${{ matrix.platform }}
+          name: getansible-${{ matrix.version.ANSIBLE_RELEASE }}-${{ matrix.platform }}
           path: "dist/*"
 
   release:

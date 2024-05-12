@@ -9,7 +9,7 @@ DOCKER_IMAGE := getansible
 DOCKER_TAG := latest
 
 ANSIBLE_PLATFORM ?= arm64
-ANSIBLE_VERSION ?= 9.0
+ANSIBLE_RELEASE ?= 9.0
 PYTHON_RELEASE ?= 20240415
 PYTHON_VERSION ?= 3.11.9
 
@@ -20,7 +20,7 @@ lint: ## Lint the code
 .PHONY: run
 run:  ## Build the docker image
 	docker buildx build \
-		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
+		--build-arg ANSIBLE_RELEASE=$(ANSIBLE_RELEASE) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
 		--tag getansible:latest \
@@ -31,7 +31,7 @@ run:  ## Build the docker image
 .PHONY: build
 build:  ## Build the docker image
 	docker buildx build \
-		--build-arg ANSIBLE_VERSION=$(ANSIBLE_VERSION) \
+		--build-arg ANSIBLE_RELEASE=$(ANSIBLE_RELEASE) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
 		--output $(MAKEFILE_DIR)/dist \
@@ -50,14 +50,14 @@ build-bats:  ## Build the docker image for bats
 .PHONY: shell
 shell:
 	docker run --rm \
-		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_VERSION)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
+		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		debian:bookworm-slim
 
 .PHONY: test
 test:  ## Test getansible.sh
 	docker run --rm \
 		--platform linux/$(ANSIBLE_PLATFORM) \
-		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_VERSION)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
+		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
 		bats:latest /usr/src/bats
 
