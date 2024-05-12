@@ -79,13 +79,13 @@ getansible_install() {
     # shellcheck disable=SC2064
     trap "rm -rf $getansible_tempdir" EXIT
     curl -sL "$GITHUB_DOWNLOAD_URL" -o "$getansible_tempdir/$GITHUB_ARTIFACT"
-    chmod +x "$getansible_path"
 
     pushd "$getansible_tempdir" > /dev/null
     sha512sum -c "$SHA512SUMS" --ignore-missing
     popd > /dev/null
 
     mv "$getansible_tempdir/$GITHUB_ARTIFACT" "$getansible_path"
+    chmod +x "$getansible_path"
 }
 
 getansible_uninstall() {
