@@ -71,7 +71,7 @@ Supported Ansible Versions:
 | 8.0     | 8.7.0   | 2.15.11      | 3.11.9 |
 | 9.0     | 9.5.1   | 2.16.6       | 3.11.9 |
 
-Supported Linux with GLIBC 2.17+:
+Supported Linux with GLIBC 2.17 or later:
 
 - `Debian` starting from `8` (`jessie`)
 - `Ubuntu` starting from `14.04` (`trusty`)
