@@ -3,17 +3,27 @@
 ## Getting Started
 
 ```bash
-# execute without installing
-curl -s https://getansible.sh/ | sh -s -- ansible-playbook playbook.yml
+curl -s https://getansible.sh/ | sh -
+```
 
-# install and execute
-curl -s https://getansible.sh/ | sh
+Additionally, you can specify the Ansible version to install:
+```bash
+curl -s https://getansible.sh/ | ANSIBLE_VERSION=9.0 sh -
+```
+
+Then, you can execute Ansible commands:
+```bash
 getansible.sh -- ansible-playbook playbook.yml
+```
+
+Or, you can execute Ansible commands directly:
+```bash
+curl -s https://getansible.sh/ | sh -s -- ansible-playbook playbook.yml
 ```
 
 ## Overview
 
-`getansible.sh` is a shell script that contains a self-extracting archive of Ansible (including dependencies) and Python interpreter. It can be executed on any Linux machine without the need to install Ansible.
+`getansible.sh` is a shell script that contains a self-extracting archive of Ansible (including dependencies) and Python interpreter. It is designed to be executed on any Linux machine without the need to install packages or dependencies.
 
 Supported Ansible Versions:
 
