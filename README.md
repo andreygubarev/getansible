@@ -45,11 +45,11 @@ Supported Ansible Versions:
 
 Supported Linux with GLIBC 2.17+:
 
-- Debian 8+
-- Ubuntu 14.04+
-- Fedora 21+
-- openSUSE 13.2+
-- RHEL/CentOS 7+
+- `Debian` starting from `jessie`
+- `Ubuntu` starting from `trusty`
+- `Fedora` starting from `21`
+- `openSUSE` starting from `13.2`
+- `RHEL` or `CentOS` starting from `7`
 
 Note: Linux distributions with MUSL (e.g. Alpine) are not supported.
 
