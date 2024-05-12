@@ -42,25 +42,9 @@ Supported Platforms:
 
 ## Motivation
 
-Using Ansible for provisioning and configuration management of cloud resources is a common practice, but it requires the installation of Ansible on the local machine.
+Author always wanted Ansible to be distributed as single binary, so it can be easily executed on any Linux machine without the need to install packages or dependencies.
 
-Use case:
-
-1. Need to create a new deployment on AWS EC2.
-2. Setup Autoscaling Group for high availability and reliability.
-3. Need to provision new instances with Ansible.
-
-In this case, the new instance may not have Ansible installed, until it was baked into AMI (if so then you don't have a problem this script solves).
-
-### Why not install Ansible using package manager?
-
-- **Compatibility**: each OS has its own package manager, and the version of Ansible may not be the same.
-
-- **Dependency**: installing Ansible may require additional packages, e.g. Python and Python packages.
-
-- **Reliability**: package repositories may be down, or the package may be removed.
-
-- **Reproducibility**: the version of Ansible may change over time, and the playbook may not work as expected, target EC2 may contain contain incompatible changes.
+Setting up Ansible using package manager means sticking to the version provided by the OS, which always lags behind the latest release. Setting up Ansible using Python package manager means relying on the PYPI repository, which may be down.
 
 # Reference
 
