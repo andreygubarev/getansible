@@ -27,7 +27,7 @@ RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linu
 
 RUN getansible/bin/pip install -q --upgrade ansible~="${ANSIBLE_RELEASE}"
 RUN sed -i 's|#!/opt/getansible/bin/python3.*|#!/usr/bin/env python3|' /opt/getansible/bin/ansible*
-COPY --chmod=0755 getansible.sh /opt/getansible/getansible.sh
+COPY --chmod=0755 entrypoint.sh /opt/getansible/entrypoint.sh
 RUN rm -r /opt/getansible/share/ && \
     find /opt/getansible -type d -name "__pycache__" -print | xargs rm -rf && \
     find /opt/getansible -type d -name "tests" -print | xargs rm -rf
@@ -36,8 +36,8 @@ ENV MAKESELF_ARGS="--complevel 6 --tar-format gnu --tar-quietly"
 RUN makeself $MAKESELF_ARGS \
     /opt/getansible \
     /opt/getansible.sh \
-    "Ansible ${ANSIBLE_RELEASE} with Python ${PYTHON_VERSION}" \
-    ./getansible.sh
+    "Ansible ${ANSIBLE_RELEASE} (Python ${PYTHON_VERSION})" \
+    ./entrypoint.sh
 RUN chmod 0755 /opt/getansible.sh
 
 FROM scratch AS release
