@@ -3,17 +3,17 @@
 ## Getting Started
 
 ```bash
-curl -s https://getansible.sh/ | sh -
+curl -s https://getansible.sh/ | bash -
 ```
 
 Additionally, you can specify the Ansible release to install:
 ```bash
-curl -s https://getansible.sh/ | ANSIBLE_RELEASE=9.0 sh -
+curl -s https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash -
 ```
 
 Alternatively, you can download distribution from the [releases page](https://github.com/andreygubarev/getansible/releases):
 ```bash
-curl -sL https://github.com/andreygubarev/getansible/releases/download/v0.3.3/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
+curl -fsSL https://github.com/andreygubarev/getansible/releases/download/v0.3.3/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
 chmod +x /usr/local/bin/getansible.sh
 ```
 
@@ -22,9 +22,9 @@ Then, you can execute Ansible commands:
 getansible.sh -- ansible-playbook playbook.yml
 ```
 
-Or, you can execute Ansible commands directly:
+Or, you can execute Ansible commands using curl piping:
 ```bash
-curl -s https://getansible.sh/ | sh -s -- ansible-playbook playbook.yml
+curl -fsSL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
 ```
 
 ## Overview

@@ -59,14 +59,14 @@ test:  ## Test getansible.sh
 		--platform linux/$(ANSIBLE_PLATFORM) \
 		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
-		bats:latest --filter-tags !remote /usr/src/bats/
+		bats:latest --filter-tags !curlpipe /usr/src/bats/
 
-.PHONY: test-remote
-test-remote:  ## Test getansible.sh
+.PHONY: test-curlpipe
+test-curlpipe:  ## Test https://getansible.sh
 	docker run --rm \
 		--platform linux/$(ANSIBLE_PLATFORM) \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
-		bats:latest --filter-tags remote /usr/src/bats/
+		bats:latest --filter-tags curlpipe /usr/src/bats/
 
 .PHONY: clean
 clean:  ## Clean up

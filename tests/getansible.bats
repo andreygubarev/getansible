@@ -27,8 +27,8 @@ setup() {
 }
 
 
-# bats test_tags=remote
+# bats test_tags=curlpipe
 @test "curl https://getansible.sh/" {
-  run bash -c "curl -s https://getansible.sh/ | sh -"
+  run bash -c "curl -s https://getansible.sh/ | bash -"
   assert_success
 }
