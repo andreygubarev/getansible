@@ -64,7 +64,6 @@ test:  ## Test getansible.sh
 .PHONY: test-curlpipe
 test-curlpipe:  ## Test https://getansible.sh
 	docker run --rm \
-		--platform linux/$(ANSIBLE_PLATFORM) \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
 		bats:latest --filter-tags curlpipe /usr/src/bats/
 

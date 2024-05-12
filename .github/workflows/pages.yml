@@ -63,8 +63,7 @@ jobs:
           tags: bats:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          platforms: linux/amd64
 
       - name: Test with BATS
         run: |
-          make test-curlpipe ANSIBLE_PLATFORM=amd64
+          make test-curlpipe
