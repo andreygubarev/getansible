@@ -27,6 +27,14 @@ Or, you can execute Ansible commands using curl piping:
 curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
 ```
 
+### Prerequisites
+
+`getansible.sh` requires `bash`, `sed` and `tar` to be installed on the system.
+
+Additionally, if you are using curl piping, you need:
+- `curl` to download the script, and CA certificates to verify the download
+
+
 ### Configuration
 
 You can configure the following environment variables:
