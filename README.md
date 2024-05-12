@@ -27,17 +27,18 @@ Supported Ansible Versions:
 | 8.0     | 8.7.0   | 2.15.11      | 3.11.9 |
 | 9.0     | 9.5.1   | 2.16.6       | 3.11.9 |
 
-Supported OS:
+Supported Linux with GLIBC 2.17+:
 
-- Fedora 21+
-- RHEL/CentOS 7+
-- openSUSE 13.2+
-- Debian 8+ (Jessie)
+- Debian 8+
 - Ubuntu 14.04+
+- Fedora 21+
+- openSUSE 13.2+
+- RHEL/CentOS 7+
 
 Supported Platforms:
 
-- Linux on `amd64` and `arm64` architectures with GLIBC 2.17+.
+- `amd64`
+- `arm64`
 
 ## Motivation
 
