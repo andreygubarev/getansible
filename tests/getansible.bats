@@ -25,3 +25,10 @@ setup() {
   run getansible.sh -- ansible-galaxy --version
   assert_success
 }
+
+
+# bats test_tags=remote
+@test "curl https://getansible.sh/" {
+  run bash -c "curl -s https://getansible.sh/ | sh -"
+  assert_success
+}
