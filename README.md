@@ -1,4 +1,4 @@
-# `getansible.sh` - self-contained, portable, isolated, and reproducible Ansible installation
+# `getansible.sh` - self-contained, standalone, and reproducible Ansible installation
 
 ## Getting Started
 
@@ -58,7 +58,7 @@ Author always wanted Ansible to be distributed as a single binary, so it can be 
 
 Setting up Ansible using package manager means sticking to the version provided by the OS, which always lags behind the latest release. Setting up Ansible using Python package manager means relying on the PYPI repository, which may be down.
 
-Thus, `getansible.sh` was created to provide a self-contained, portable, isolated, and reproducible Ansible installation.
+Thus, `getansible.sh` was created to provide a self-contained, standalone (isolated and portable), and reproducible Ansible installation.
 
 # Reference
 
