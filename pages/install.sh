@@ -87,6 +87,33 @@ getansible_install() {
 
     mv "$getansible_tempdir/$GITHUB_ARTIFACT" "$getansible_path"
     chmod +x "$getansible_path"
+
+    if [ "$link_option" = "true" ]; then
+        getansible_link "$getansible_path"
+    fi
+}
+
+getansible_link() {
+    local getansible_path=$1
+
+    echo > /usr/local/bin/ansible <<EOF
+#!/usr/bin/env bash
+exec "$getansible_path" -- ansible "\$@"
+EOF
+    chmod +x /usr/local/bin/ansible
+
+    echo > /usr/local/bin/ansible-galaxy <<EOF
+#!/usr/bin/env bash
+exec "$getansible_path" -- ansible-galaxy "\$@"
+EOF
+    chmod +x /usr/local/bin/ansible-galaxy
+
+    echo > /usr/local/bin/ansible-playbook <<EOF
+#!/usr/bin/env bash
+exec "$getansible_path" -- ansible-playbook "\$@"
+EOF
+    chmod +x /usr/local/bin/ansible-playbook
+
 }
 
 getansible_uninstall() {

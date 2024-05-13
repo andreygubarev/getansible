@@ -39,6 +39,25 @@ setup() {
 @test "install.sh" {
   run install.sh install
   assert_success
-
   assert_file_exist /usr/local/bin/getansible.sh
+}
+
+
+# bats test_tags=install
+@test "install.sh --link" {
+  run install.sh install --link
+  assert_success
+
+  assert_file_exist /usr/local/bin/ansible
+  assert_file_exist /usr/local/bin/ansible-galaxy
+  assert_file_exist /usr/local/bin/ansible-playbook
+
+  run ansible --version
+  assert_success
+
+  run ansible-galaxy --version
+  assert_success
+
+  run ansible-playbook --version
+  assert_success
 }
