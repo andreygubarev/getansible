@@ -105,6 +105,15 @@ Setting up Ansible using package manager means sticking to the version provided 
 
 Thus, `getansible.sh` was created to provide a self-contained, standalone (isolated and portable), and reproducible Ansible installation.
 
+### Criticism of Curl Piping
+
+- https://0x46.net/thoughts/2019/04/27/piping-curl-to-shell/
+- https://gnu.moe/wallofshame.md
+
+Author believes that curl piping is acceptable for downloading and executing scripts, as long as the script is open-source and the source code is available for review. In this case, transparency is sufficient to ensure good faith.
+
+For those who are still concerned (and rightfully so), `getansible.sh` can be downloaded directly from the [releases page](https://github.com/andreygubarev/getansible/releases) and executed locally.
+
 # Reference
 
 The project is possible only because of the following tools:
