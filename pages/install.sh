@@ -7,6 +7,8 @@ GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
 
 ANSIBLE_RELEASE="${ANSIBLE_RELEASE:-9.0}"
 
+PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
+
 ### pre-requisites ############################################################
 if ! command -v curl > /dev/null; then
     echo "missing dependency: curl"

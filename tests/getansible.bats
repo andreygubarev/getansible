@@ -28,6 +28,12 @@ setup() {
 }
 
 
+@test "PYTHON_REQUIREMENTS getansible.sh -- ansible" {
+  run bash -c "PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- exec pip3 freeze | grep boto3"
+  assert_success
+}
+
+
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash" {
   run bash -c "curl -s https://getansible.sh/ | bash"
