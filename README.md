@@ -2,16 +2,32 @@
 
 ## Getting Started
 
+You can use `install.sh` to download and execute `getansible.sh`:
 ```bash
 curl -sL https://getansible.sh/ | bash -
 ```
 
-Additionally, you can specify the Ansible release to install:
+Additionally, you can specify the Ansible release to install (e.g. `9.0`):
 ```bash
 curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash -
 ```
 
-Alternatively, you can download distribution from the [releases page](https://github.com/andreygubarev/getansible/releases):
+Or, you can execute Ansible commands using curl piping:
+```bash
+curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
+```
+
+Also, you can specify `--link` to create system-wide symlinks:
+```bash
+curl -sL https://getansible.sh/ | bash -s -- --link
+```
+
+After linking, you can execute Ansible commands:
+```bash
+ansible-playbook playbook.yml
+```
+
+Alternatively, you can download distribution of `getansible.sh` from the [releases page](https://github.com/andreygubarev/getansible/releases):
 ```bash
 curl -fsSL https://github.com/andreygubarev/getansible/releases/download/v0.3.4/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
 chmod +x /usr/local/bin/getansible.sh
@@ -20,11 +36,6 @@ chmod +x /usr/local/bin/getansible.sh
 Then, you can execute Ansible commands:
 ```bash
 getansible.sh -- ansible-playbook playbook.yml
-```
-
-Or, you can execute Ansible commands using curl piping:
-```bash
-curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
 ```
 
 ### Prerequisites
