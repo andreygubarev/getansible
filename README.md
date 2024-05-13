@@ -1,5 +1,7 @@
 # `getansible.sh` - self-contained, standalone, and reproducible Ansible installation
 
+[![Release - getansible.sh](https://github.com/andreygubarev/getansible/actions/workflows/getansible.yml/badge.svg)](https://github.com/andreygubarev/getansible/actions/workflows/getansible.yml)
+
 ## Getting Started
 
 You can use `install.sh` to download and execute `getansible.sh`:
