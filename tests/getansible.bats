@@ -28,7 +28,7 @@ setup() {
 }
 
 
-@test "PYTHON_REQUIREMENTS getansible.sh -- ansible" {
+@test "PYTHON_REQUIREMENTS getansible.sh" {
   run bash -c "PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- exec pip3 freeze | grep boto3"
   assert_success
 }
