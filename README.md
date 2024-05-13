@@ -1,6 +1,6 @@
 # `getansible.sh` - self-contained, standalone, and reproducible Ansible installation
 
-[![Build](https://github.com/andreygubarev/getansible/actions/workflows/getansible.yml/badge.svg)](https://github.com/andreygubarev/getansible/actions/workflows/getansible.yml)
+[![Release - getansible.sh](https://github.com/andreygubarev/getansible/actions/workflows/getansible.yml/badge.svg)](https://github.com/andreygubarev/getansible/actions/workflows/getansible.yml)
 
 ## Getting Started
 
