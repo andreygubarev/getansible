@@ -4,12 +4,12 @@
 
 You can use `install.sh` to download and execute `getansible.sh`:
 ```bash
-curl -sL https://getansible.sh/ | bash -
+curl -sL https://getansible.sh/ | bash
 ```
 
 Additionally, you can specify the Ansible release to install (e.g. `9.0`):
 ```bash
-curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash -
+curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash
 ```
 
 Or, you can execute Ansible commands using curl piping:

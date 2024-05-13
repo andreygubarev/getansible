@@ -29,9 +29,25 @@ setup() {
 
 
 # bats test_tags=curlpipe
-@test "curl https://getansible.sh/" {
+@test "curl https://getansible.sh/ | bash" {
+  run bash -c "curl -s https://getansible.sh/ | bash"
+  assert_success
+}
+
+
+# bats test_tags=curlpipe
+@test "curl https://getansible.sh/ | bash -" {
   run bash -c "curl -s https://getansible.sh/ | bash -"
   assert_success
+}
+
+# bats test_tags=curlpipe
+@test "curl https://getansible.sh/ | bash -s -- install --link" {
+  run bash -c "curl -sL https://getansible.sh/ | bash -s -- install --link"
+  assert_success
+  assert_file_exist /usr/local/bin/ansible
+  assert_file_exist /usr/local/bin/ansible-galaxy
+  assert_file_exist /usr/local/bin/ansible-playbook
 }
 
 
