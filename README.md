@@ -38,6 +38,11 @@ Then, you can execute Ansible commands:
 getansible.sh -- ansible-playbook playbook.yml
 ```
 
+And you can specify Python requirements needed for your playbook:
+```bash
+PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
+```
+
 ### Prerequisites
 
 `getansible.sh` requires `bash`, `sed` and `tar` to be installed on the system.
@@ -58,6 +63,11 @@ curl -sL https://getansible.sh/ | GETANSIBLE_PATH=/opt/getansible.sh bash
 `ANSIBLE_RELEASE` - Ansible release to install (default: `9.0`):
 ```bash
 curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash
+```
+
+`PYTHON_REQUIREMENTS` - Python requirements needed for your playbook (default: `''`):
+```bash
+curl -sL https://getansible.sh/ | PYTHON_REQUIREMENTS='boto3 botocore' bash -s -- ansible-playbook playbook.yml
 ```
 
 `TMPDIR` - Temporary directory to extract Ansible (default: `/tmp`):

@@ -6,6 +6,11 @@ export WORKDIR
 export PATH="$WORKDIR/bin:$PATH"
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
+PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
+if [ -n "$PYTHON_REQUIREMENTS" ]; then
+    "$WORKDIR"/bin/pip3 install --no-cache-dir $PYTHON_REQUIREMENTS
+fi
+
 cd "$USER_PWD" || exit 1
 
 case "${1:-}" in
