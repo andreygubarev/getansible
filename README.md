@@ -19,7 +19,7 @@ curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
 
 Also, you can specify `--link` to create system-wide symlinks:
 ```bash
-curl -sL https://getansible.sh/ | bash -s -- --link
+curl -sL https://getansible.sh/ | bash -s -- install --link
 ```
 
 After linking, you can execute Ansible commands:
@@ -29,7 +29,7 @@ ansible-playbook playbook.yml
 
 Alternatively, you can download distribution of `getansible.sh` from the [releases page](https://github.com/andreygubarev/getansible/releases):
 ```bash
-curl -fsSL https://github.com/andreygubarev/getansible/releases/download/v0.3.4/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
+curl -fsSL https://github.com/andreygubarev/getansible/releases/download/v0.3.5/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
 chmod +x /usr/local/bin/getansible.sh
 ```
 
