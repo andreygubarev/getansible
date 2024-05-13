@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -yq && apt-get install -yq --no-install-recommends \
     bats \
     bats-assert \
+    bats-file \
     bats-support \
     ca-certificates \
     curl \

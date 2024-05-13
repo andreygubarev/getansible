@@ -53,6 +53,7 @@ esac
 getansible_install() {
     local ansible_release=$1
     local getansible_path=$2
+    local link_option="$3"
 
     if [ -e "$getansible_path" ]; then
         if [ ! -w "$getansible_path" ]; then
@@ -104,7 +105,7 @@ getansible_ansible() {
     # shellcheck disable=SC2064
     trap "rm -rf $tmpdir" EXIT
 
-    getansible_install "$ANSIBLE_RELEASE" "$tmpdir/getansible.sh"
+    getansible_install "$ANSIBLE_RELEASE" "$tmpdir/getansible.sh" "false"
     "$tmpdir/getansible.sh" -- "$@"
 }
 
@@ -114,7 +115,18 @@ case ${1:-} in
         getansible_ansible "${@}"
         ;;
     install)
-        getansible_install "$ANSIBLE_RELEASE" "$GETANSIBLE_PATH"
+        shift
+        link_option="false"
+        for arg in "$@"; do
+            case $arg in
+                --link|-l)
+                    link_option="true"
+                    ;;
+                *)
+                    ;;
+            esac
+        done
+        getansible_install "$ANSIBLE_RELEASE" "$GETANSIBLE_PATH" "$link_option"
         ;;
     uninstall)
         getansible_uninstall "$ANSIBLE_RELEASE" "$GETANSIBLE_PATH"
@@ -123,6 +135,6 @@ case ${1:-} in
         getansible_help
         ;;
     *)
-        getansible_install "$ANSIBLE_RELEASE" "$GETANSIBLE_PATH"
+        getansible_install "$ANSIBLE_RELEASE" "$GETANSIBLE_PATH" "false"
         ;;
 esac

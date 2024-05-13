@@ -1,6 +1,7 @@
 setup() {
-    bats_load_library bats-support
     bats_load_library bats-assert
+    bats_load_library bats-file
+    bats_load_library bats-support
 }
 
 @test "getansible.sh" {
@@ -31,4 +32,13 @@ setup() {
 @test "curl https://getansible.sh/" {
   run bash -c "curl -s https://getansible.sh/ | bash -"
   assert_success
+}
+
+
+# bats test_tags=install
+@test "install.sh" {
+  run install.sh install
+  assert_success
+
+  assert_file_exist /usr/local/bin/getansible.sh
 }
