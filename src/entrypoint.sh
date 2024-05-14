@@ -14,6 +14,41 @@ fi
 
 cd "$USER_PWD" || exit 1
 
+playbook() {
+    playbook_url=$1
+
+    tmpfile=$(mktemp)
+    # shellcheck disable=SC2064
+    trap "rm -f $tmpfile" EXIT
+    curl -fsSL -o "$tmpfile" "$playbook_url"
+
+    tmpdir=$(mktemp -d)
+    # shellcheck disable=SC2064
+    trap "rm -rf $tmpdir" EXIT
+
+    tar -xzf "$tmpfile" "$tmpdir"
+    pushd "$tmpdir" > /dev/null || exit 1
+
+    if [ -f .env ]; then
+        # shellcheck disable=SC1091
+        . .env
+    fi
+
+    if [ -f requirements.txt ]; then
+        "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
+    fi
+
+    if [ -f requirements.yml ]; then
+        "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
+    fi
+
+    if [ -f playbook.yml ]; then
+        "$WORKDIR"/bin/ansible-playbook playbook.yml
+    fi
+
+    popd > /dev/null || exit 1
+}
+
 case "${1:-}" in
     exec)
         shift
