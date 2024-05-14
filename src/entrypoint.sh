@@ -34,7 +34,15 @@ main() {
             curl -fsSL -o "$tmpfile" "$playbook_url"
             ;;
         file://*)
-            cp "${playbook_url#file://}" "$tmpfile"
+            fname="${playbook_url#file://}"
+            if [ -f "$fname" ]; then
+                cp "$fname" "$tmpfile"
+            elif [ -d "$fname" ]; then
+                tar -C "$fname" -czf "$tmpfile" .
+            else
+                echo "Invalid playbook: $fname"
+                exit 3
+            fi
             ;;
         *)
             echo "Invalid playbook URL: $playbook_url"
@@ -42,15 +50,19 @@ main() {
             ;;
     esac
 
-    case "$playbook_url" in
-        *.tar.gz|*.tgz)
+    ftype=$(file -b --mime-type "$tmpfile")
+    case "$ftype" in
+        application/gzip)
             tar -C "$tmpdir" -xzf "$tmpfile"
             ;;
-        *.zip)
+        application/zip)
             unzip -d "$tmpdir" "$tmpfile"
             ;;
+        text/plain)
+            cp "$tmpfile" "$tmpdir/playbook.yml"
+            ;;
         *)
-            echo "Invalid playbook archive: $playbook_url"
+            echo "Invalid playbook file type: $ftype"
             exit 4
             ;;
     esac
