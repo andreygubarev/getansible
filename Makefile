@@ -64,7 +64,7 @@ test:  ## Test getansible.sh
 .PHONY: test-install
 test-install:  ## Test getansible.sh
 	docker run --rm \
-		-v $(MAKEFILE_DIR)/pages/install.sh:/usr/local/bin/install.sh \
+		-v $(MAKEFILE_DIR)/docs/install.sh:/usr/local/bin/install.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
 		bats:latest --filter-tags install /usr/src/bats/
 
