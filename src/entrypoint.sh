@@ -20,13 +20,34 @@ playbook() {
     tmpfile=$(mktemp)
     # shellcheck disable=SC2064
     trap "rm -f $tmpfile" EXIT
-    curl -fsSL -o "$tmpfile" "$playbook_url"
 
     tmpdir=$(mktemp -d)
     # shellcheck disable=SC2064
     trap "rm -rf $tmpdir" EXIT
 
-    tar -xzf "$tmpfile" "$tmpdir"
+    case "$playbook_url" in
+        http://*|https://*)
+            curl -fsSL -o "$tmpfile" "$playbook_url"
+            ;;
+        *)
+            echo "Invalid playbook URL: $playbook_url"
+            exit 3
+            ;;
+    esac
+
+    case "$playbook_url" in
+        *.tar.gz|*.tgz)
+            tar -C "$tmpdir" -xzf "$tmpfile"
+            ;;
+        *.zip)
+            unzip -d "$tmpdir" "$tmpfile"
+            ;;
+        *)
+            echo "Invalid playbook archive: $playbook_url"
+            exit 4
+            ;;
+    esac
+
     pushd "$tmpdir" > /dev/null || exit 1
 
     if [ -f .env ]; then
