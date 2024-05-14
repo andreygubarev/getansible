@@ -35,13 +35,27 @@ setup() {
 
 
 # bats test_tags=playbook
-@test "getansible.sh -- file://" {
+@test "getansible.sh -- file:// with absolute path" {
   tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
 
   run bash -c "getansible.sh -- file:///opt/001-ping.tar.gz"
   assert_success
   assert_output --partial "ok=1"
 }
+
+
+# bats test_tags=playbook
+@test "getansible.sh -- file:// with relative path" {
+  tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+  pushd /opt > /dev/null || exit 1
+
+  run bash -c "getansible.sh -- file://001-ping.tar.gz"
+  assert_success
+  assert_output --partial "ok=1"
+
+  popd > /dev/null || exit 1
+}
+
 
 # bats test_tags=playbook
 @test "getansible.sh -- file:// with requirements.yml" {
