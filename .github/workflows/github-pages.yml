@@ -59,12 +59,12 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Rename script
-        run: cp pages/install.sh pages/index.html
+        run: cp docs/install.sh docs/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "pages"
+          path: "docs"
 
       - name: Deploy to GitHub Pages
         id: deployment
