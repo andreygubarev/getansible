@@ -63,6 +63,10 @@ playbook() {
         exec "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
     fi
 
+    if [ -d roles ]; then
+        export ANSIBLE_ROLES_PATH="$tmpdir/roles"
+    fi
+
     if [ -f playbook.yml ]; then
         exec "$WORKDIR"/bin/ansible-playbook playbook.yml
     fi
