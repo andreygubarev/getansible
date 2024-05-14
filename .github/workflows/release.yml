@@ -72,7 +72,7 @@ jobs:
       - name: Build Distribution
         uses: docker/build-push-action@v5
         with:
-          context: getansible
+          context: src
           push: false
           tags: andreygubarev/getansible:latest
           cache-from: type=gha
