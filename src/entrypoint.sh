@@ -50,7 +50,51 @@ main() {
             ;;
     esac
 
-    ftype=$(file -b --mime-type "$tmpfile")
+    if command -v file > /dev/null; then
+        ftype=$(file --brief --mime-type "$tmpfile")
+    else
+        case "$playbook_url" in
+            http://*|https://*)
+                case "$playbook_url" in
+                    *.tar.gz)
+                        ftype="application/gzip"
+                        ;;
+                    *.zip)
+                        ftype="application/zip"
+                        ;;
+                    *.yml|*.yaml)
+                        ftype="text/plain"
+                        ;;
+                    *)
+                        echo "Invalid playbook file: $playbook_url"
+                        exit 4
+                        ;;
+                esac
+                ;;
+            file://*)
+                fname="${playbook_url#file://}"
+                if [ -f "$fname" ]; then
+                    case "$fname" in
+                        *.tar.gz)
+                            ftype="application/gzip"
+                            ;;
+                        *.zip)
+                            ftype="application/zip"
+                            ;;
+                        *.yml|*.yaml)
+                            ftype="text/plain"
+                            ;;
+                        *)
+                            echo "Invalid playbook file: $fname"
+                            exit 4
+                            ;;
+                    esac
+                elif [ -d "$fname" ]; then
+                    ftype="application/gzip"
+                fi
+        esac
+    fi
+
     case "$ftype" in
         application/gzip)
             tar -C "$tmpdir" -xzf "$tmpfile"
