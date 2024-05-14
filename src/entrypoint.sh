@@ -59,11 +59,12 @@ main() {
     fi
 
     if [ -f requirements.txt ]; then
-        exec "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
+        "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
     fi
 
     if [ -f requirements.yml ]; then
-        exec "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
+        "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
+        echo $?
     fi
 
     if [ -d roles ]; then
@@ -71,7 +72,7 @@ main() {
     fi
 
     if [ -f playbook.yml ]; then
-        exec "$WORKDIR"/bin/ansible-playbook playbook.yml
+        "$WORKDIR"/bin/ansible-playbook playbook.yml
     else
         echo "No playbook.yml found"
         exit 5

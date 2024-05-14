@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: random_string
+      ansible.builtin.debug:
+        var: lookup('community.general.random_string')

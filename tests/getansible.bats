@@ -33,9 +33,22 @@ setup() {
   assert_success
 }
 
+
 # bats test_tags=playbook
 @test "getansible.sh -- file://" {
-  run bash -c "getansible.sh -- file:///usr/src/bats/examples/ping.tar.gz"
+  tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+
+  run bash -c "getansible.sh -- file:///opt/001-ping.tar.gz"
+  assert_success
+  assert_output --partial "ok=1"
+}
+
+# bats test_tags=playbook
+@test "getansible.sh -- file:// with requirements.yml" {
+  tar -czf /opt/002-requirements.tar.gz -C /usr/src/bats/examples/002-requirements .
+
+  run bash -c "getansible.sh -- file:///opt/002-requirements.tar.gz"
+  echo $output
   assert_success
   assert_output --partial "ok=1"
 }
