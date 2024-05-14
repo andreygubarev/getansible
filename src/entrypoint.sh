@@ -14,7 +14,7 @@ fi
 
 cd "$USER_PWD" || exit 1
 
-playbook() {
+main() {
     playbook_url=$1
 
     tmpfile=$(mktemp)
@@ -28,6 +28,9 @@ playbook() {
     case "$playbook_url" in
         http://*|https://*)
             curl -fsSL -o "$tmpfile" "$playbook_url"
+            ;;
+        file://*)
+            cp "${playbook_url#file://}" "$tmpfile"
             ;;
         *)
             echo "Invalid playbook URL: $playbook_url"
@@ -69,6 +72,9 @@ playbook() {
 
     if [ -f playbook.yml ]; then
         exec "$WORKDIR"/bin/ansible-playbook playbook.yml
+    else
+        echo "No playbook.yml found"
+        exit 5
     fi
 
     popd > /dev/null || exit 1
@@ -89,7 +95,6 @@ case "${1:-}" in
         exit 0
         ;;
     *)
-        echo "Usage: getansible -- exec|ansible|ansible-* [args]"
-        exit 2
+        main "$@"
         ;;
 esac

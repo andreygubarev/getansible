@@ -33,6 +33,13 @@ setup() {
   assert_success
 }
 
+# bats test_tags=playbook
+@test "getansible.sh -- file://" {
+  run bash -c "getansible.sh -- file:///usr/src/bats/examples/ping.tar.gz"
+  assert_success
+  assert_output --partial "ok=1"
+}
+
 
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash" {
