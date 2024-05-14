@@ -12,5 +12,5 @@ RUN apt-get update -yq && apt-get install -yq --no-install-recommends \
     tini
 
 VOLUME /usr/src/bats
-
+WORKDIR /usr/src/bats
 ENTRYPOINT ["tini", "--", "bash", "bats"]

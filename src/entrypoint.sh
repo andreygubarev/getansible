@@ -14,6 +14,10 @@ fi
 
 cd "$USER_PWD" || exit 1
 
+usage() {
+    echo "Usage: getansible -- exec|ansible|ansible-* [args]"
+}
+
 main() {
     playbook_url=$1
 
@@ -81,6 +85,11 @@ main() {
     popd > /dev/null || exit 1
 }
 
+if [ $# -eq 0 ]; then
+    usage
+    exit 2
+fi
+
 case "${1:-}" in
     exec)
         shift
@@ -92,7 +101,7 @@ case "${1:-}" in
         exec "$WORKDIR/bin/$command" "$@"
         ;;
     help|-h|--help)
-        echo "Usage: getansible -- exec|ansible|ansible-* [args]"
+        usage
         exit 0
         ;;
     *)
