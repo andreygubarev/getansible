@@ -25,7 +25,7 @@ jobs:
       - name: Lint shell scripts
         run: |
           sudo apt-get install shellcheck
-          shellcheck getansible/*.sh pages/*.sh
+          shellcheck src/*.sh pages/*.sh
 
   build:
     runs-on: ubuntu-latest
