@@ -128,7 +128,7 @@ getansible_help() {
     echo "Usage: $0 [install]"
 }
 
-getansible_ansible() {
+getansible() {
     tmpdir="$(mktemp -d)"
 
     # shellcheck disable=SC2064
@@ -141,7 +141,7 @@ getansible_ansible() {
 ### main ######################################################################
 case ${1:-} in
     ansible|ansible-galaxy|ansible-playbook|ansible-*)
-        getansible_ansible "${@}"
+        getansible "${@}"
         ;;
     install)
         shift

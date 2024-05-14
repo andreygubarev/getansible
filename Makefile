@@ -15,7 +15,7 @@ PYTHON_VERSION ?= 3.11.9
 
 .PHONY: lint
 lint: ## Lint the code
-	shellcheck getansible/*.sh pages/*.sh
+	shellcheck docs/*.sh src/*.sh
 
 .PHONY: run
 run:  ## Build the docker image
@@ -25,7 +25,7 @@ run:  ## Build the docker image
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
 		--tag getansible:latest \
 		--target build \
-		$(MAKEFILE_DIR)/getansible
+		$(MAKEFILE_DIR)/src
 	docker run -it --rm getansible:latest
 
 .PHONY: build
@@ -37,7 +37,7 @@ build:  ## Build the docker image
 		--output $(MAKEFILE_DIR)/dist \
 		--platform linux/$(ANSIBLE_PLATFORM) \
 		--progress=plain \
-		$(MAKEFILE_DIR)/getansible
+		$(MAKEFILE_DIR)/src
 
 .PHONY: build-bats
 build-bats:  ## Build the docker image for bats

@@ -25,7 +25,7 @@ jobs:
       - name: Lint shell scripts
         run: |
           sudo apt-get install shellcheck
-          shellcheck getansible/*.sh pages/*.sh
+          shellcheck src/*.sh docs/*.sh
 
   build:
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
       - name: Build Distribution
         uses: docker/build-push-action@v5
         with:
-          context: getansible
+          context: src
           push: false
           tags: andreygubarev/getansible:latest
           cache-from: type=gha
