@@ -35,15 +35,15 @@ playbook() {
     fi
 
     if [ -f requirements.txt ]; then
-        "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
+        exec "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
     fi
 
     if [ -f requirements.yml ]; then
-        "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
+        exec "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
     fi
 
     if [ -f playbook.yml ]; then
-        "$WORKDIR"/bin/ansible-playbook playbook.yml
+        exec "$WORKDIR"/bin/ansible-playbook playbook.yml
     fi
 
     popd > /dev/null || exit 1
