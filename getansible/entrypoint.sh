@@ -24,6 +24,10 @@ case "${1:-}" in
         shift
         exec "$WORKDIR/bin/$command" "$@"
         ;;
+    help|-h|--help)
+        echo "Usage: getansible -- exec|ansible|ansible-* [args]"
+        exit 0
+        ;;
     *)
         echo "Usage: getansible -- exec|ansible|ansible-* [args]"
         exit 2
