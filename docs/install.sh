@@ -164,6 +164,6 @@ case ${1:-} in
         getansible_help
         ;;
     *)
-        getansible "${@}"
+        getansible_install "$ANSIBLE_RELEASE" "$GETANSIBLE_PATH" "false"
         ;;
 esac

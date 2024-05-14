@@ -64,6 +64,7 @@ case "${1:-}" in
         exit 0
         ;;
     *)
-        playbook "$1"
+        echo "Usage: getansible -- exec|ansible|ansible-* [args]"
+        exit 2
         ;;
 esac
