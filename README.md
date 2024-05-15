@@ -128,7 +128,7 @@ Supported Linux with GLIBC 2.17 or later:
 - `openSUSE` starting from `13.2`
 - `RHEL` or `CentOS` starting from `7`
 
-Note: Linux distributions with MUSL (e.g. Alpine) are not supported.
+Note: Linux distributions with MUSL (e.g. `Alpine`) are not supported.
 
 Supported Platforms:
 
