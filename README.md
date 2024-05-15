@@ -37,6 +37,7 @@ Following file structure is expected inside the tarball:
             └── main.yml
 ```
 
+Only `playbook.yml` is required, other files are optional.
 
 ### Advanced Usage
 
