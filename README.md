@@ -17,10 +17,10 @@ getansible.sh -- ansible-playbook playbook.yml
 Alternatively, you can use `getansible.sh` to execute a playbook from a tarball:
 ```bash
 # remote
-getansible.sh --  https://example.com/playbook.tar.gz
+getansible.sh -- https://example.com/playbook.tar.gz
 
 # local
-getansible.sh --  file:///path/to/playbook.tar.gz
+getansible.sh -- file:///path/to/playbook.tar.gz
 ```
 
 Following file structure is expected inside the tarball:
