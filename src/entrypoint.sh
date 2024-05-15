@@ -114,8 +114,11 @@ main() {
     pushd "$tmpdir" > /dev/null || exit 1
 
     if [ -f .env ]; then
-        # shellcheck disable=SC1091
-        . .env
+        while read -r var || [[ -n "$var" ]]; do
+            if [[ ! $var == \#* ]]; then
+                export "${var?}"
+            fi
+        done < .env
     fi
 
     if [ -f requirements.txt ]; then

@@ -1,0 +1,10 @@
+---
+- name: Debug passphrase
+  ansible.builtin.debug:
+    msg: "{{ lookup('ansible.builtin.env', 'OPENSSL_PRIVATEKEY_PASSPHRASE') }}"
+
+- name: Generate an OpenSSL private key
+  community.crypto.openssl_privatekey:
+    path: /etc/ssl/private/getansible.sh.pem
+    passphrase: "{{ lookup('ansible.builtin.env', 'OPENSSL_PRIVATEKEY_PASSPHRASE') }}"
+    cipher: auto

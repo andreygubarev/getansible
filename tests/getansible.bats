@@ -68,6 +68,17 @@ setup() {
 }
 
 
+# bats test_tags=playbook,role
+@test "getansible.sh -- file:// with roles" {
+  tar -czf /opt/003-roles.tar.gz -C /usr/src/bats/examples/003-roles .
+
+  run bash -c "getansible.sh -- file:///opt/003-roles.tar.gz"
+  echo $output
+  assert_success
+  assert_output --partial '"msg": "getansible"'
+  assert_output --partial "ok=2"
+}
+
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash" {
   run bash -c "curl -s https://getansible.sh/ | bash"
