@@ -16,10 +16,35 @@ getansible.sh -- ansible-playbook playbook.yml
 
 ### Advanced Usage
 
-And you can specify Python requirements needed for your playbook:
+You can specify Python requirements needed for your playbook:
 ```bash
 PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
 ```
+
+Or you can specify Ansible playbook, packed as a tarball:
+```bash
+# remote
+curl -sL https://getansible.sh/ | bash -s -- https://example.com/playbook.tar.gz
+
+# local
+curl -sL https://getansible.sh/ | bash -s -- file:///path/to/playbook.tar.gz
+```
+
+Following file structure is expected inside the tarball:
+```
+.
+├── .env
+├── ansible.cfg
+├── playbook.yml
+├── requirements.txt
+├── requirements.yml
+└── roles
+    └── role_name
+        └── tasks
+            └── main.yml
+```
+
+`playbook.yml` - required playbook file
 
 ## Installation
 
