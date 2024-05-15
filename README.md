@@ -2,47 +2,48 @@
 
 [![Release - getansible.sh](https://github.com/andreygubarev/getansible/actions/workflows/getansible.yml/badge.svg)](https://github.com/andreygubarev/getansible/actions/workflows/getansible.yml)
 
-## Getting Started
+## Usage
 
-You can use `install.sh` to download and execute `getansible.sh`:
-```bash
-curl -sL https://getansible.sh/ | bash
-```
-
-Additionally, you can specify the Ansible release to install (e.g. `9.0`):
-```bash
-curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash
-```
-
-Or, you can execute Ansible commands using curl piping:
+You can execute Ansible commands using curl piping (without installing `getansible.sh`):
 ```bash
 curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
 ```
 
-Also, you can specify `--link` to create system-wide symlinks:
-```bash
-curl -sL https://getansible.sh/ | bash -s -- install --link
-```
-
-After linking, you can execute Ansible commands:
-```bash
-ansible-playbook playbook.yml
-```
-
-Alternatively, you can download distribution of `getansible.sh` from the [releases page](https://github.com/andreygubarev/getansible/releases):
-```bash
-curl -fsSL https://github.com/andreygubarev/getansible/releases/download/v0.3.6/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
-chmod +x /usr/local/bin/getansible.sh
-```
-
-Then, you can execute Ansible commands:
+Or you can use `getansible.sh` as a wrapper for Ansible commands (after installing it):
 ```bash
 getansible.sh -- ansible-playbook playbook.yml
 ```
 
+### Advanced Usage
+
 And you can specify Python requirements needed for your playbook:
 ```bash
 PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
+```
+
+## Installation
+
+You can use `install.sh` to download and install `getansible.sh`:
+```bash
+curl -sL https://getansible.sh/ | bash
+```
+
+Optionally, you can specify the Ansible release to install (e.g. `9.0`):
+```bash
+curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash
+```
+
+Also, you can create system-wide symlinks for Ansible commands (e.g. `ansible-playbook`):
+```bash
+curl -sL https://getansible.sh/ | bash -s -- install --link
+```
+
+### No Internet Access
+
+You can download distribution of `getansible.sh` from the [releases page](https://github.com/andreygubarev/getansible/releases):
+```bash
+curl -fsSL https://github.com/andreygubarev/getansible/releases/download/v0.3.6/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
+chmod +x /usr/local/bin/getansible.sh
 ```
 
 ### Prerequisites
