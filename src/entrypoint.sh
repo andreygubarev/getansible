@@ -14,40 +14,139 @@ fi
 
 cd "$USER_PWD" || exit 1
 
-playbook() {
+usage() {
+    echo "Usage: getansible -- exec|ansible|ansible-* [args]"
+}
+
+main() {
     playbook_url=$1
 
     tmpfile=$(mktemp)
     # shellcheck disable=SC2064
     trap "rm -f $tmpfile" EXIT
-    curl -fsSL -o "$tmpfile" "$playbook_url"
 
     tmpdir=$(mktemp -d)
     # shellcheck disable=SC2064
     trap "rm -rf $tmpdir" EXIT
 
-    tar -xzf "$tmpfile" "$tmpdir"
+    case "$playbook_url" in
+        http://*|https://*)
+            curl -fsSL -o "$tmpfile" "$playbook_url"
+            ;;
+        file://*)
+            fname="${playbook_url#file://}"
+            if [ -f "$fname" ]; then
+                cp "$fname" "$tmpfile"
+            elif [ -d "$fname" ]; then
+                tar -C "$fname" -czf "$tmpfile" .
+            else
+                echo "Invalid playbook: $fname"
+                exit 3
+            fi
+            ;;
+        *)
+            echo "Invalid playbook URL: $playbook_url"
+            exit 3
+            ;;
+    esac
+
+    if command -v file > /dev/null; then
+        ftype=$(file --brief --mime-type "$tmpfile")
+    else
+        case "$playbook_url" in
+            http://*|https://*)
+                case "$playbook_url" in
+                    *.tar.gz)
+                        ftype="application/gzip"
+                        ;;
+                    *.zip)
+                        ftype="application/zip"
+                        ;;
+                    *.yml|*.yaml)
+                        ftype="text/plain"
+                        ;;
+                    *)
+                        echo "Invalid playbook file: $playbook_url"
+                        exit 4
+                        ;;
+                esac
+                ;;
+            file://*)
+                fname="${playbook_url#file://}"
+                if [ -f "$fname" ]; then
+                    case "$fname" in
+                        *.tar.gz)
+                            ftype="application/gzip"
+                            ;;
+                        *.zip)
+                            ftype="application/zip"
+                            ;;
+                        *.yml|*.yaml)
+                            ftype="text/plain"
+                            ;;
+                        *)
+                            echo "Invalid playbook file: $fname"
+                            exit 4
+                            ;;
+                    esac
+                elif [ -d "$fname" ]; then
+                    ftype="application/gzip"
+                fi
+        esac
+    fi
+
+    case "$ftype" in
+        application/gzip)
+            tar -C "$tmpdir" -xzf "$tmpfile"
+            ;;
+        application/zip)
+            unzip -d "$tmpdir" "$tmpfile"
+            ;;
+        text/plain)
+            cp "$tmpfile" "$tmpdir/playbook.yml"
+            ;;
+        *)
+            echo "Invalid playbook file type: $ftype"
+            exit 4
+            ;;
+    esac
+
     pushd "$tmpdir" > /dev/null || exit 1
 
+    if [ ! -f playbook.yml ]; then
+        echo "No playbook.yml found"
+        exit 5
+    fi
+
     if [ -f .env ]; then
-        # shellcheck disable=SC1091
-        . .env
+        while read -r var || [[ -n "$var" ]]; do
+            if [[ ! $var == \#* ]]; then
+                export "${var?}"
+            fi
+        done < .env
     fi
 
     if [ -f requirements.txt ]; then
-        exec "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
+        "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
     fi
 
     if [ -f requirements.yml ]; then
-        exec "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
+        "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
+        echo $?
     fi
 
-    if [ -f playbook.yml ]; then
-        exec "$WORKDIR"/bin/ansible-playbook playbook.yml
+    if [ -d roles ]; then
+        export ANSIBLE_ROLES_PATH="$tmpdir/roles"
     fi
 
+    "$WORKDIR"/bin/ansible-playbook playbook.yml
     popd > /dev/null || exit 1
 }
+
+if [ $# -eq 0 ]; then
+    usage
+    exit 2
+fi
 
 case "${1:-}" in
     exec)
@@ -60,11 +159,10 @@ case "${1:-}" in
         exec "$WORKDIR/bin/$command" "$@"
         ;;
     help|-h|--help)
-        echo "Usage: getansible -- exec|ansible|ansible-* [args]"
+        usage
         exit 0
         ;;
     *)
-        echo "Usage: getansible -- exec|ansible|ansible-* [args]"
-        exit 2
+        main "$@"
         ;;
 esac

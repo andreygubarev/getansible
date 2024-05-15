@@ -34,6 +34,51 @@ setup() {
 }
 
 
+# bats test_tags=playbook
+@test "getansible.sh -- file:// with absolute path" {
+  tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+
+  run bash -c "getansible.sh -- file:///opt/001-ping.tar.gz"
+  assert_success
+  assert_output --partial "ok=1"
+}
+
+
+# bats test_tags=playbook
+@test "getansible.sh -- file:// with relative path" {
+  tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+  pushd /opt > /dev/null || exit 1
+
+  run bash -c "getansible.sh -- file://001-ping.tar.gz"
+  assert_success
+  assert_output --partial "ok=1"
+
+  popd > /dev/null || exit 1
+}
+
+
+# bats test_tags=playbook
+@test "getansible.sh -- file:// with requirements.yml" {
+  tar -czf /opt/002-requirements.tar.gz -C /usr/src/bats/examples/002-requirements .
+
+  run bash -c "getansible.sh -- file:///opt/002-requirements.tar.gz"
+  echo $output
+  assert_success
+  assert_output --partial "ok=1"
+}
+
+
+# bats test_tags=playbook,role
+@test "getansible.sh -- file:// with roles" {
+  tar -czf /opt/003-roles.tar.gz -C /usr/src/bats/examples/003-roles .
+
+  run bash -c "getansible.sh -- file:///opt/003-roles.tar.gz"
+  echo $output
+  assert_success
+  assert_output --partial '"msg": "getansible"'
+  assert_output --partial "ok=2"
+}
+
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash" {
   run bash -c "curl -s https://getansible.sh/ | bash"

@@ -13,6 +13,8 @@ ANSIBLE_RELEASE ?= 9.0
 PYTHON_RELEASE ?= 20240415
 PYTHON_VERSION ?= 3.11.9
 
+BATS_TAGS ?= !install,!curlpipe
+
 .PHONY: lint
 lint: ## Lint the code
 	shellcheck docs/*.sh src/*.sh
@@ -59,7 +61,7 @@ test:  ## Test getansible.sh
 		--platform linux/$(ANSIBLE_PLATFORM) \
 		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
-		bats:latest --filter-tags !install,!curlpipe /usr/src/bats/
+		bats:latest --filter-tags $(BATS_TAGS) /usr/src/bats/
 
 .PHONY: test-install
 test-install:  ## Test getansible.sh
