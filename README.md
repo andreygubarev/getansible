@@ -14,20 +14,13 @@ Or you can use `getansible.sh` as a wrapper for Ansible commands (after installi
 getansible.sh -- ansible-playbook playbook.yml
 ```
 
-### Advanced Usage
-
-You can specify Python requirements needed for your playbook:
-```bash
-PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
-```
-
-Or you can specify Ansible playbook, packed as a tarball:
+Alternatively, you can use `getansible.sh` to execute a playbook from a tarball:
 ```bash
 # remote
-curl -sL https://getansible.sh/ | bash -s -- https://example.com/playbook.tar.gz
+getansible.sh --  https://example.com/playbook.tar.gz
 
 # local
-curl -sL https://getansible.sh/ | bash -s -- file:///path/to/playbook.tar.gz
+getansible.sh --  file:///path/to/playbook.tar.gz
 ```
 
 Following file structure is expected inside the tarball:
@@ -44,7 +37,13 @@ Following file structure is expected inside the tarball:
             └── main.yml
 ```
 
-`playbook.yml` - required playbook file
+
+### Advanced Usage
+
+You can specify Python requirements needed for your playbook:
+```bash
+PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
+```
 
 ## Installation
 
