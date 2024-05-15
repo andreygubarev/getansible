@@ -113,6 +113,11 @@ main() {
 
     pushd "$tmpdir" > /dev/null || exit 1
 
+    if [ ! -f playbook.yml ]; then
+        echo "No playbook.yml found"
+        exit 5
+    fi
+
     if [ -f .env ]; then
         while read -r var || [[ -n "$var" ]]; do
             if [[ ! $var == \#* ]]; then
@@ -134,13 +139,7 @@ main() {
         export ANSIBLE_ROLES_PATH="$tmpdir/roles"
     fi
 
-    if [ -f playbook.yml ]; then
-        "$WORKDIR"/bin/ansible-playbook playbook.yml
-    else
-        echo "No playbook.yml found"
-        exit 5
-    fi
-
+    "$WORKDIR"/bin/ansible-playbook playbook.yml
     popd > /dev/null || exit 1
 }
 
