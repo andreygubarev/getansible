@@ -18,10 +18,16 @@ Additionally, tarball sources (`file://`, `http://` or `https://`) are supported
 
 ```bash
 curl -sL https://getansible.sh/ | bash -s -- https://example.com/playbook.tar.gz
-
 ```
 
-Following file structure is expected inside the tarball:
+### Advanced Usage
+
+You can specify inline Python requirements needed for your playbook:
+```bash
+PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
+```
+
+For tarball sources, use following file structure is expected inside the tarball:
 ```
 .
 ├── .env
@@ -42,14 +48,6 @@ Where:
 - `requirements.txt` - Python requirements file
 - `requirements.yml` - Ansible Galaxy requirements file
 - `roles` - Directory with roles
-
-
-### Advanced Usage
-
-You can specify inline Python requirements needed for your playbook:
-```bash
-PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
-```
 
 ## Installation
 
