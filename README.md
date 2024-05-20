@@ -9,7 +9,7 @@ Use Ansible commands with curl piping:
 curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
 ```
 
-Or use `getansible.sh` as a wrapper for Ansible commands (after (installing)[#Installation] it):
+Or use `getansible.sh` as a wrapper for Ansible commands (after [installing](#Installation) it):
 ```bash
 getansible.sh -- ansible-playbook playbook.yml
 ```
