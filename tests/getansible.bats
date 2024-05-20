@@ -79,6 +79,18 @@ setup() {
   assert_output --partial "ok=2"
 }
 
+
+# bats test_tags=playbook
+@test "getansible.sh -- file:// with subfolder" {
+  tar -czf /opt/004-subfolder.tar.gz -C /usr/src/bats/examples/004-subfolder .
+
+  run bash -c "getansible.sh -- file:///opt/004-subfolder.tar.gz"
+  echo $output
+  assert_success
+  assert_output --partial "ok=1"
+}
+
+
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash" {
   run bash -c "curl -s https://getansible.sh/ | bash"

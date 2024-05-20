@@ -113,6 +113,13 @@ main() {
 
     pushd "$tmpdir" > /dev/null || exit 1
 
+    # if there is only one file in the tmpdir and it is a directory, cd into it
+    if [ "$(find . -maxdepth 1 -type f | wc -l)" -eq 0 ] && [ "$(find . -maxdepth 1 -type d | wc -l)" -eq 2 ]; then
+        subdir=$(find . -maxdepth 1 -type d -not -name .)
+        popd > /dev/null || exit 1
+        pushd "$tmpdir/$subdir" > /dev/null || exit 1
+    fi
+
     if [ ! -f playbook.yml ]; then
         echo "No playbook.yml found"
         exit 5
