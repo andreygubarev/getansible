@@ -140,3 +140,13 @@ setup() {
   run ansible-playbook --version
   assert_success
 }
+
+
+# bats test_tags=install
+@test "install.sh file://" {
+  tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+
+  run install.sh file:///opt/001-ping.tar.gz
+  assert_success
+  assert_output --partial "ok=1"
+}
