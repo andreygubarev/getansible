@@ -4,23 +4,21 @@
 
 ## Usage
 
-You can execute Ansible commands using curl piping (without installing `getansible.sh`):
+Use Ansible commands with curl piping:
 ```bash
 curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
 ```
 
-Or you can use `getansible.sh` as a wrapper for Ansible commands (after installing it):
+Or use `getansible.sh` as a wrapper for Ansible commands (after (installing)[#Installation] it):
 ```bash
 getansible.sh -- ansible-playbook playbook.yml
 ```
 
-Alternatively, you can use `getansible.sh` to execute a playbook from a tarball:
-```bash
-# remote
-getansible.sh -- https://example.com/playbook.tar.gz
+Additionally, tarball sources (`file://`, `http://` or `https://`) are supported:
 
-# local
-getansible.sh -- file:///path/to/playbook.tar.gz
+```bash
+curl -sL https://getansible.sh/ | bash -s -- https://example.com/playbook.tar.gz
+
 ```
 
 Following file structure is expected inside the tarball:
@@ -37,11 +35,18 @@ Following file structure is expected inside the tarball:
             └── main.yml
 ```
 
-Only `playbook.yml` is required, other files are optional.
+Where:
+- `.env` - Environment variables for the playbook
+- `ansible.cfg` - Ansible configuration file
+- `playbook.yml` - Main playbook file (required)
+- `requirements.txt` - Python requirements file
+- `requirements.yml` - Ansible Galaxy requirements file
+- `roles` - Directory with roles
+
 
 ### Advanced Usage
 
-You can specify Python requirements needed for your playbook:
+You can specify inline Python requirements needed for your playbook:
 ```bash
 PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
 ```
