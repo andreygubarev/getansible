@@ -146,6 +146,10 @@ main() {
         export ANSIBLE_ROLES_PATH="$tmpdir/roles"
     fi
 
+    if [ -d collections ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$tmpdir/collections"
+    fi
+
     "$WORKDIR"/bin/ansible-playbook playbook.yml
     popd > /dev/null || exit 1
 }
