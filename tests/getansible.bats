@@ -91,6 +91,28 @@ setup() {
 }
 
 
+# bats test_tags=playbook
+@test "install.sh file:// with dotenv" {
+  tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
+
+  run getansible.sh -- file:///opt/005-dotenv.tar.gz
+  assert_success
+  assert_output --partial "FOO=BAR"
+  assert_output --partial "ok=1"
+}
+
+
+# bats test_tags=playbook
+@test "install.sh file:// with dotenv with overrides" {
+  tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
+
+  export FOO=BAZ
+  run getansible.sh -- file:///opt/005-dotenv.tar.gz
+  assert_success
+  assert_output --partial "FOO=BAZ"
+  assert_output --partial "ok=1"
+}
+
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash" {
   run bash -c "curl -s https://getansible.sh/ | bash"
