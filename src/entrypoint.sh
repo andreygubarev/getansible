@@ -127,7 +127,7 @@ main() {
 
     if [ -f .env ]; then
         while read -r var || [[ -n "$var" ]]; do
-            if [[ ! $var == \#* ]]; then
+            if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
                 export "${var?}"
             fi
         done < .env
