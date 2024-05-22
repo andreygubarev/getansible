@@ -126,9 +126,13 @@ main() {
     fi
 
     if [ -f .env ]; then
-        while read -r var || [[ -n "$var" ]]; do
+        while IFS= read -r var || [[ -n "$var" ]]; do
             if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
-                export "${var?}"
+                var_name=${var%%=*}
+                echo "$var_name"
+                if ! declare -p "$var_name" > /dev/null 2>&1; then
+                    export "${var?}"
+                fi
             fi
         done < .env
     fi
