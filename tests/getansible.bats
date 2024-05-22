@@ -38,7 +38,7 @@ setup() {
 @test "getansible.sh -- file:// with absolute path" {
   tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
 
-  run bash -c "getansible.sh -- file:///opt/001-ping.tar.gz"
+  run getansible.sh -- file:///opt/001-ping.tar.gz
   assert_success
   assert_output --partial "ok=1"
 }
@@ -49,7 +49,7 @@ setup() {
   tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
   pushd /opt > /dev/null || exit 1
 
-  run bash -c "getansible.sh -- file://001-ping.tar.gz"
+  run getansible.sh -- file://001-ping.tar.gz
   assert_success
   assert_output --partial "ok=1"
 
@@ -61,7 +61,7 @@ setup() {
 @test "getansible.sh -- file:// with requirements.yml" {
   tar -czf /opt/002-requirements.tar.gz -C /usr/src/bats/examples/002-requirements .
 
-  run bash -c "getansible.sh -- file:///opt/002-requirements.tar.gz"
+  run getansible.sh -- file:///opt/002-requirements.tar.gz
   echo $output
   assert_success
   assert_output --partial "ok=1"
@@ -72,7 +72,7 @@ setup() {
 @test "getansible.sh -- file:// with roles" {
   tar -czf /opt/003-roles.tar.gz -C /usr/src/bats/examples/003-roles .
 
-  run bash -c "getansible.sh -- file:///opt/003-roles.tar.gz"
+  run getansible.sh -- file:///opt/003-roles.tar.gz
   echo $output
   assert_success
   assert_output --partial '"msg": "getansible"'
@@ -84,12 +84,34 @@ setup() {
 @test "getansible.sh -- file:// with subfolder" {
   tar -czf /opt/004-subfolder.tar.gz -C /usr/src/bats/examples/004-subfolder .
 
-  run bash -c "getansible.sh -- file:///opt/004-subfolder.tar.gz"
+  run getansible.sh -- file:///opt/004-subfolder.tar.gz
   echo $output
   assert_success
   assert_output --partial "ok=1"
 }
 
+
+# bats test_tags=playbook
+@test "install.sh file:// with dotenv" {
+  tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
+
+  run getansible.sh -- file:///opt/005-dotenv.tar.gz
+  assert_success
+  assert_output --partial "FOO=BAR"
+  assert_output --partial "ok=1"
+}
+
+
+# bats test_tags=playbook
+@test "install.sh file:// with dotenv with overrides" {
+  tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
+
+  export FOO=BAZ
+  run getansible.sh -- file:///opt/005-dotenv.tar.gz
+  assert_success
+  assert_output --partial "FOO=BAZ"
+  assert_output --partial "ok=1"
+}
 
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash" {
