@@ -33,6 +33,13 @@ setup() {
   assert_success
 }
 
+# bats test_tags=playbook,galaxy
+@test "getansible.sh -- galaxy" {
+  run getansible.sh -- galaxy://geerlingguy.apache
+  assert_success
+  assert_output --partial "geerlingguy.apache"
+  assert_output --partial "failed=0"
+}
 
 # bats test_tags=playbook
 @test "getansible.sh -- file:// with absolute path" {

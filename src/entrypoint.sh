@@ -44,6 +44,20 @@ main() {
                 exit 3
             fi
             ;;
+        galaxy://*)
+            role_name="${playbook_url#galaxy://}"
+            roles_dir="$tmpdir/roles"
+            mkdir -p "$roles_dir"
+            "$WORKDIR"/bin/ansible-galaxy role install "$role_name" -p "$roles_dir"
+            cat <<EOF > "$tmpfile"
+---
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  roles:
+    - role: $role_name
+EOF
+            ;;
         *)
             echo "Invalid playbook URL: $playbook_url"
             exit 3
@@ -92,6 +106,14 @@ main() {
                 elif [ -d "$fname" ]; then
                     ftype="application/gzip"
                 fi
+                ;;
+            galaxy://*)
+                ftype="text/plain"
+                ;;
+            *)
+                echo "Invalid playbook URL: $playbook_url"
+                exit 3
+                ;;
         esac
     fi
 
