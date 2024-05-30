@@ -143,7 +143,7 @@ case ${1:-} in
     ansible|ansible-galaxy|ansible-playbook|ansible-*)
         getansible "${@}"
         ;;
-    file://*|http://*|https://*)
+    file://*|http://*|https://*|galaxy://*)
         getansible "${@}"
         ;;
     install)
