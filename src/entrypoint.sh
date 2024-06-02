@@ -177,8 +177,7 @@ playbook() {
         # shellcheck disable=SC2064
         trap "rm -rf $inventory" EXIT
 
-        while IFS= read -r line
-        do
+        while IFS= read -r line; do
             echo -e "$line" >> "$inventory/hosts"
         done
 
@@ -195,7 +194,6 @@ playbook() {
             ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
         fi
         export ANSIBLE_INVENTORY
-
     fi
 
     if [ -f .env ]; then
