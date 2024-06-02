@@ -54,9 +54,9 @@ main() {
             ansible_core_version_major=$(echo "$ansible_core_version" | awk -F. '{print $1}')
             ansible_core_version_minor=$(echo "$ansible_core_version" | awk -F. '{print $2}')
             ansible_core_version_patch=$(echo "$ansible_core_version" | awk -F. '{print $3}')
-            if ( [ "$ansible_core_version_major" -lt 2 ] ) || \
-               ( [ "$ansible_core_version_major" -eq 2 ] && [ "$ansible_core_version_minor" -lt 13 ] ) || \
-               ( [ "$ansible_core_version_major" -eq 2 ] && [ "$ansible_core_version_minor" -eq 13 ] && [ "$ansible_core_version_patch" -lt 9 ] )
+            if { [ "$ansible_core_version_major" -lt 2 ]; } || \
+               { [ "$ansible_core_version_major" -eq 2 ] && [ "$ansible_core_version_minor" -lt 13 ]; } || \
+               { [ "$ansible_core_version_major" -eq 2 ] && [ "$ansible_core_version_minor" -eq 13 ] && [ "$ansible_core_version_patch" -lt 9 ]; }
             then
                 echo "ERROR: ansible-core version $ansible_core_version is not supported"
                 exit 6
