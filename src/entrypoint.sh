@@ -225,12 +225,12 @@ playbook() {
     fi
 
     if [ -z "${ANSIBLE_ROLES_PATH:-}" ]; then
-        export ANSIBLE_ROLES_PATH="$WORKDIR/roles"
+        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles"
     fi
     mkdir -p "$ANSIBLE_ROLES_PATH"
 
     if [ -z "${ANSIBLE_COLLECTIONS_PATH:-}" ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$playbook_dir/collections"
+        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections"
     fi
     mkdir -p "$ANSIBLE_COLLECTIONS_PATH"
 
