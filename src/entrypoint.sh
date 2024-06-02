@@ -14,6 +14,21 @@ fi
 
 cd "$USER_PWD" || exit 1
 
+assert_galaxy_support() {
+    # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
+    version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | cut -d= -f3)
+    version_major=$(echo "$version" | awk -F. '{print $1}')
+    version_minor=$(echo "$version" | awk -F. '{print $2}')
+    version_patch=$(echo "$version" | awk -F. '{print $3}')
+    if { [ "$version_major" -lt 2 ]; } || \
+    { [ "$version_major" -eq 2 ] && [ "$version_minor" -lt 13 ]; } || \
+    { [ "$version_major" -eq 2 ] && [ "$version_minor" -eq 13 ] && [ "$version_patch" -lt 9 ]; }
+    then
+        echo "ERROR: ansible-core version $version is not supported"
+        exit 6
+    fi
+}
+
 usage() {
     echo "Usage: getansible -- exec|ansible|ansible-* [args]"
 }
@@ -45,38 +60,34 @@ main() {
             fi
             ;;
         galaxy://*)
-            role_name="${playbook_url#galaxy://}"
-            roles_dir="$tmpdir/roles"
-            mkdir -p "$roles_dir"
+            assert_galaxy_support
 
-            # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
-            ansible_core_version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | cut -d= -f3)
-            ansible_core_version_major=$(echo "$ansible_core_version" | awk -F. '{print $1}')
-            ansible_core_version_minor=$(echo "$ansible_core_version" | awk -F. '{print $2}')
-            ansible_core_version_patch=$(echo "$ansible_core_version" | awk -F. '{print $3}')
-            if { [ "$ansible_core_version_major" -lt 2 ]; } || \
-               { [ "$ansible_core_version_major" -eq 2 ] && [ "$ansible_core_version_minor" -lt 13 ]; } || \
-               { [ "$ansible_core_version_major" -eq 2 ] && [ "$ansible_core_version_minor" -eq 13 ] && [ "$ansible_core_version_patch" -lt 9 ]; }
-            then
-                echo "ERROR: ansible-core version $ansible_core_version is not supported"
-                exit 6
-            fi
+            galaxy_name="${playbook_url#galaxy://}"
+            galaxy_dir=$(mktemp -d)
+            # shellcheck disable=SC2064
+            trap "rm -rf $galaxy_dir" EXIT
 
-            if [ "$(echo "$role_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
-                collection_name=$(echo "$role_name" | cut -d. -f1-2)
-                "$WORKDIR"/bin/ansible-galaxy collection install "$collection_name"
+            if [ "$(echo "$galaxy_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
+                collection_name=$(echo "$galaxy_name" | cut -d. -f1-2)
+                "$WORKDIR"/bin/ansible-galaxy collection install -p "$galaxy_dir/collections" "$collection_name"
             else
-                "$WORKDIR"/bin/ansible-galaxy role install "$role_name" -p "$roles_dir"
+                mkdir -p "$galaxy_dir/roles"
+                "$WORKDIR"/bin/ansible-galaxy role install -p "$galaxy_dir/roles" "$galaxy_name"
             fi
 
-            cat <<EOF > "$tmpfile"
+            cat <<EOF > "$galaxy_dir/playbook.yml"
 ---
 - hosts: localhost
   connection: local
   gather_facts: true
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
   roles:
-    - role: $role_name
+    - role: $galaxy_name
 EOF
+            pushd "$galaxy_dir" > /dev/null || exit 1
+            tar -czf "$tmpfile" .
+            popd > /dev/null || exit 1
             ;;
         *)
             echo "Invalid playbook URL: $playbook_url"
@@ -128,7 +139,7 @@ EOF
                 fi
                 ;;
             galaxy://*)
-                ftype="text/plain"
+                ftype="application/gzip"
                 ;;
             *)
                 echo "Invalid playbook URL: $playbook_url"
@@ -167,9 +178,24 @@ playbook() {
         pushd "$playbook_dir/$subdir" > /dev/null || exit 1
     fi
 
+    ANSIBLE_PLAYBOOK_DIR=$(pwd)
+    export ANSIBLE_PLAYBOOK_DIR
+
     if [ ! -f playbook.yml ]; then
         echo "No playbook.yml found"
         exit 5
+    fi
+
+    if [ -f .env ]; then
+        while IFS= read -r var || [[ -n "$var" ]]; do
+            if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
+                var_name=${var%%=*}
+                echo "$var_name"
+                if ! declare -p "$var_name" > /dev/null 2>&1; then
+                    export "${var?}"
+                fi
+            fi
+        done < .env
     fi
 
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
@@ -196,33 +222,31 @@ playbook() {
         export ANSIBLE_INVENTORY
     fi
 
-    if [ -f .env ]; then
-        while IFS= read -r var || [[ -n "$var" ]]; do
-            if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
-                var_name=${var%%=*}
-                echo "$var_name"
-                if ! declare -p "$var_name" > /dev/null 2>&1; then
-                    export "${var?}"
-                fi
-            fi
-        done < .env
+    if [ ! -f host_vars/localhost.yml ]; then
+        mkdir -p host_vars
+        touch host_vars/localhost.yml
+    fi
+    if ! grep -q 'ansible_python_interpreter' host_vars/localhost.yml; then
+        echo "ansible_python_interpreter: $WORKDIR/bin/python3" >> host_vars/localhost.yml
     fi
 
     if [ -f requirements.txt ]; then
         "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
     fi
 
+    if [ -z "${ANSIBLE_ROLES_PATH:-}" ]; then
+        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles"
+    fi
+    mkdir -p "$ANSIBLE_ROLES_PATH"
+
+    if [ -z "${ANSIBLE_COLLECTIONS_PATH:-}" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections"
+    fi
+    mkdir -p "$ANSIBLE_COLLECTIONS_PATH"
+
     if [ -f requirements.yml ]; then
         "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
         echo $?
-    fi
-
-    if [ -d roles ]; then
-        export ANSIBLE_ROLES_PATH="$playbook_dir/roles"
-    fi
-
-    if [ -d collections ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$playbook_dir/collections"
     fi
 
     "$WORKDIR"/bin/ansible-playbook playbook.yml
