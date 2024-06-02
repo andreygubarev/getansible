@@ -33,6 +33,21 @@ setup() {
   assert_success
 }
 
+# bats test_tags=playbook,galaxy
+@test "getansible.sh -- galaxy" {
+  if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3')" ]; then
+    # FIXME: ansible 3.0 is not working with geerlingguy.apache because of python3-apt which is unsupported
+    #   TASK [geerlingguy.apache : Update apt cache.] **********************************
+    #   [WARNING]: Updating cache and auto-installing missing dependency: python3-apt
+    #   fatal: [localhost]: FAILED! => {"changed": false, "msg": "Could not import python modules: apt, apt_pkg. Please install python3-apt package."}
+    skip
+  fi
+
+  run getansible.sh -- galaxy://geerlingguy.apache
+  assert_success
+  assert_output --partial "geerlingguy.apache"
+  assert_output --partial "failed=0"
+}
 
 # bats test_tags=playbook
 @test "getansible.sh -- file:// with absolute path" {

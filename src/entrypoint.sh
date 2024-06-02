@@ -44,6 +44,20 @@ main() {
                 exit 3
             fi
             ;;
+        galaxy://*)
+            role_name="${playbook_url#galaxy://}"
+            roles_dir="$tmpdir/roles"
+            mkdir -p "$roles_dir"
+            "$WORKDIR"/bin/ansible-galaxy role install "$role_name" -p "$roles_dir"
+            cat <<EOF > "$tmpfile"
+---
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  roles:
+    - role: $role_name
+EOF
+            ;;
         *)
             echo "Invalid playbook URL: $playbook_url"
             exit 3
@@ -92,6 +106,14 @@ main() {
                 elif [ -d "$fname" ]; then
                     ftype="application/gzip"
                 fi
+                ;;
+            galaxy://*)
+                ftype="text/plain"
+                ;;
+            *)
+                echo "Invalid playbook URL: $playbook_url"
+                exit 3
+                ;;
         esac
     fi
 
@@ -111,13 +133,18 @@ main() {
             ;;
     esac
 
-    pushd "$tmpdir" > /dev/null || exit 1
+    playbook "$tmpdir"
+}
 
-    # if there is only one file in the tmpdir and it is a directory, cd into it
+playbook() {
+    playbook_dir=$1
+
+    pushd "$playbook_dir" > /dev/null || exit 1
+    # if there is only one file in the playbook_dir and it is a directory, cd into it
     if [ "$(find . -maxdepth 1 -type f | wc -l)" -eq 0 ] && [ "$(find . -maxdepth 1 -type d | wc -l)" -eq 2 ]; then
         subdir=$(find . -maxdepth 1 -type d -not -name .)
         popd > /dev/null || exit 1
-        pushd "$tmpdir/$subdir" > /dev/null || exit 1
+        pushd "$playbook_dir/$subdir" > /dev/null || exit 1
     fi
 
     if [ ! -f playbook.yml ]; then
@@ -147,11 +174,11 @@ main() {
     fi
 
     if [ -d roles ]; then
-        export ANSIBLE_ROLES_PATH="$tmpdir/roles"
+        export ANSIBLE_ROLES_PATH="$playbook_dir/roles"
     fi
 
     if [ -d collections ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$tmpdir/collections"
+        export ANSIBLE_COLLECTIONS_PATH="$playbook_dir/collections"
     fi
 
     "$WORKDIR"/bin/ansible-playbook playbook.yml
