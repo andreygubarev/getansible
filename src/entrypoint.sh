@@ -178,6 +178,7 @@ playbook() {
         pushd "$playbook_dir/$subdir" > /dev/null || exit 1
     fi
 
+    export ANSIBLE_PLAYBOOK_DIR=$(pwd)
     if [ ! -f playbook.yml ]; then
         echo "No playbook.yml found"
         exit 5
