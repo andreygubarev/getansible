@@ -35,6 +35,7 @@ setup() {
 
 # bats test_tags=playbook,galaxy
 @test "getansible.sh -- galaxy" {
+  apt-get install -yq --no-install-recommends python3-apt
   run getansible.sh -- galaxy://geerlingguy.apache
   assert_success
   assert_output --partial "geerlingguy.apache"
