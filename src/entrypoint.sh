@@ -74,6 +74,8 @@ main() {
 - hosts: localhost
   connection: local
   gather_facts: true
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
   roles:
     - role: $role_name
 EOF
