@@ -239,6 +239,14 @@ playbook() {
         echo $?
     fi
 
+    if [ ! -f host_vars/localhost.yml ]; then
+        mkdir -p host_vars
+        touch host_vars/localhost.yml
+    fi
+    if ! grep -q 'ansible_python_interpreter' host_vars/localhost.yml; then
+        echo "ansible_python_interpreter: $WORKDIR/bin/python3" >> host_vars/localhost.yml
+    fi
+
     "$WORKDIR"/bin/ansible-playbook playbook.yml
     popd > /dev/null || exit 1
 }
