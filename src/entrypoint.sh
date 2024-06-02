@@ -60,11 +60,11 @@ main() {
             fi
             ;;
         galaxy://*)
+            assert_galaxy_support
+
             role_name="${playbook_url#galaxy://}"
             roles_dir="$tmpdir/roles"
             mkdir -p "$roles_dir"
-
-
 
             if [ "$(echo "$role_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
                 collection_name=$(echo "$role_name" | cut -d. -f1-2)
