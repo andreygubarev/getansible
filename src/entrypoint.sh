@@ -223,17 +223,19 @@ playbook() {
         "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
     fi
 
+    if [ -z "${ANSIBLE_ROLES_PATH:-}" ]; then
+        export ANSIBLE_ROLES_PATH="$WORKDIR/roles"
+    fi
+    mkdir -p "$ANSIBLE_ROLES_PATH"
+
+    if [ -z "${ANSIBLE_COLLECTIONS_PATH:-}" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$playbook_dir/collections"
+    fi
+    mkdir -p "$ANSIBLE_COLLECTIONS_PATH"
+
     if [ -f requirements.yml ]; then
         "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
         echo $?
-    fi
-
-    if [ -d roles ]; then
-        export ANSIBLE_ROLES_PATH="$playbook_dir/roles"
-    fi
-
-    if [ -d collections ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$playbook_dir/collections"
     fi
 
     "$WORKDIR"/bin/ansible-playbook playbook.yml
