@@ -63,17 +63,19 @@ main() {
             assert_galaxy_support
 
             galaxy_name="${playbook_url#galaxy://}"
-            roles_dir="$tmpdir/roles"
-            mkdir -p "$roles_dir"
+            galaxy_dir=$(mktemp -d)
+            # shellcheck disable=SC2064
+            trap "rm -rf $galaxy_dir" EXIT
 
             if [ "$(echo "$galaxy_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
                 collection_name=$(echo "$galaxy_name" | cut -d. -f1-2)
-                "$WORKDIR"/bin/ansible-galaxy collection install "$collection_name"
+                "$WORKDIR"/bin/ansible-galaxy collection install -p "$galaxy_dir/collections" "$collection_name"
             else
-                "$WORKDIR"/bin/ansible-galaxy role install "$galaxy_name" -p "$roles_dir"
+                mkdir -p "$galaxy_dir/roles"
+                "$WORKDIR"/bin/ansible-galaxy role install -p "$galaxy_dir/roles" "$galaxy_name"
             fi
 
-            cat <<EOF > "$tmpfile"
+            cat <<EOF > "$galaxy_dir/playbook.yml"
 ---
 - hosts: localhost
   connection: local
@@ -83,6 +85,9 @@ main() {
   roles:
     - role: $galaxy_name
 EOF
+            pushd "$galaxy_dir" > /dev/null || exit 1
+            tar -czf "$tmpfile" .
+            popd > /dev/null || exit 1
             ;;
         *)
             echo "Invalid playbook URL: $playbook_url"
@@ -134,7 +139,7 @@ EOF
                 fi
                 ;;
             galaxy://*)
-                ftype="text/plain"
+                ftype="application/gzip"
                 ;;
             *)
                 echo "Invalid playbook URL: $playbook_url"
