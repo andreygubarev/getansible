@@ -153,7 +153,10 @@ playbook() {
     fi
 
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
-        if [ -f hosts.yml ]; then
+        if [ -f hosts ]; then
+            ANSIBLE_INVENTORY="$(pwd)/hosts"
+            export ANSIBLE_INVENTORY
+        elif [ -f hosts.yml ]; then
             ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
             export ANSIBLE_INVENTORY
         else
@@ -163,10 +166,19 @@ playbook() {
 
             while IFS= read -r line
             do
-                echo -e "$line" >> "$inventory/hosts.yml"
+                echo -e "$line" >> "$inventory/hosts"
             done
-            ANSIBLE_INVENTORY="$inventory/hosts.yml"
-            export ANSIBLE_INVENTORY
+
+            if [ -s "$inventory/hosts" ]; then
+                if [ "$(head -n 1 "$inventory/hosts")" == "---" ]; then
+                    mv "$inventory/hosts" "$inventory/hosts.yml"
+                    ANSIBLE_INVENTORY="$inventory/hosts.yml"
+                else
+                    ANSIBLE_INVENTORY="$inventory/hosts"
+                fi
+                export ANSIBLE_INVENTORY
+            fi
+
         fi
     fi
 
