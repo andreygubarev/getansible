@@ -43,6 +43,11 @@ setup() {
     skip
   fi
 
+  # skip unsupported ansible releases: 3.0, 4.0 and 5.0
+  if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5')" ]; then
+    skip
+  fi
+
   run getansible.sh -- galaxy://geerlingguy.apache
   assert_success
   assert_output --partial "geerlingguy.apache"
@@ -51,6 +56,11 @@ setup() {
 
 # bats test_tags=playbook,galaxy
 @test "getansible.sh -- galaxy with collection" {
+  # skip unsupported ansible releases: 3.0, 4.0 and 5.0
+  if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5')" ]; then
+    skip
+  fi
+
   run getansible.sh -- galaxy://andreygubarev.core.ping
   assert_success
   assert_output --partial "andreygubarev.core.ping : Ping"
