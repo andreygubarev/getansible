@@ -48,7 +48,14 @@ main() {
             role_name="${playbook_url#galaxy://}"
             roles_dir="$tmpdir/roles"
             mkdir -p "$roles_dir"
-            "$WORKDIR"/bin/ansible-galaxy role install "$role_name" -p "$roles_dir"
+
+            if [ "$(echo "$role_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
+                collection_name=$(echo "$role_name" | cut -d. -f1-2)
+                "$WORKDIR"/bin/ansible-galaxy collection install "$collection_name"
+            else
+                "$WORKDIR"/bin/ansible-galaxy role install "$role_name" -p "$roles_dir"
+            fi
+
             cat <<EOF > "$tmpfile"
 ---
 - hosts: localhost
