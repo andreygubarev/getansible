@@ -48,7 +48,27 @@ main() {
             role_name="${playbook_url#galaxy://}"
             roles_dir="$tmpdir/roles"
             mkdir -p "$roles_dir"
-            "$WORKDIR"/bin/ansible-galaxy role install "$role_name" -p "$roles_dir"
+
+            # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
+            ansible_core_version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | cut -d= -f3)
+            ansible_core_version_major=$(echo "$ansible_core_version" | awk -F. '{print $1}')
+            ansible_core_version_minor=$(echo "$ansible_core_version" | awk -F. '{print $2}')
+            ansible_core_version_patch=$(echo "$ansible_core_version" | awk -F. '{print $3}')
+            if { [ "$ansible_core_version_major" -lt 2 ]; } || \
+               { [ "$ansible_core_version_major" -eq 2 ] && [ "$ansible_core_version_minor" -lt 13 ]; } || \
+               { [ "$ansible_core_version_major" -eq 2 ] && [ "$ansible_core_version_minor" -eq 13 ] && [ "$ansible_core_version_patch" -lt 9 ]; }
+            then
+                echo "ERROR: ansible-core version $ansible_core_version is not supported"
+                exit 6
+            fi
+
+            if [ "$(echo "$role_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
+                collection_name=$(echo "$role_name" | cut -d. -f1-2)
+                "$WORKDIR"/bin/ansible-galaxy collection install "$collection_name"
+            else
+                "$WORKDIR"/bin/ansible-galaxy role install "$role_name" -p "$roles_dir"
+            fi
+
             cat <<EOF > "$tmpfile"
 ---
 - hosts: localhost
