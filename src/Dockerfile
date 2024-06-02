@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM debian:bookworm-slim AS build
+FROM debian:bookworm-slim AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -yq && apt-get install -yq --no-install-recommends \
@@ -25,8 +25,8 @@ RUN PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-$(uname -m)-unknown-linu
     rm -f "${PYTHON}" && \
     mv python getansible
 
-RUN getansible/bin/pip install -q --upgrade ansible~="${ANSIBLE_RELEASE}" && \
-    if [ "${ANSIBLE_RELEASE}" = "3.0" ]; then getansible/bin/pip install -q --upgrade python-apt=="0.7.8"; fi
+FROM base AS build
+RUN getansible/bin/pip install -q --upgrade ansible~="${ANSIBLE_RELEASE}"
 RUN sed -i 's|#!/opt/getansible/bin/python3.*|#!/usr/bin/env python3|' /opt/getansible/bin/ansible*
 COPY --chmod=0755 entrypoint.sh /opt/getansible/entrypoint.sh
 RUN rm -r /opt/getansible/share/ && \
