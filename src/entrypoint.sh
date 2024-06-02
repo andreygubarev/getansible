@@ -152,6 +152,12 @@ playbook() {
         exit 5
     fi
 
+    mkdir -p host_vars
+    while IFS= read -r line
+    do
+        echo -e "$line" >> host_vars/localhost.yml
+    done
+
     if [ -f .env ]; then
         while IFS= read -r var || [[ -n "$var" ]]; do
             if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
