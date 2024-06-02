@@ -154,7 +154,8 @@ playbook() {
 
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
         if [ -f hosts.yml ]; then
-            export ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
+            ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
+            export ANSIBLE_INVENTORY
         else
             inventory=$(mktemp -d)
             # shellcheck disable=SC2064
@@ -164,7 +165,8 @@ playbook() {
             do
                 echo -e "$line" >> "$inventory/hosts.yml"
             done
-            export ANSIBLE_INVENTORY="$inventory/hosts.yml"
+            ANSIBLE_INVENTORY="$inventory/hosts.yml"
+            export ANSIBLE_INVENTORY
         fi
     fi
 
