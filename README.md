@@ -32,6 +32,7 @@ For tarball sources, use following file structure is expected inside the tarball
 .
 ├── .env
 ├── ansible.cfg
+├── hosts.yml
 ├── playbook.yml
 ├── requirements.txt
 ├── requirements.yml
@@ -44,6 +45,7 @@ For tarball sources, use following file structure is expected inside the tarball
 Where:
 - `.env` - Environment variables for the playbook
 - `ansible.cfg` - Ansible configuration file
+- `hosts.yml` - Inventory file
 - `playbook.yml` - Main playbook file (required)
 - `requirements.txt` - Python requirements file
 - `requirements.yml` - Ansible Galaxy requirements file
