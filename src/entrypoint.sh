@@ -152,11 +152,21 @@ playbook() {
         exit 5
     fi
 
-    mkdir -p host_vars
-    while IFS= read -r line
-    do
-        echo -e "$line" >> host_vars/localhost.yml
-    done
+    if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
+        if [ -f hosts.yml ]; then
+            export ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
+        else
+            inventory=$(mktemp -d)
+            # shellcheck disable=SC2064
+            trap "rm -rf $inventory" EXIT
+
+            while IFS= read -r line
+            do
+                echo -e "$line" >> "$inventory/hosts.yml"
+            done
+            export ANSIBLE_INVENTORY="$inventory/hosts.yml"
+        fi
+    fi
 
     if [ -f .env ]; then
         while IFS= read -r var || [[ -n "$var" ]]; do

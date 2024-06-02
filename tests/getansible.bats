@@ -133,7 +133,10 @@ setup() {
   tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
 
   run getansible.sh -- file:///opt/006-inventory.tar.gz <<-EOF
-foo: bar
+ungrouped:
+  hosts:
+    localhost:
+      foo: bar
 EOF
   assert_success
   assert_output --partial "foo=bar"
