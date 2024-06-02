@@ -128,6 +128,34 @@ setup() {
   assert_output --partial "ok=1"
 }
 
+# bats test_tags=playbook,inventory
+@test "install.sh file:// with inventory in yaml format" {
+  tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
+
+  run getansible.sh -- file:///opt/006-inventory.tar.gz <<-EOF
+---
+ungrouped:
+  hosts:
+    localhost:
+      foo: bar
+EOF
+  assert_success
+  assert_output --partial "foo=bar"
+  assert_output --partial "ok=1"
+}
+
+# bats test_tags=playbook,inventory
+@test "install.sh file:// with inventory in ini format" {
+  tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
+
+  run getansible.sh -- file:///opt/006-inventory.tar.gz <<-EOF
+localhost foo=bar
+EOF
+  assert_success
+  assert_output --partial "foo=bar"
+  assert_output --partial "ok=1"
+}
+
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash" {
   run bash -c "curl -s https://getansible.sh/ | bash"
