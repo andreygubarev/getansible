@@ -184,6 +184,18 @@ playbook() {
         exit 5
     fi
 
+    if [ -f .env ]; then
+        while IFS= read -r var || [[ -n "$var" ]]; do
+            if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
+                var_name=${var%%=*}
+                echo "$var_name"
+                if ! declare -p "$var_name" > /dev/null 2>&1; then
+                    export "${var?}"
+                fi
+            fi
+        done < .env
+    fi
+
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
         inventory=$(mktemp -d)
         # shellcheck disable=SC2064
@@ -208,16 +220,12 @@ playbook() {
         export ANSIBLE_INVENTORY
     fi
 
-    if [ -f .env ]; then
-        while IFS= read -r var || [[ -n "$var" ]]; do
-            if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
-                var_name=${var%%=*}
-                echo "$var_name"
-                if ! declare -p "$var_name" > /dev/null 2>&1; then
-                    export "${var?}"
-                fi
-            fi
-        done < .env
+    if [ ! -f host_vars/localhost.yml ]; then
+        mkdir -p host_vars
+        touch host_vars/localhost.yml
+    fi
+    if ! grep -q 'ansible_python_interpreter' host_vars/localhost.yml; then
+        echo "ansible_python_interpreter: $WORKDIR/bin/python3" >> host_vars/localhost.yml
     fi
 
     if [ -f requirements.txt ]; then
@@ -237,14 +245,6 @@ playbook() {
     if [ -f requirements.yml ]; then
         "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
         echo $?
-    fi
-
-    if [ ! -f host_vars/localhost.yml ]; then
-        mkdir -p host_vars
-        touch host_vars/localhost.yml
-    fi
-    if ! grep -q 'ansible_python_interpreter' host_vars/localhost.yml; then
-        echo "ansible_python_interpreter: $WORKDIR/bin/python3" >> host_vars/localhost.yml
     fi
 
     "$WORKDIR"/bin/ansible-playbook playbook.yml
