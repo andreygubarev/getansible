@@ -6,6 +6,9 @@ export WORKDIR
 export PATH="$WORKDIR/bin:$PATH"
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
+export TEMPORARY_DIR=""
+export TEMPORARY_FILE=""
+
 PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
 if [ -n "$PYTHON_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
@@ -36,24 +39,19 @@ usage() {
 main() {
     playbook_url=$1
 
-    tmpfile=$(mktemp)
-    # shellcheck disable=SC2064
-    trap "rm -f $tmpfile" EXIT
-
-    tmpdir=$(mktemp -d)
-    # shellcheck disable=SC2064
-    trap "rm -rf $tmpdir" EXIT
+    TEMPORARY_FILE=$(mktemp)
+    trap 'rm -f "$TEMPORARY_FILE"' EXIT
 
     case "$playbook_url" in
         http://*|https://*)
-            curl -fsSL -o "$tmpfile" "$playbook_url"
+            curl -fsSL -o "$TEMPORARY_FILE" "$playbook_url"
             ;;
         file://*)
             fname="${playbook_url#file://}"
             if [ -f "$fname" ]; then
-                cp "$fname" "$tmpfile"
+                cp "$fname" "$TEMPORARY_FILE"
             elif [ -d "$fname" ]; then
-                tar -C "$fname" -czf "$tmpfile" .
+                tar -C "$fname" -czf "$TEMPORARY_FILE" .
             else
                 echo "Invalid playbook: $fname"
                 exit 3
@@ -62,10 +60,8 @@ main() {
         galaxy://*)
             assert_galaxy_support
 
-            galaxy_name="${playbook_url#galaxy://}"
             galaxy_dir=$(mktemp -d)
-            # shellcheck disable=SC2064
-            trap "rm -rf $galaxy_dir" EXIT
+            galaxy_name="${playbook_url#galaxy://}"
 
             if [ "$(echo "$galaxy_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
                 collection_name=$(echo "$galaxy_name" | cut -d. -f1-2)
@@ -86,8 +82,10 @@ main() {
     - role: $galaxy_name
 EOF
             pushd "$galaxy_dir" > /dev/null || exit 1
-            tar -czf "$tmpfile" .
+            tar -czf "$TEMPORARY_FILE" .
             popd > /dev/null || exit 1
+
+            rm -rf "$galaxy_dir"
             ;;
         *)
             echo "Invalid playbook URL: $playbook_url"
@@ -96,7 +94,7 @@ EOF
     esac
 
     if command -v file > /dev/null; then
-        ftype=$(file --brief --mime-type "$tmpfile")
+        ftype=$(file --brief --mime-type "$TEMPORARY_FILE")
     else
         case "$playbook_url" in
             http://*|https://*)
@@ -148,15 +146,18 @@ EOF
         esac
     fi
 
+    TEMPORARY_DIR=$(mktemp -d)
+    trap 'rm -rf "$TEMPORARY_DIR"' EXIT
+
     case "$ftype" in
         application/gzip)
-            tar -C "$tmpdir" -xzf "$tmpfile"
+            tar -C "$TEMPORARY_DIR" -xzf "$TEMPORARY_FILE"
             ;;
         application/zip)
-            unzip -d "$tmpdir" "$tmpfile"
+            unzip -d "$TEMPORARY_DIR" "$TEMPORARY_FILE"
             ;;
         text/plain)
-            cp "$tmpfile" "$tmpdir/playbook.yml"
+            cp "$TEMPORARY_FILE" "$TEMPORARY_DIR/playbook.yml"
             ;;
         *)
             echo "Invalid playbook file type: $ftype"
@@ -164,7 +165,7 @@ EOF
             ;;
     esac
 
-    playbook "$tmpdir"
+    playbook "$TEMPORARY_DIR"
 }
 
 playbook() {
