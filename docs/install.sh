@@ -4,6 +4,8 @@ set -euo pipefail
 ### variables #################################################################
 GETANSIBLE_ARCH="${GETANSIBLE_ARCH:-}"
 GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
+GETANSIBLE_TEMP=""
+export GETANSIBLE_TEMP
 
 ANSIBLE_RELEASE="${ANSIBLE_RELEASE:-9.0}"
 
@@ -74,21 +76,19 @@ getansible_install() {
     GITHUB_DOWNLOAD_URL="https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/$GITHUB_ARTIFACT"
 
     SHA512SUMS=$(mktemp)
-    # shellcheck disable=SC2064
-    trap "rm -f $SHA512SUMS" EXIT
     curl -sLo "$SHA512SUMS" "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/SHA512SUMS"
 
     getansible_tempdir=$(mktemp -d)
-    # shellcheck disable=SC2064
-    trap "rm -rf $getansible_tempdir" EXIT
     curl -sL "$GITHUB_DOWNLOAD_URL" -o "$getansible_tempdir/$GITHUB_ARTIFACT"
 
     pushd "$getansible_tempdir" > /dev/null
     sha512sum -c "$SHA512SUMS" --ignore-missing
     popd > /dev/null
+    rm -f "$SHA512SUMS"
 
     mv "$getansible_tempdir/$GITHUB_ARTIFACT" "$getansible_path"
     chmod +x "$getansible_path"
+    rm -rf "$getansible_tempdir"
 
     if [ "$link_option" = "true" ]; then
         getansible_link "$getansible_path"
@@ -129,13 +129,11 @@ getansible_help() {
 }
 
 getansible() {
-    tmpdir="$(mktemp -d)"
+    GETANSIBLE_TEMP="$(mktemp -d)"
+    trap 'rm -rf "$GETANSIBLE_TEMP"' EXIT
 
-    # shellcheck disable=SC2064
-    trap "rm -rf $tmpdir" EXIT
-
-    getansible_install "$ANSIBLE_RELEASE" "$tmpdir/getansible.sh" "false"
-    "$tmpdir/getansible.sh" -- "$@"
+    getansible_install "$ANSIBLE_RELEASE" "$GETANSIBLE_TEMP/getansible.sh" "false"
+    "$GETANSIBLE_TEMP/getansible.sh" -- "$@"
 }
 
 ### main ######################################################################
