@@ -7,8 +7,9 @@ export PATH="$WORKDIR/bin:$PATH"
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
 export TEMPORARY_DIR=""
+trap 'rm -rf "$TEMPORARY_DIR"' EXIT
 export TEMPORARY_FILE=""
-export TEMPORARY_INVENTORY=""
+trap 'rm -rf "$TEMPORARY_FILE"' EXIT
 
 PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
 if [ -n "$PYTHON_REQUIREMENTS" ]; then
@@ -39,9 +40,7 @@ usage() {
 
 main() {
     playbook_url=$1
-
     TEMPORARY_FILE=$(mktemp)
-    trap 'rm -rf "$TEMPORARY_FILE"' EXIT
 
     case "$playbook_url" in
         http://*|https://*)
@@ -148,8 +147,6 @@ EOF
     fi
 
     TEMPORARY_DIR=$(mktemp -d)
-    trap 'rm -rf "$TEMPORARY_DIR"' EXIT
-
     case "$ftype" in
         application/gzip)
             tar -C "$TEMPORARY_DIR" -xzf "$TEMPORARY_FILE"
@@ -201,18 +198,18 @@ playbook() {
     fi
 
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
-        TEMPORARY_INVENTORY=$(mktemp)
+        tmphosts=$(mktemp)
 
         if [ -p /dev/stdin ]; then
-            cat - > "$TEMPORARY_INVENTORY"
+            cat - > "$tmphosts"
         fi
 
-        if [ -s "$TEMPORARY_INVENTORY" ]; then
-            if [ "$(head -n 1 "$TEMPORARY_INVENTORY")" == "---" ]; then
-                cp "$TEMPORARY_INVENTORY" "$(pwd)/hosts.yml"
+        if [ -s "$tmphosts" ]; then
+            if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
+                cp "$tmphosts" "$(pwd)/hosts.yml"
                 ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
             else
-                cp "$TEMPORARY_INVENTORY" "$(pwd)/hosts"
+                cp "$tmphosts" "$(pwd)/hosts"
                 ANSIBLE_INVENTORY="$(pwd)/hosts"
             fi
         elif [ -f hosts ]; then
@@ -220,8 +217,9 @@ playbook() {
         elif [ -f hosts.yml ]; then
             ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
         fi
-        rm -rf "$TEMPORARY_INVENTORY"
         export ANSIBLE_INVENTORY
+
+        rm -rf "$tmphosts"
     fi
 
     if [ ! -f host_vars/localhost.yml ]; then
