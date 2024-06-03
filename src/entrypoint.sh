@@ -6,11 +6,6 @@ export WORKDIR
 export PATH="$WORKDIR/bin:$PATH"
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
-export TEMPORARY_DIR=""
-trap 'rm -rf "$TEMPORARY_DIR"' EXIT
-export TEMPORARY_FILE=""
-trap 'rm -rf "$TEMPORARY_FILE"' EXIT
-
 PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
 if [ -n "$PYTHON_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
@@ -40,18 +35,18 @@ usage() {
 
 main() {
     playbook_url=$1
-    TEMPORARY_FILE=$(mktemp)
+    tmpfile=$(mktemp)
 
     case "$playbook_url" in
         http://*|https://*)
-            curl -fsSL -o "$TEMPORARY_FILE" "$playbook_url"
+            curl -fsSL -o "$tmpfile" "$playbook_url"
             ;;
         file://*)
             fname="${playbook_url#file://}"
             if [ -f "$fname" ]; then
-                cp "$fname" "$TEMPORARY_FILE"
+                cp "$fname" "$tmpfile"
             elif [ -d "$fname" ]; then
-                tar -C "$fname" -czf "$TEMPORARY_FILE" .
+                tar -C "$fname" -czf "$tmpfile" .
             else
                 echo "Invalid playbook: $fname"
                 exit 3
@@ -82,7 +77,7 @@ main() {
     - role: $galaxy_name
 EOF
             pushd "$galaxy_dir" > /dev/null || exit 1
-            tar -czf "$TEMPORARY_FILE" .
+            tar -czf "$tmpfile" .
             popd > /dev/null || exit 1
 
             rm -rf "$galaxy_dir"
@@ -94,7 +89,7 @@ EOF
     esac
 
     if command -v file > /dev/null; then
-        ftype=$(file --brief --mime-type "$TEMPORARY_FILE")
+        ftype=$(file --brief --mime-type "$tmpfile")
     else
         case "$playbook_url" in
             http://*|https://*)
@@ -146,24 +141,25 @@ EOF
         esac
     fi
 
-    TEMPORARY_DIR=$(mktemp -d)
+    tmpdir=$(mktemp -d)
     case "$ftype" in
         application/gzip)
-            tar -C "$TEMPORARY_DIR" -xzf "$TEMPORARY_FILE"
+            tar -C "$tmpdir" -xzf "$tmpfile"
             ;;
         application/zip)
-            unzip -d "$TEMPORARY_DIR" "$TEMPORARY_FILE"
+            unzip -d "$tmpdir" "$tmpfile"
             ;;
         text/plain)
-            cp "$TEMPORARY_FILE" "$TEMPORARY_DIR/playbook.yml"
+            cp "$tmpfile" "$tmpdir/playbook.yml"
             ;;
         *)
             echo "Invalid playbook file type: $ftype"
             exit 4
             ;;
     esac
+    rm -f "$tmpfile"
 
-    playbook "$TEMPORARY_DIR"
+    playbook "$tmpdir"
 }
 
 playbook() {
@@ -217,8 +213,8 @@ playbook() {
         elif [ -f hosts.yml ]; then
             ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
         fi
-        export ANSIBLE_INVENTORY
 
+        export ANSIBLE_INVENTORY
         rm -rf "$tmphosts"
     fi
 
@@ -253,7 +249,6 @@ playbook() {
     rc=$?
 
     popd > /dev/null || exit 1
-
     exit $rc
 }
 
