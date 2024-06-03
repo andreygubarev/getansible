@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+### environment ###############################################################
 WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
-export PATH="$WORKDIR/bin:$PATH"
+
+PATH="$WORKDIR/bin:$PATH"
+export PATH
+
+### substitutions #############################################################
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
+### python requirements #######################################################
 PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
 if [ -n "$PYTHON_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
     "$WORKDIR"/bin/pip3 install --no-cache-dir $PYTHON_REQUIREMENTS
 fi
 
-cd "$USER_PWD" || exit 1
-
+### function | assert ########################################################
 assert_galaxy_support() {
     # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
     version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | cut -d= -f3)
@@ -29,6 +34,7 @@ assert_galaxy_support() {
     fi
 }
 
+### function | main ###########################################################
 usage() {
     echo "Usage: getansible -- exec|ansible|ansible-* [args]"
 }
@@ -252,6 +258,9 @@ playbook() {
     rm -rf "$playbook_dir"
     return $rc
 }
+
+### command line interface ####################################################
+cd "$USER_PWD" || exit 1
 
 if [ $# -eq 0 ]; then
     usage
