@@ -4,45 +4,44 @@ setup() {
     bats_load_library bats-support
 }
 
+assert_teardown() {
+  run test -z "$(ls -A /tmp | grep -v 'bats-')"
+  assert_success
+}
+
 @test "getansible.sh" {
   run getansible.sh
   assert_failure 2
   assert_output --partial "Usage: getansible"
+  assert_teardown
 }
 
 @test "getansible.sh -- ansible" {
   run getansible.sh -- ansible --version
   assert_success
+  assert_teardown
 }
-
 
 @test "getansible.sh -- ansible-playbook" {
   run getansible.sh -- ansible-playbook --version
   assert_success
+  assert_teardown
 }
-
 
 @test "getansible.sh -- ansible-galaxy" {
   run getansible.sh -- ansible-galaxy --version
   assert_success
+  assert_teardown
 }
-
 
 @test "PYTHON_REQUIREMENTS getansible.sh" {
   run bash -c "PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- exec pip3 freeze | grep boto3"
   assert_success
+  assert_teardown
 }
 
 # bats test_tags=playbook,galaxy
 @test "getansible.sh -- galaxy with role" {
-  if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3')" ]; then
-    # FIXME: ansible 3.0 is not working with geerlingguy.apache because of python3-apt which is unsupported
-    #   TASK [geerlingguy.apache : Update apt cache.] **********************************
-    #   [WARNING]: Updating cache and auto-installing missing dependency: python3-apt
-    #   fatal: [localhost]: FAILED! => {"changed": false, "msg": "Could not import python modules: apt, apt_pkg. Please install python3-apt package."}
-    skip
-  fi
-
   # skip unsupported ansible releases: 3.0, 4.0 and 5.0
   if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5')" ]; then
     skip
@@ -52,6 +51,7 @@ setup() {
   assert_success
   assert_output --partial "geerlingguy.apache"
   assert_output --partial "failed=0"
+  assert_teardown
 }
 
 # bats test_tags=playbook,galaxy
@@ -65,6 +65,7 @@ setup() {
   assert_success
   assert_output --partial "andreygubarev.core.ping : Ping"
   assert_output --partial "failed=0"
+  assert_teardown
 }
 
 # bats test_tags=playbook
@@ -74,8 +75,8 @@ setup() {
   run getansible.sh -- file:///opt/001-ping.tar.gz
   assert_success
   assert_output --partial "ok=1"
+  assert_teardown
 }
-
 
 # bats test_tags=playbook
 @test "getansible.sh -- file:// with relative path" {
@@ -87,8 +88,8 @@ setup() {
   assert_output --partial "ok=1"
 
   popd > /dev/null || exit 1
+  assert_teardown
 }
-
 
 # bats test_tags=playbook
 @test "getansible.sh -- file:// with requirements.yml" {
@@ -98,8 +99,8 @@ setup() {
   echo $output
   assert_success
   assert_output --partial "ok=1"
+  assert_teardown
 }
-
 
 # bats test_tags=playbook,role
 @test "getansible.sh -- file:// with roles" {
@@ -110,8 +111,8 @@ setup() {
   assert_success
   assert_output --partial '"msg": "getansible"'
   assert_output --partial "ok=2"
+  assert_teardown
 }
-
 
 # bats test_tags=playbook
 @test "getansible.sh -- file:// with subfolder" {
@@ -121,8 +122,8 @@ setup() {
   echo $output
   assert_success
   assert_output --partial "ok=1"
+  assert_teardown
 }
-
 
 # bats test_tags=playbook
 @test "install.sh file:// with dotenv" {
@@ -132,8 +133,8 @@ setup() {
   assert_success
   assert_output --partial "FOO=BAR"
   assert_output --partial "ok=1"
+  assert_teardown
 }
-
 
 # bats test_tags=playbook
 @test "install.sh file:// with dotenv with overrides" {
@@ -144,6 +145,7 @@ setup() {
   assert_success
   assert_output --partial "FOO=BAZ"
   assert_output --partial "ok=1"
+  assert_teardown
 }
 
 # bats test_tags=playbook,inventory
@@ -160,6 +162,7 @@ EOF
   assert_success
   assert_output --partial "foo=bar"
   assert_output --partial "ok=1"
+  assert_teardown
 }
 
 # bats test_tags=playbook,inventory
@@ -172,19 +175,21 @@ EOF
   assert_success
   assert_output --partial "foo=bar"
   assert_output --partial "ok=1"
+  assert_teardown
 }
 
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash" {
   run bash -c "curl -s https://getansible.sh/ | bash"
   assert_success
+  assert_teardown
 }
-
 
 # bats test_tags=curlpipe
 @test "curl https://getansible.sh/ | bash -" {
   run bash -c "curl -s https://getansible.sh/ | bash -"
   assert_success
+  assert_teardown
 }
 
 # bats test_tags=curlpipe
@@ -194,16 +199,16 @@ EOF
   assert_file_exist /usr/local/bin/ansible
   assert_file_exist /usr/local/bin/ansible-galaxy
   assert_file_exist /usr/local/bin/ansible-playbook
+  assert_teardown
 }
-
 
 # bats test_tags=install
 @test "install.sh" {
   run install.sh install
   assert_success
   assert_file_exist /usr/local/bin/getansible.sh
+  assert_teardown
 }
-
 
 # bats test_tags=install
 @test "install.sh --link" {
@@ -222,8 +227,9 @@ EOF
 
   run ansible-playbook --version
   assert_success
-}
 
+  assert_teardown
+}
 
 # bats test_tags=install
 @test "install.sh file://" {
@@ -232,4 +238,6 @@ EOF
   run install.sh file:///opt/001-ping.tar.gz
   assert_success
   assert_output --partial "ok=1"
+
+  assert_teardown
 }

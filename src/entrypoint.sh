@@ -249,7 +249,8 @@ playbook() {
     rc=$?
 
     popd > /dev/null || exit 1
-    exit $rc
+    rm -rf "$playbook_dir"
+    return $rc
 }
 
 if [ $# -eq 0 ]; then
