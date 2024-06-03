@@ -250,7 +250,11 @@ playbook() {
     fi
 
     "$WORKDIR"/bin/ansible-playbook playbook.yml
+    rc=$?
+
     popd > /dev/null || exit 1
+
+    exit $rc
 }
 
 if [ $# -eq 0 ]; then
