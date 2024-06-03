@@ -202,7 +202,6 @@ playbook() {
 
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
         TEMPORARY_INVENTORY=$(mktemp)
-        trap 'rm -rf "$TEMPORARY_INVENTORY"' EXIT
 
         if [ -p /dev/stdin ]; then
             cat - > "$TEMPORARY_INVENTORY"
@@ -221,6 +220,7 @@ playbook() {
         elif [ -f hosts.yml ]; then
             ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
         fi
+        rm -rf "$TEMPORARY_INVENTORY"
         export ANSIBLE_INVENTORY
     fi
 
