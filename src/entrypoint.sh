@@ -34,11 +34,12 @@ assert_galaxy_support() {
     fi
 }
 
-### function | main ###########################################################
+### function | usage ##########################################################
 usage() {
     echo "Usage: getansible -- exec|ansible|ansible-* [args]"
 }
 
+### function | main ###########################################################
 main() {
     playbook_url=$1
     tmpfile=$(mktemp)
@@ -168,6 +169,7 @@ EOF
     playbook "$tmpdir"
 }
 
+### function | playbook #######################################################
 playbook() {
     playbook_dir=$1
 
