@@ -204,9 +204,9 @@ playbook() {
         TEMPORARY_INVENTORY=$(mktemp)
         trap 'rm -rf "$TEMPORARY_INVENTORY"' EXIT
 
-        while IFS= read -r line; do
-            echo -e "$line" >> "$TEMPORARY_INVENTORY"
-        done
+        if [ -p /dev/stdin ]; then
+            cat - > "$TEMPORARY_INVENTORY"
+        fi
 
         if [ -s "$TEMPORARY_INVENTORY" ]; then
             if [ "$(head -n 1 "$TEMPORARY_INVENTORY")" == "---" ]; then
