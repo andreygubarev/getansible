@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+### environment ###############################################################
 WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
-export PATH="$WORKDIR/bin:$PATH"
+
+PATH="$WORKDIR/bin:$PATH"
+export PATH
+
+### substitutions #############################################################
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
+### python requirements #######################################################
 PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
 if [ -n "$PYTHON_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
     "$WORKDIR"/bin/pip3 install --no-cache-dir $PYTHON_REQUIREMENTS
 fi
 
-cd "$USER_PWD" || exit 1
-
+### function | assert ########################################################
 assert_galaxy_support() {
     # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
     version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | cut -d= -f3)
@@ -29,20 +34,15 @@ assert_galaxy_support() {
     fi
 }
 
+### function | usage ##########################################################
 usage() {
     echo "Usage: getansible -- exec|ansible|ansible-* [args]"
 }
 
+### function | main ###########################################################
 main() {
     playbook_url=$1
-
     tmpfile=$(mktemp)
-    # shellcheck disable=SC2064
-    trap "rm -f $tmpfile" EXIT
-
-    tmpdir=$(mktemp -d)
-    # shellcheck disable=SC2064
-    trap "rm -rf $tmpdir" EXIT
 
     case "$playbook_url" in
         http://*|https://*)
@@ -62,10 +62,8 @@ main() {
         galaxy://*)
             assert_galaxy_support
 
-            galaxy_name="${playbook_url#galaxy://}"
             galaxy_dir=$(mktemp -d)
-            # shellcheck disable=SC2064
-            trap "rm -rf $galaxy_dir" EXIT
+            galaxy_name="${playbook_url#galaxy://}"
 
             if [ "$(echo "$galaxy_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
                 collection_name=$(echo "$galaxy_name" | cut -d. -f1-2)
@@ -88,6 +86,8 @@ EOF
             pushd "$galaxy_dir" > /dev/null || exit 1
             tar -czf "$tmpfile" .
             popd > /dev/null || exit 1
+
+            rm -rf "$galaxy_dir"
             ;;
         *)
             echo "Invalid playbook URL: $playbook_url"
@@ -148,6 +148,7 @@ EOF
         esac
     fi
 
+    tmpdir=$(mktemp -d)
     case "$ftype" in
         application/gzip)
             tar -C "$tmpdir" -xzf "$tmpfile"
@@ -163,10 +164,12 @@ EOF
             exit 4
             ;;
     esac
+    rm -f "$tmpfile"
 
     playbook "$tmpdir"
 }
 
+### function | playbook #######################################################
 playbook() {
     playbook_dir=$1
 
@@ -199,27 +202,28 @@ playbook() {
     fi
 
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
-        inventory=$(mktemp -d)
-        # shellcheck disable=SC2064
-        trap "rm -rf $inventory" EXIT
+        tmphosts=$(mktemp)
 
-        while IFS= read -r line; do
-            echo -e "$line" >> "$inventory/hosts"
-        done
+        if [ -p /dev/stdin ]; then
+            cat - > "$tmphosts"
+        fi
 
-        if [ -s "$inventory/hosts" ]; then
-            if [ "$(head -n 1 "$inventory/hosts")" == "---" ]; then
-                mv "$inventory/hosts" "$inventory/hosts.yml"
-                ANSIBLE_INVENTORY="$inventory/hosts.yml"
+        if [ -s "$tmphosts" ]; then
+            if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
+                cp "$tmphosts" "$(pwd)/hosts.yml"
+                ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
             else
-                ANSIBLE_INVENTORY="$inventory/hosts"
+                cp "$tmphosts" "$(pwd)/hosts"
+                ANSIBLE_INVENTORY="$(pwd)/hosts"
             fi
         elif [ -f hosts ]; then
             ANSIBLE_INVENTORY="$(pwd)/hosts"
         elif [ -f hosts.yml ]; then
             ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
         fi
+
         export ANSIBLE_INVENTORY
+        rm -rf "$tmphosts"
     fi
 
     if [ ! -f host_vars/localhost.yml ]; then
@@ -250,8 +254,15 @@ playbook() {
     fi
 
     "$WORKDIR"/bin/ansible-playbook playbook.yml
+    rc=$?
+
     popd > /dev/null || exit 1
+    rm -rf "$playbook_dir"
+    return $rc
 }
+
+### command line interface ####################################################
+cd "$USER_PWD" || exit 1
 
 if [ $# -eq 0 ]; then
     usage
