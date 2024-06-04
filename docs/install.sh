@@ -4,8 +4,6 @@ set -euo pipefail
 ### variables #################################################################
 GETANSIBLE_ARCH="${GETANSIBLE_ARCH:-}"
 GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
-GETANSIBLE_TEMP=""
-export GETANSIBLE_TEMP
 
 ANSIBLE_RELEASE="${ANSIBLE_RELEASE:-9.0}"
 
@@ -120,7 +118,6 @@ EOF
 
 getansible_uninstall() {
     local getansible_path=$1
-
     rm -f "$getansible_path"
 }
 
@@ -129,11 +126,14 @@ getansible_help() {
 }
 
 getansible() {
-    GETANSIBLE_TEMP="$(mktemp -d)"
-    trap 'rm -rf "$GETANSIBLE_TEMP"' EXIT
+    tmpdir="$(mktemp -d)"
 
-    getansible_install "$ANSIBLE_RELEASE" "$GETANSIBLE_TEMP/getansible.sh" "false"
-    "$GETANSIBLE_TEMP/getansible.sh" -- "$@"
+    getansible_install "$ANSIBLE_RELEASE" "$tmpdir/getansible.sh" "false"
+    "$tmpdir/getansible.sh" -- "$@"
+    rc=$?
+
+    rm -rf "$tmpdir"
+    return $rc
 }
 
 ### main ######################################################################
