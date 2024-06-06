@@ -22,6 +22,11 @@ if [ -n "$PIP_REQUIREMENTS" ]; then
     "$WORKDIR"/bin/pip3 install --no-cache-dir $PIP_REQUIREMENTS
 fi
 
+### environment | ansible #####################################################
+export ANSIBLE_HOME="$WORKDIR/.ansible"
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
 ### function | assert ########################################################
 assert_galaxy_support() {
     # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
