@@ -42,13 +42,22 @@ usage() {
 ### function | main ###########################################################
 main() {
     url=$1
-    protocol=$(echo "$url" | cut -d: -f1)
-    authority=$(echo "$url" | cut -d: -f2 | cut -c3-)
-    path=$(echo "$authority" | cut -d/ -f2-)
-    authority=$(echo "$authority" | cut -d/ -f1)
+    if echo "$url" | grep -q '#'; then
+        url_fragment=$(echo "$url" | cut -d'#' -f2)
+    else
+        url_fragment=""
+    fi
+    if [ -n "$url_fragment" ]; then
+        url=$(echo "$url" | cut -d'#' -f1)
+    fi
+
+    url_proto=$(echo "$url" | cut -d':' -f1)
+    # url_host=$(echo "$url" | cut -d':' -f2 | cut -c3-)
+    # url_path=$(echo "$url_host" | cut -d'/' -f2-)
+    # url_host=$(echo "$url_host" | cut -d'/' -f1)
 
     tmpfile=$(mktemp)
-    case "$protocol" in
+    case "$url_proto" in
         http|https)
             curl -fsSL -o "$tmpfile" "$url"
             ;;
@@ -102,7 +111,7 @@ EOF
     if command -v file > /dev/null; then
         ftype=$(file --brief --mime-type "$tmpfile")
     else
-        case "$protocol" in
+        case "$url_proto" in
             http|https)
                 case "$url" in
                     *.tar.gz)
@@ -153,6 +162,8 @@ EOF
     fi
 
     tmpdir=$(mktemp -d)
+    trap 'rm -rf "$tmpdir"' EXIT
+
     case "$ftype" in
         application/gzip)
             tar -C "$tmpdir" -xzf "$tmpfile"
@@ -170,19 +181,38 @@ EOF
     esac
     rm -f "$tmpfile"
 
-    playbook "$tmpdir"
+    if [ -n "$url_fragment" ]; then
+        if [ -d "$tmpdir/$url_fragment" ]; then
+            subdir=$url_fragment
+        else
+            subdir=""
+            echo "Invalid subdirectory: $url_fragment"
+            exit 4
+        fi
+    else
+        subdir=""
+    fi
+
+    playbook "$tmpdir" "$subdir"
 }
 
 ### function | playbook #######################################################
 playbook() {
     playbook_dir=$1
+    playbook_subdir=$2
 
-    pushd "$playbook_dir" > /dev/null || exit 1
+    workdir="$playbook_dir"
+    if [ -n "$playbook_subdir" ]; then
+        workdir="$playbook_dir/$playbook_subdir"
+    fi
+
+    pushd "$workdir" > /dev/null || exit 1
+
     # if there is only one file in the playbook_dir and it is a directory, cd into it
     if [ "$(find . -maxdepth 1 -type f | wc -l)" -eq 0 ] && [ "$(find . -maxdepth 1 -type d | wc -l)" -eq 2 ]; then
         subdir=$(find . -maxdepth 1 -type d -not -name .)
         popd > /dev/null || exit 1
-        pushd "$playbook_dir/$subdir" > /dev/null || exit 1
+        pushd "$workdir/$subdir" > /dev/null || exit 1
     fi
 
     ANSIBLE_PLAYBOOK_DIR=$(pwd)

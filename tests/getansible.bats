@@ -114,12 +114,34 @@ assert_teardown() {
   assert_teardown
 }
 
-# bats test_tags=playbook
+# bats test_tags=playbook,subfolder
 @test "getansible.sh -- file:// with subfolder" {
   tar -czf /opt/004-subfolder.tar.gz -C /usr/src/bats/examples/004-subfolder .
 
   run getansible.sh -- file:///opt/004-subfolder.tar.gz
-  echo $output
+  assert_success
+  assert_output --partial "ok=1"
+  assert_teardown
+}
+
+# bats test_tags=playbook,subfolder
+@test "install.sh file:// with multiple subfolders" {
+  tar -czf /opt/007-subfolders.tar.gz -C /usr/src/bats/examples/007-subfolders .
+
+  run getansible.sh -- file:///opt/007-subfolders.tar.gz
+  assert_failure
+  assert_teardown
+
+  run getansible.sh -- file:///opt/007-subfolders.tar.gz#ping
+  assert_success
+  assert_output --partial "ok=1"
+  assert_teardown
+
+  run getansible.sh -- file:///opt/007-subfolders.tar.gz#foobar
+  assert_failure
+  assert_teardown
+
+  run getansible.sh -- file:///opt/007-subfolders.tar.gz#pong
   assert_success
   assert_output --partial "ok=1"
   assert_teardown
