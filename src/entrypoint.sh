@@ -8,10 +8,11 @@ export WORKDIR
 PATH="$WORKDIR/bin:$PATH"
 export PATH
 
-### substitutions #############################################################
+### environment | python ######################################################
+unset PYTHONPATH  # unset PYTHONPATH to ensure isolation
+
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
-### python requirements #######################################################
 PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
 if [ -n "$PYTHON_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
