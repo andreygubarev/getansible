@@ -51,6 +51,16 @@ main() {
         url=$(echo "$url" | cut -d'#' -f1)
     fi
 
+    # handler: ==1.0.0
+    if echo "$url" | grep -q '=='; then
+        url_version=$(echo "$url" | awk -F'==' '{print $2}')
+        if [ -n "$url_version" ]; then
+            url=$(echo "$url" | awk -F'==' '{print $1}')
+        fi
+    else
+        url_version=""
+    fi
+
     url_proto=$(echo "$url" | cut -d':' -f1)
     # url_host=$(echo "$url" | cut -d':' -f2 | cut -c3-)
     # url_path=$(echo "$url_host" | cut -d'/' -f2-)
@@ -78,12 +88,18 @@ main() {
             galaxy_dir=$(mktemp -d)
             galaxy_name="${url#galaxy://}"
 
+            if [ -n "$url_version" ]; then
+                galaxy_version="==$url_version"
+            else
+                galaxy_version=""
+            fi
+
             if [ "$(echo "$galaxy_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
                 collection_name=$(echo "$galaxy_name" | cut -d. -f1-2)
-                "$WORKDIR"/bin/ansible-galaxy collection install -p "$galaxy_dir/collections" "$collection_name"
+                "$WORKDIR"/bin/ansible-galaxy collection install -p "$galaxy_dir/collections" "$collection_name$galaxy_version"
             else
                 mkdir -p "$galaxy_dir/roles"
-                "$WORKDIR"/bin/ansible-galaxy role install -p "$galaxy_dir/roles" "$galaxy_name"
+                "$WORKDIR"/bin/ansible-galaxy role install -p "$galaxy_dir/roles" "$galaxy_name$galaxy_version"
             fi
 
             cat <<EOF > "$galaxy_dir/playbook.yml"
