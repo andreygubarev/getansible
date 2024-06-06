@@ -52,9 +52,9 @@ main() {
     fi
 
     url_proto=$(echo "$url" | cut -d':' -f1)
-    url_host=$(echo "$url" | cut -d':' -f2 | cut -c3-)
-    url_path=$(echo "$url_host" | cut -d'/' -f2-)
-    url_host=$(echo "$url_host" | cut -d'/' -f1)
+    # url_host=$(echo "$url" | cut -d':' -f2 | cut -c3-)
+    # url_path=$(echo "$url_host" | cut -d'/' -f2-)
+    # url_host=$(echo "$url_host" | cut -d'/' -f1)
 
     tmpfile=$(mktemp)
     case "$url_proto" in
