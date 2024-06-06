@@ -27,8 +27,8 @@ export ANSIBLE_HOME="$WORKDIR/.ansible"
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
-### function | assert ########################################################
-assert_galaxy_support() {
+### assert | ansible galaxy compatibility ####################################
+assert_compat_galaxy() {
     # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
     version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | cut -d= -f3)
     version_major=$(echo "$version" | awk -F. '{print $1}')
@@ -92,7 +92,7 @@ main() {
             fi
             ;;
         galaxy)
-            assert_galaxy_support
+            assert_compat_galaxy
 
             galaxy_dir=$(mktemp -d)
             galaxy_name="${url#galaxy://}"
