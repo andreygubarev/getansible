@@ -162,6 +162,8 @@ EOF
     fi
 
     tmpdir=$(mktemp -d)
+    trap 'rm -rf "$tmpdir"' EXIT
+
     case "$ftype" in
         application/gzip)
             tar -C "$tmpdir" -xzf "$tmpfile"

@@ -128,7 +128,20 @@ assert_teardown() {
 @test "install.sh file:// with multiple subfolders" {
   tar -czf /opt/007-subfolders.tar.gz -C /usr/src/bats/examples/007-subfolders .
 
+  run getansible.sh -- file:///opt/007-subfolders.tar.gz
+  assert_failure
+  assert_teardown
+
   run getansible.sh -- file:///opt/007-subfolders.tar.gz#ping
+  assert_success
+  assert_output --partial "ok=1"
+  assert_teardown
+
+  run getansible.sh -- file:///opt/007-subfolders.tar.gz#foobar
+  assert_failure
+  assert_teardown
+
+  run getansible.sh -- file:///opt/007-subfolders.tar.gz#pong
   assert_success
   assert_output --partial "ok=1"
   assert_teardown
