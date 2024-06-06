@@ -45,10 +45,7 @@ assert_compat_galaxy() {
     fi
 }
 
-### function | usage ##########################################################
-usage() {
-    echo "Usage: getansible -- exec|ansible|ansible-* [args]"
-}
+
 
 ### function | main ###########################################################
 main() {
@@ -322,7 +319,12 @@ playbook() {
     return $rc
 }
 
-### command line interface ####################################################
+### cli | usage ###############################################################
+usage() {
+    echo "Usage: getansible -- exec|ansible|ansible-* [args]"
+}
+
+### cli #######################################################################
 cd "$USER_PWD" || exit 1
 
 if [ $# -eq 0 ]; then
