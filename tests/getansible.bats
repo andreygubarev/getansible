@@ -2,10 +2,17 @@ setup() {
     bats_load_library bats-assert
     bats_load_library bats-file
     bats_load_library bats-support
+
+    if [ -n "$TMPDIR" ]; then
+      export TMPDIR="$TMPDIR/bats"
+    else
+      export TMPDIR="/tmp/bats"
+    fi
+    mkdir -p $TMPDIR
 }
 
 assert_teardown() {
-  run test -z "$(ls -A /tmp | grep -v 'bats-')"
+  run test -z "$(ls -A $TMPDIR | grep -v 'bats-')"
   assert_success
 }
 
