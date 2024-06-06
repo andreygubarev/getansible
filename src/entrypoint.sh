@@ -30,13 +30,15 @@ export LANG=C.UTF-8
 ### assert | ansible galaxy compatibility ####################################
 assert_compat_galaxy() {
     # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
-    version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | cut -d= -f3)
+    version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | awk -F'==' '{print $2}')
+
     version_major=$(echo "$version" | awk -F. '{print $1}')
     version_minor=$(echo "$version" | awk -F. '{print $2}')
     version_patch=$(echo "$version" | awk -F. '{print $3}')
+
     if { [ "$version_major" -lt 2 ]; } || \
-    { [ "$version_major" -eq 2 ] && [ "$version_minor" -lt 13 ]; } || \
-    { [ "$version_major" -eq 2 ] && [ "$version_minor" -eq 13 ] && [ "$version_patch" -lt 9 ]; }
+       { [ "$version_major" -eq 2 ] && [ "$version_minor" -lt 13 ]; } || \
+       { [ "$version_major" -eq 2 ] && [ "$version_minor" -eq 13 ] && [ "$version_patch" -lt 9 ]; }
     then
         echo "ERROR: ansible-core version $version is not supported"
         exit 6
