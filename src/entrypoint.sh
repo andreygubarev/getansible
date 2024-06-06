@@ -42,13 +42,14 @@ usage() {
 ### function | main ###########################################################
 main() {
     url=$1
-    protocol=$(echo "$url" | cut -d: -f1)
-    authority=$(echo "$url" | cut -d: -f2 | cut -c3-)
-    path=$(echo "$authority" | cut -d/ -f2-)
-    authority=$(echo "$authority" | cut -d/ -f1)
+    url_proto=$(echo "$url" | cut -d':' -f1)
+    url_host=$(echo "$url" | cut -d':' -f2 | cut -c3-)
+    url_path=$(echo "$url_host" | cut -d'/' -f2-)
+    url_host=$(echo "$url_host" | cut -d'/' -f1)
+    url_fragment=$(echo "$url" | cut -d'#' -f2)
 
     tmpfile=$(mktemp)
-    case "$protocol" in
+    case "$url_proto" in
         http|https)
             curl -fsSL -o "$tmpfile" "$url"
             ;;
@@ -102,7 +103,7 @@ EOF
     if command -v file > /dev/null; then
         ftype=$(file --brief --mime-type "$tmpfile")
     else
-        case "$protocol" in
+        case "$url_proto" in
             http|https)
                 case "$url" in
                     *.tar.gz)
@@ -169,6 +170,15 @@ EOF
             ;;
     esac
     rm -f "$tmpfile"
+
+    if [ -n "$url_fragment" ]; then
+        if [ -d "$tmpdir/$url_fragment" ]; then
+            tmpdir="$tmpdir/$url_fragment"
+        else
+            echo "Invalid subdirectory: $url_fragment"
+            exit 4
+        fi
+    fi
 
     playbook "$tmpdir"
 }
