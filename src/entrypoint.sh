@@ -45,9 +45,106 @@ assert_compat_galaxy() {
     fi
 }
 
+### function | playbook #######################################################
+playbook() {
+    playbook_dir=$1
+    playbook_subdir=$2
 
+    workdir="$playbook_dir"
+    if [ -n "$playbook_subdir" ]; then
+        workdir="$playbook_dir/$playbook_subdir"
+    fi
 
-### function | main ###########################################################
+    pushd "$workdir" > /dev/null || exit 1
+
+    # if there is only one file in the playbook_dir and it is a directory, cd into it
+    if [ "$(find . -maxdepth 1 -type f | wc -l)" -eq 0 ] && [ "$(find . -maxdepth 1 -type d | wc -l)" -eq 2 ]; then
+        subdir=$(find . -maxdepth 1 -type d -not -name .)
+        popd > /dev/null || exit 1
+        pushd "$workdir/$subdir" > /dev/null || exit 1
+    fi
+
+    ANSIBLE_PLAYBOOK_DIR=$(pwd)
+    export ANSIBLE_PLAYBOOK_DIR
+
+    if [ ! -f playbook.yml ]; then
+        echo "No playbook.yml found"
+        exit 5
+    fi
+
+    if [ -f .env ]; then
+        while IFS= read -r var || [[ -n "$var" ]]; do
+            if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
+                var_name=${var%%=*}
+                echo "$var_name"
+                if ! declare -p "$var_name" > /dev/null 2>&1; then
+                    export "${var?}"
+                fi
+            fi
+        done < .env
+    fi
+
+    if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
+        tmphosts=$(mktemp)
+
+        if [ -p /dev/stdin ]; then
+            cat - > "$tmphosts"
+        fi
+
+        if [ -s "$tmphosts" ]; then
+            if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
+                cp "$tmphosts" "$(pwd)/hosts.yml"
+                ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
+            else
+                cp "$tmphosts" "$(pwd)/hosts"
+                ANSIBLE_INVENTORY="$(pwd)/hosts"
+            fi
+        elif [ -f hosts ]; then
+            ANSIBLE_INVENTORY="$(pwd)/hosts"
+        elif [ -f hosts.yml ]; then
+            ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
+        fi
+
+        export ANSIBLE_INVENTORY
+        rm -rf "$tmphosts"
+    fi
+
+    if [ ! -f host_vars/localhost.yml ]; then
+        mkdir -p host_vars
+        touch host_vars/localhost.yml
+    fi
+    if ! grep -q 'ansible_python_interpreter' host_vars/localhost.yml; then
+        echo "ansible_python_interpreter: $WORKDIR/bin/python3" >> host_vars/localhost.yml
+    fi
+
+    if [ -f requirements.txt ]; then
+        "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
+    fi
+
+    if [ -z "${ANSIBLE_ROLES_PATH:-}" ]; then
+        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles"
+    fi
+    mkdir -p "$ANSIBLE_ROLES_PATH"
+
+    if [ -z "${ANSIBLE_COLLECTIONS_PATH:-}" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections"
+    fi
+    mkdir -p "$ANSIBLE_COLLECTIONS_PATH"
+
+    if [ -f requirements.yml ]; then
+        "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
+        echo $?
+    fi
+
+    "$WORKDIR"/bin/ansible-playbook playbook.yml
+    rc=$?
+
+    popd > /dev/null || exit 1
+    rm -rf "$playbook_dir"
+    return $rc
+}
+
+### cli | main ###########################################################
 main() {
     url=$1
     if echo "$url" | grep -q '#'; then
@@ -218,105 +315,6 @@ EOF
     fi
 
     playbook "$tmpdir" "$subdir"
-}
-
-### function | playbook #######################################################
-playbook() {
-    playbook_dir=$1
-    playbook_subdir=$2
-
-    workdir="$playbook_dir"
-    if [ -n "$playbook_subdir" ]; then
-        workdir="$playbook_dir/$playbook_subdir"
-    fi
-
-    pushd "$workdir" > /dev/null || exit 1
-
-    # if there is only one file in the playbook_dir and it is a directory, cd into it
-    if [ "$(find . -maxdepth 1 -type f | wc -l)" -eq 0 ] && [ "$(find . -maxdepth 1 -type d | wc -l)" -eq 2 ]; then
-        subdir=$(find . -maxdepth 1 -type d -not -name .)
-        popd > /dev/null || exit 1
-        pushd "$workdir/$subdir" > /dev/null || exit 1
-    fi
-
-    ANSIBLE_PLAYBOOK_DIR=$(pwd)
-    export ANSIBLE_PLAYBOOK_DIR
-
-    if [ ! -f playbook.yml ]; then
-        echo "No playbook.yml found"
-        exit 5
-    fi
-
-    if [ -f .env ]; then
-        while IFS= read -r var || [[ -n "$var" ]]; do
-            if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
-                var_name=${var%%=*}
-                echo "$var_name"
-                if ! declare -p "$var_name" > /dev/null 2>&1; then
-                    export "${var?}"
-                fi
-            fi
-        done < .env
-    fi
-
-    if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
-        tmphosts=$(mktemp)
-
-        if [ -p /dev/stdin ]; then
-            cat - > "$tmphosts"
-        fi
-
-        if [ -s "$tmphosts" ]; then
-            if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
-                cp "$tmphosts" "$(pwd)/hosts.yml"
-                ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
-            else
-                cp "$tmphosts" "$(pwd)/hosts"
-                ANSIBLE_INVENTORY="$(pwd)/hosts"
-            fi
-        elif [ -f hosts ]; then
-            ANSIBLE_INVENTORY="$(pwd)/hosts"
-        elif [ -f hosts.yml ]; then
-            ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
-        fi
-
-        export ANSIBLE_INVENTORY
-        rm -rf "$tmphosts"
-    fi
-
-    if [ ! -f host_vars/localhost.yml ]; then
-        mkdir -p host_vars
-        touch host_vars/localhost.yml
-    fi
-    if ! grep -q 'ansible_python_interpreter' host_vars/localhost.yml; then
-        echo "ansible_python_interpreter: $WORKDIR/bin/python3" >> host_vars/localhost.yml
-    fi
-
-    if [ -f requirements.txt ]; then
-        "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
-    fi
-
-    if [ -z "${ANSIBLE_ROLES_PATH:-}" ]; then
-        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles"
-    fi
-    mkdir -p "$ANSIBLE_ROLES_PATH"
-
-    if [ -z "${ANSIBLE_COLLECTIONS_PATH:-}" ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections"
-    fi
-    mkdir -p "$ANSIBLE_COLLECTIONS_PATH"
-
-    if [ -f requirements.yml ]; then
-        "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
-        echo $?
-    fi
-
-    "$WORKDIR"/bin/ansible-playbook playbook.yml
-    rc=$?
-
-    popd > /dev/null || exit 1
-    rm -rf "$playbook_dir"
-    return $rc
 }
 
 ### cli | usage ###############################################################
