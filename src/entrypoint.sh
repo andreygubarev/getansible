@@ -42,13 +42,17 @@ usage() {
 ### function | main ###########################################################
 main() {
     url=$1
-    tmpfile=$(mktemp)
+    protocol=$(echo "$url" | cut -d: -f1)
+    authority=$(echo "$url" | cut -d: -f2 | cut -c3-)
+    path=$(echo "$authority" | cut -d/ -f2-)
+    authority=$(echo "$authority" | cut -d/ -f1)
 
-    case "$url" in
-        http://*|https://*)
+    tmpfile=$(mktemp)
+    case "$protocol" in
+        http|https)
             curl -fsSL -o "$tmpfile" "$url"
             ;;
-        file://*)
+        file)
             fname="${url#file://}"
             if [ -f "$fname" ]; then
                 cp "$fname" "$tmpfile"
@@ -59,7 +63,7 @@ main() {
                 exit 3
             fi
             ;;
-        galaxy://*)
+        galaxy)
             assert_galaxy_support
 
             galaxy_dir=$(mktemp -d)
@@ -90,7 +94,7 @@ EOF
             rm -rf "$galaxy_dir"
             ;;
         *)
-            echo "Invalid playbook URL: $url"
+            echo "Invalid URL: $url"
             exit 3
             ;;
     esac
@@ -98,8 +102,8 @@ EOF
     if command -v file > /dev/null; then
         ftype=$(file --brief --mime-type "$tmpfile")
     else
-        case "$url" in
-            http://*|https://*)
+        case "$protocol" in
+            http|https)
                 case "$url" in
                     *.tar.gz)
                         ftype="application/gzip"
@@ -116,7 +120,7 @@ EOF
                         ;;
                 esac
                 ;;
-            file://*)
+            file)
                 fname="${url#file://}"
                 if [ -f "$fname" ]; then
                     case "$fname" in
@@ -138,7 +142,7 @@ EOF
                     ftype="application/gzip"
                 fi
                 ;;
-            galaxy://*)
+            galaxy)
                 ftype="application/gzip"
                 ;;
             *)
