@@ -15,10 +15,11 @@ unset PYTHONPATH
 # ensure python3 is available
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
-PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
-if [ -n "$PYTHON_REQUIREMENTS" ]; then
+### environment | python pip ##################################################
+PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
+if [ -n "$PIP_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
-    "$WORKDIR"/bin/pip3 install --no-cache-dir $PYTHON_REQUIREMENTS
+    "$WORKDIR"/bin/pip3 install --no-cache-dir $PIP_REQUIREMENTS
 fi
 
 ### function | assert ########################################################
