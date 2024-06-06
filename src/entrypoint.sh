@@ -9,8 +9,10 @@ PATH="$WORKDIR/bin:$PATH"
 export PATH
 
 ### environment | python ######################################################
-unset PYTHONPATH  # unset PYTHONPATH to ensure isolation
+# ensure isolation
+unset PYTHONPATH
 
+# ensure python3 is available
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
 PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
