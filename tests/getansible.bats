@@ -77,8 +77,8 @@ assert_teardown() {
 
 # bats test_tags=playbook,galaxy1
 @test "getansible.sh -- galaxy with collection with version" {
-  # skip unsupported ansible releases: 3.0, 4.0, 5.0 and 6.0
-  if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6')" ]; then
+  # skip unsupported ansible releases: 3.0, 4.0, 5.0, 6.0 and 7.0
+  if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6\|ansible==7')" ]; then
     skip
   fi
 
