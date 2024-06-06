@@ -2,10 +2,17 @@ setup() {
     bats_load_library bats-assert
     bats_load_library bats-file
     bats_load_library bats-support
+
+    if [ -n "$TMPDIR" ]; then
+      export TMPDIR="$TMPDIR/bats"
+    else
+      export TMPDIR="/tmp/bats"
+    fi
+    mkdir -p $TMPDIR
 }
 
 assert_teardown() {
-  run test -z "$(ls -A /tmp | grep -v 'bats-')"
+  run test -z "$(ls -A $TMPDIR | grep -v 'bats-')"
   assert_success
 }
 
@@ -65,6 +72,24 @@ assert_teardown() {
   assert_success
   assert_output --partial "andreygubarev.core.ping : Ping"
   assert_output --partial "failed=0"
+  assert_teardown
+}
+
+# bats test_tags=playbook,galaxy1
+@test "getansible.sh -- galaxy with collection with version" {
+  # skip unsupported ansible releases: 3.0, 4.0, 5.0 and 6.0
+  if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6')" ]; then
+    skip
+  fi
+
+  run getansible.sh -- galaxy://andreygubarev.core.ping==0.7.3
+  assert_success
+  assert_output --partial "andreygubarev.core.ping : Ping"
+  assert_output --partial "failed=0"
+  assert_teardown
+
+  run getansible.sh -- galaxy://andreygubarev.core.ping==0.7.0
+  assert_failure  # version 0.7.0 does not have a ping role
   assert_teardown
 }
 
