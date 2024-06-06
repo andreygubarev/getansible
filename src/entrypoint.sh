@@ -41,15 +41,15 @@ usage() {
 
 ### function | main ###########################################################
 main() {
-    playbook_url=$1
+    url=$1
     tmpfile=$(mktemp)
 
-    case "$playbook_url" in
+    case "$url" in
         http://*|https://*)
-            curl -fsSL -o "$tmpfile" "$playbook_url"
+            curl -fsSL -o "$tmpfile" "$url"
             ;;
         file://*)
-            fname="${playbook_url#file://}"
+            fname="${url#file://}"
             if [ -f "$fname" ]; then
                 cp "$fname" "$tmpfile"
             elif [ -d "$fname" ]; then
@@ -63,7 +63,7 @@ main() {
             assert_galaxy_support
 
             galaxy_dir=$(mktemp -d)
-            galaxy_name="${playbook_url#galaxy://}"
+            galaxy_name="${url#galaxy://}"
 
             if [ "$(echo "$galaxy_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
                 collection_name=$(echo "$galaxy_name" | cut -d. -f1-2)
@@ -90,7 +90,7 @@ EOF
             rm -rf "$galaxy_dir"
             ;;
         *)
-            echo "Invalid playbook URL: $playbook_url"
+            echo "Invalid playbook URL: $url"
             exit 3
             ;;
     esac
@@ -98,9 +98,9 @@ EOF
     if command -v file > /dev/null; then
         ftype=$(file --brief --mime-type "$tmpfile")
     else
-        case "$playbook_url" in
+        case "$url" in
             http://*|https://*)
-                case "$playbook_url" in
+                case "$url" in
                     *.tar.gz)
                         ftype="application/gzip"
                         ;;
@@ -111,13 +111,13 @@ EOF
                         ftype="text/plain"
                         ;;
                     *)
-                        echo "Invalid playbook file: $playbook_url"
+                        echo "Invalid playbook file: $url"
                         exit 4
                         ;;
                 esac
                 ;;
             file://*)
-                fname="${playbook_url#file://}"
+                fname="${url#file://}"
                 if [ -f "$fname" ]; then
                     case "$fname" in
                         *.tar.gz)
@@ -142,7 +142,7 @@ EOF
                 ftype="application/gzip"
                 ;;
             *)
-                echo "Invalid playbook URL: $playbook_url"
+                echo "Invalid playbook URL: $url"
                 exit 3
                 ;;
         esac
