@@ -141,103 +141,119 @@ assert_teardown() {
     assert_teardown
 }
 
-# # bats test_tags=playbook,role
-# @test "getansible.sh -- file:// with roles" {
-#   tar -czf /opt/003-roles.tar.gz -C /usr/src/bats/examples/003-roles .
+# bats test_tags=0013,playbook
+@test "0013: getansible.sh -- /opt/003-roles.tar.gz" {
+    tar -czf /opt/003-roles.tar.gz -C /usr/src/bats/examples/003-roles .
 
-#   run getansible.sh -- file:///opt/003-roles.tar.gz
-#   echo $output
-#   assert_success
-#   assert_output --partial '"msg": "getansible"'
-#   assert_output --partial "ok=2"
-#   assert_teardown
-# }
+    run getansible.sh -- /opt/003-roles.tar.gz
+    assert_success
+    assert_output --partial '"msg": "getansible"'
+    assert_output --partial "ok=2"
+    assert_teardown
+}
 
-# # bats test_tags=playbook,subfolder
-# @test "getansible.sh -- file:// with subfolder" {
-#   tar -czf /opt/004-subfolder.tar.gz -C /usr/src/bats/examples/004-subfolder .
+# bats test_tags=0014,playbook
+@test "0014: getansible.sh --/opt/004-subfolder.tar.gz" {
+    tar -czf /opt/004-subfolder.tar.gz -C /usr/src/bats/examples/004-subfolder .
 
-#   run getansible.sh -- file:///opt/004-subfolder.tar.gz
-#   assert_success
-#   assert_output --partial "ok=1"
-#   assert_teardown
-# }
+    run getansible.sh -- /opt/004-subfolder.tar.gz
+    assert_success
+    assert_output --partial "ok=1"
+    assert_teardown
+}
 
-# # bats test_tags=playbook,subfolder
-# @test "install.sh file:// with multiple subfolders" {
-#   tar -czf /opt/007-subfolders.tar.gz -C /usr/src/bats/examples/007-subfolders .
+# bats test_tags=0015,playbook
+@test "0015: getansible.sh -- /opt/005-dotenv.tar.gz" {
+    tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
 
-#   run getansible.sh -- file:///opt/007-subfolders.tar.gz
-#   assert_failure
-#   assert_teardown
+    run getansible.sh -- /opt/005-dotenv.tar.gz
+    assert_success
+    assert_output --partial "FOO=BAR"
+    assert_output --partial "ok=1"
+    assert_teardown
+}
 
-#   run getansible.sh -- file:///opt/007-subfolders.tar.gz#ping
-#   assert_success
-#   assert_output --partial "ok=1"
-#   assert_teardown
+# bats test_tags=0016,playbook
+@test "0016: getansible.sh -- /opt/005-dotenv.tar.gz" {
+    tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
 
-#   run getansible.sh -- file:///opt/007-subfolders.tar.gz#foobar
-#   assert_failure
-#   assert_teardown
+    export FOO=BAZ
+    run getansible.sh -- /opt/005-dotenv.tar.gz
+    assert_success
+    assert_output --partial "FOO=BAZ"
+    assert_output --partial "ok=1"
+    assert_teardown
+}
 
-#   run getansible.sh -- file:///opt/007-subfolders.tar.gz#pong
-#   assert_success
-#   assert_output --partial "ok=1"
-#   assert_teardown
-# }
+# bats test_tags=0017,playbook,inventory
+@test "0017: getansible.sh -- /opt/006-inventory.tar.gz" {
+    tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
 
-# # bats test_tags=playbook
-# @test "install.sh file:// with dotenv" {
-#   tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
+    run getansible.sh -- /opt/006-inventory.tar.gz <<-EOF
+---
+ungrouped:
+  hosts:
+    localhost:
+      foo: bar
+EOF
+    assert_success
+    assert_output --partial "foo=bar"
+    assert_output --partial "ok=1"
+    assert_teardown
+}
 
-#   run getansible.sh -- file:///opt/005-dotenv.tar.gz
-#   assert_success
-#   assert_output --partial "FOO=BAR"
-#   assert_output --partial "ok=1"
-#   assert_teardown
-# }
+# bats test_tags=0018,playbook,inventory
+@test "0018: getansible.sh -- /opt/006-inventory.tar.gz" {
+    tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
 
-# # bats test_tags=playbook
-# @test "install.sh file:// with dotenv with overrides" {
-#   tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
+    run getansible.sh -- /opt/006-inventory.tar.gz <<-EOF
+localhost foo=bar
+EOF
+    assert_success
+    assert_output --partial "foo=bar"
+    assert_output --partial "ok=1"
+    assert_teardown
+}
 
-#   export FOO=BAZ
-#   run getansible.sh -- file:///opt/005-dotenv.tar.gz
-#   assert_success
-#   assert_output --partial "FOO=BAZ"
-#   assert_output --partial "ok=1"
-#   assert_teardown
-# }
+# bats test_tags=0100,install
+@test "0100: install.sh install" {
+    run install.sh install
+    assert_success
+    assert_file_exist /usr/local/bin/getansible.sh
+    assert_teardown
+}
 
-# # bats test_tags=playbook,inventory
-# @test "install.sh file:// with inventory in yaml format" {
-#   tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
+# bats test_tags=0101,install
+@test "0101: install.sh install --link" {
+    run install.sh install --link
+    assert_success
 
-#   run getansible.sh -- file:///opt/006-inventory.tar.gz <<-EOF
-# ---
-# ungrouped:
-#   hosts:
-#     localhost:
-#       foo: bar
-# EOF
-#   assert_success
-#   assert_output --partial "foo=bar"
-#   assert_output --partial "ok=1"
-#   assert_teardown
-# }
+    assert_file_exist /usr/local/bin/ansible
+    assert_file_exist /usr/local/bin/ansible-galaxy
+    assert_file_exist /usr/local/bin/ansible-playbook
 
-# # bats test_tags=playbook,inventory
-# @test "install.sh file:// with inventory in ini format" {
-#   tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
+    run ansible --version
+    assert_success
 
-#   run getansible.sh -- file:///opt/006-inventory.tar.gz <<-EOF
-# localhost foo=bar
-# EOF
-#   assert_success
-#   assert_output --partial "foo=bar"
-#   assert_output --partial "ok=1"
-#   assert_teardown
-# }
+    run ansible-galaxy --version
+    assert_success
+
+    run ansible-playbook --version
+    assert_success
+
+    assert_teardown
+}
+
+bats test_tags=0102,install
+@test "install.sh /opt/001-ping.tar.gz" {
+    tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+
+    run install.sh /opt/001-ping.tar.gz
+    assert_success
+    assert_output --partial "ok=1"
+    assert_teardown
+}
+
 
 # # bats test_tags=curlpipe
 # @test "curl https://getansible.sh/ | bash" {
@@ -260,45 +276,5 @@ assert_teardown() {
 #   assert_file_exist /usr/local/bin/ansible
 #   assert_file_exist /usr/local/bin/ansible-galaxy
 #   assert_file_exist /usr/local/bin/ansible-playbook
-#   assert_teardown
-# }
-
-# # bats test_tags=install
-# @test "install.sh" {
-#   run install.sh install
-#   assert_success
-#   assert_file_exist /usr/local/bin/getansible.sh
-#   assert_teardown
-# }
-
-# # bats test_tags=install
-# @test "install.sh --link" {
-#   run install.sh install --link
-#   assert_success
-
-#   assert_file_exist /usr/local/bin/ansible
-#   assert_file_exist /usr/local/bin/ansible-galaxy
-#   assert_file_exist /usr/local/bin/ansible-playbook
-
-#   run ansible --version
-#   assert_success
-
-#   run ansible-galaxy --version
-#   assert_success
-
-#   run ansible-playbook --version
-#   assert_success
-
-#   assert_teardown
-# }
-
-# # bats test_tags=install
-# @test "install.sh file://" {
-#   tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
-
-#   run install.sh file:///opt/001-ping.tar.gz
-#   assert_success
-#   assert_output --partial "ok=1"
-
 #   assert_teardown
 # }
