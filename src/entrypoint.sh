@@ -43,8 +43,8 @@ fi
 mkdir -p "$ANSIBLE_HOME/collections"
 export ANSIBLE_COLLECTIONS_PATH
 
-export LC_ALL=C
-export LANG=C
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
 
 ### assert | ansible galaxy compatibility ####################################
 assert_ansible_galaxy() {
