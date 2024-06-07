@@ -119,7 +119,7 @@ assert_teardown() {
 }
 
 # bats test_tags=T011,playbook
-@test "T011: getansible.sh -- T01-ping.tar.gz" {
+@test "T011: getansible.sh -- /opt/001-ping.tar.gz" {
     tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
     pushd /opt > /dev/null || exit 1
 
