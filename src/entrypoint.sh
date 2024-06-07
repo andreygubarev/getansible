@@ -147,6 +147,7 @@ playbook() {
 ### cli | main ###########################################################
 main() {
     playbook="$1"
+    playbook_version="${2:-}"
 
     location=""
     location_type=""
@@ -160,7 +161,7 @@ main() {
         fi
         location_type="directory"
 
-    # use case 1.3: file path
+    # use case 1.2: file path
     elif [ -f "$playbook" ] || [ -f "$USER_PWD/$playbook" ]; then
         if echo "$playbook" | grep -q '^/'; then
             location="$playbook"
@@ -168,12 +169,12 @@ main() {
             location="$USER_PWD/$playbook"
         fi
 
-        # use case 1.3.1: file yaml relative path (relative path to *.yml playbook, e.g "myplaybook/playbook.yml")
+        # use case 1.2.1: file yaml relative path (relative path to *.yml playbook, e.g "myplaybook/playbook.yml")
         if echo "$location" | grep -q '\.ya?ml$'; then
             location="$(dirname "$location")"
             location_type="directory"
 
-        # use case 1.3.2: file tarball relative path (relative path to *.tar.gz playbook, e.g "myplaybook.tar.gz")
+        # use case 1.2.2: file tarball relative path (relative path to *.tar.gz playbook, e.g "myplaybook.tar.gz")
         elif echo "$location" | grep -q '\.tar\.gz$'; then
             location="$location"
             location_type="tarball"
