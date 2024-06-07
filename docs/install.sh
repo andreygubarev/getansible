@@ -138,12 +138,6 @@ getansible() {
 
 ### main ######################################################################
 case ${1:-} in
-    ansible|ansible-galaxy|ansible-playbook|ansible-*)
-        getansible "${@}"
-        ;;
-    file://*|http://*|https://*|galaxy://*)
-        getansible "${@}"
-        ;;
     install)
         shift
         link_option="false"
@@ -165,6 +159,6 @@ case ${1:-} in
         getansible_help
         ;;
     *)
-        getansible_install "$ANSIBLE_RELEASE" "$GETANSIBLE_PATH" "false"
+        getansible "${@}"
         ;;
 esac

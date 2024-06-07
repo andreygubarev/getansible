@@ -245,7 +245,7 @@ EOF
 }
 
 # bats test_tags=T102,install
-@test "install.sh /opt/001-ping.tar.gz" {
+@test "T102: install.sh /opt/001-ping.tar.gz" {
     tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
 
     run install.sh /opt/001-ping.tar.gz
