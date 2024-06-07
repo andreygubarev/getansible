@@ -18,44 +18,44 @@ assert_teardown() {
     assert_success
 }
 
-# bats test_tags=0001,getansible
-@test "0001: getansible.sh" {
+# bats test_tags=T0001,getansible
+@test "T0001: getansible.sh" {
     run getansible.sh
     assert_failure 2
     assert_output --partial "Usage: getansible"
     assert_teardown
 }
 
-# bats test_tags=0002,getansible
-@test "0002: getansible.sh -- ansible" {
+# bats test_tags=T0002,getansible
+@test "T0002: getansible.sh -- ansible" {
     run getansible.sh -- ansible --version
     assert_success
     assert_teardown
 }
 
-# bats test_tags=0003,getansible
-@test "0003: getansible.sh -- ansible-galaxy" {
+# bats test_tags=T0003,getansible
+@test "T0003: getansible.sh -- ansible-galaxy" {
     run getansible.sh -- ansible-galaxy --version
     assert_success
     assert_teardown
 }
 
-# bats test_tags=0004,getansible
-@test "0004: getansible.sh -- ansible-playbook" {
+# bats test_tags=T0004,getansible
+@test "T0004: getansible.sh -- ansible-playbook" {
     run getansible.sh -- ansible-playbook --version
     assert_success
     assert_teardown
 }
 
-# bats test_tags=0005,python
-@test "0005: getansible.sh -- exec pip" {
+# bats test_tags=T0005,python
+@test "T0005: getansible.sh -- exec pip" {
     run bash -c "PIP_REQUIREMENTS='boto3 botocore' getansible.sh -- exec pip freeze | grep boto3"
     assert_success
     assert_teardown
 }
 
-# bats test_tags=0006,getansible,galaxy
-@test "0006: getansible.sh -- geerlingguy.apache" {
+# bats test_tags=T0006,getansible,galaxy
+@test "T0006: getansible.sh -- geerlingguy.apache" {
     # skip unsupported ansible releases: 3.0, 4.0 and 5.0
     if [ -n "$(getansible.sh -- exec pip freeze | grep 'ansible==3\|ansible==4\|ansible==5')" ]; then
         skip
@@ -68,8 +68,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0007,getansible,galaxy
-@test "0007: getansible.sh -- andreygubarev.core.ping" {
+# bats test_tags=T0007,getansible,galaxy
+@test "T0007: getansible.sh -- andreygubarev.core.ping" {
     # skip unsupported ansible releases: 3.0, 4.0 and 5.0
     if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5')" ]; then
         skip
@@ -82,8 +82,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0008,getansible,galaxy
-@test "0008: getansible.sh -- andreygubarev.core.ping 0.7.3" {
+# bats test_tags=T0008,getansible,galaxy
+@test "T0008: getansible.sh -- andreygubarev.core.ping 0.7.3" {
     # skip unsupported ansible releases: 3.0, 4.0, 5.0, 6.0 and 7.0
     if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6\|ansible==7')" ]; then
         skip
@@ -96,8 +96,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0009,getansible,galaxy
-@test "0009: getansible.sh -- andreygubarev.core.ping 0.7.0" {
+# bats test_tags=T0009,getansible,galaxy
+@test "T0009: getansible.sh -- andreygubarev.core.ping 0.7.0" {
     # skip unsupported ansible releases: 3.0, 4.0, 5.0, 6.0 and 7.0
     if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6\|ansible==7')" ]; then
         skip
@@ -108,9 +108,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0010,playbook
-@test "0010: getansible.sh -- /opt/001-ping.tar.gz" {
-    tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+# bats test_tags=T0010,playbook
+@test "T0010: getansible.sh -- /opt/T001-ping.tar.gz" {
 
     run getansible.sh -- /opt/001-ping.tar.gz
     assert_success
@@ -118,9 +117,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0011,playbook
-@test "0011: getansible.sh -- 001-ping.tar.gz" {
-    tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+# bats test_tags=T0011,playbook
+@test "T0011: getansible.sh -- T001-ping.tar.gz" {
     pushd /opt > /dev/null || exit 1
 
     run getansible.sh -- 001-ping.tar.gz
@@ -131,8 +129,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0012,playbook
-@test "0012: getansible.sh -- /opt/002-requirements.tar.gz" {
+# bats test_tags=T0012,playbook
+@test "T0012: getansible.sh -- /opt/002-requirements.tar.gz" {
     tar -czf /opt/002-requirements.tar.gz -C /usr/src/bats/examples/002-requirements .
 
     run getansible.sh -- /opt/002-requirements.tar.gz
@@ -141,8 +139,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0013,playbook
-@test "0013: getansible.sh -- /opt/003-roles.tar.gz" {
+# bats test_tags=T0013,playbook
+@test "T0013: getansible.sh -- /opt/003-roles.tar.gz" {
     tar -czf /opt/003-roles.tar.gz -C /usr/src/bats/examples/003-roles .
 
     run getansible.sh -- /opt/003-roles.tar.gz
@@ -152,8 +150,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0014,playbook
-@test "0014: getansible.sh --/opt/004-subfolder.tar.gz" {
+# bats test_tags=T0014,playbook
+@test "T0014: getansible.sh --/opt/004-subfolder.tar.gz" {
     tar -czf /opt/004-subfolder.tar.gz -C /usr/src/bats/examples/004-subfolder .
 
     run getansible.sh -- /opt/004-subfolder.tar.gz
@@ -162,8 +160,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0015,playbook
-@test "0015: getansible.sh -- /opt/005-dotenv.tar.gz" {
+# bats test_tags=T0015,playbook
+@test "T0015: getansible.sh -- /opt/005-dotenv.tar.gz" {
     tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
 
     run getansible.sh -- /opt/005-dotenv.tar.gz
@@ -173,8 +171,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0016,playbook
-@test "0016: getansible.sh -- /opt/005-dotenv.tar.gz" {
+# bats test_tags=T0016,playbook
+@test "T0016: getansible.sh -- /opt/005-dotenv.tar.gz" {
     tar -czf /opt/005-dotenv.tar.gz -C /usr/src/bats/examples/005-dotenv .
 
     export FOO=BAZ
@@ -185,8 +183,8 @@ assert_teardown() {
     assert_teardown
 }
 
-# bats test_tags=0017,playbook,inventory
-@test "0017: getansible.sh -- /opt/006-inventory.tar.gz" {
+# bats test_tags=T0017,playbook,inventory
+@test "T0017: getansible.sh -- /opt/006-inventory.tar.gz" {
     tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
 
     run getansible.sh -- /opt/006-inventory.tar.gz <<-EOF
@@ -202,8 +200,8 @@ EOF
     assert_teardown
 }
 
-# bats test_tags=0018,playbook,inventory
-@test "0018: getansible.sh -- /opt/006-inventory.tar.gz" {
+# bats test_tags=T0018,playbook,inventory
+@test "T0018: getansible.sh -- /opt/006-inventory.tar.gz" {
     tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
 
     run getansible.sh -- /opt/006-inventory.tar.gz <<-EOF
@@ -215,16 +213,16 @@ EOF
     assert_teardown
 }
 
-# bats test_tags=0100,install
-@test "0100: install.sh install" {
+# bats test_tags=T0100,install
+@test "T0100: install.sh install" {
     run install.sh install
     assert_success
     assert_file_exist /usr/local/bin/getansible.sh
     assert_teardown
 }
 
-# bats test_tags=0101,install
-@test "0101: install.sh install --link" {
+# bats test_tags=T0101,install
+@test "T0101: install.sh install --link" {
     run install.sh install --link
     assert_success
 
@@ -244,9 +242,9 @@ EOF
     assert_teardown
 }
 
-bats test_tags=0102,install
-@test "install.sh /opt/001-ping.tar.gz" {
-    tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+bats test_tags=T0102,install
+@test "install.sh /opt/T001-ping.tar.gz" {
+    tar -czf /opt/T001-ping.tar.gz -C /usr/src/bats/examples/T001-ping .
 
     run install.sh /opt/001-ping.tar.gz
     assert_success
