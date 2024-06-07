@@ -109,7 +109,8 @@ assert_teardown() {
 }
 
 # bats test_tags=T010,playbook
-@test "T010: getansible.sh -- /opt/T01-ping.tar.gz" {
+@test "T010: getansible.sh -- /opt/001-ping.tar.gz" {
+    tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
 
     run getansible.sh -- /opt/001-ping.tar.gz
     assert_success
@@ -119,6 +120,7 @@ assert_teardown() {
 
 # bats test_tags=T011,playbook
 @test "T011: getansible.sh -- T01-ping.tar.gz" {
+    tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
     pushd /opt > /dev/null || exit 1
 
     run getansible.sh -- 001-ping.tar.gz
@@ -151,7 +153,7 @@ assert_teardown() {
 }
 
 # bats test_tags=T014,playbook
-@test "T014: getansible.sh --/opt/004-subfolder.tar.gz" {
+@test "T014: getansible.sh -- /opt/004-subfolder.tar.gz" {
     tar -czf /opt/004-subfolder.tar.gz -C /usr/src/bats/examples/004-subfolder .
 
     run getansible.sh -- /opt/004-subfolder.tar.gz
@@ -244,7 +246,7 @@ EOF
 
 # bats test_tags=T102,install
 @test "install.sh /opt/001-ping.tar.gz" {
-    tar -czf /opt/T01-ping.tar.gz -C /usr/src/bats/examples/T01-ping .
+    tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
 
     run install.sh /opt/001-ping.tar.gz
     assert_success
