@@ -252,16 +252,22 @@ main() {
         galaxy_role|galaxy_collection)
             assert_ansible_galaxy
 
-            if [ -n "$playbook_version" ]; then
-                location_version="==$playbook_version"
+            if [ "$location_type" = "galaxy_role" ]; then
+                galaxy_name="$location"
             else
-                location_version=""
+                galaxy_name="$(echo "$location" | cut -d. -f1,2)"
+            fi
+
+            if [ -n "$playbook_version" ]; then
+                galaxy_version="==$playbook_version"
+            else
+                galaxy_version=""
             fi
 
             if [ "$location_type" = "galaxy_role" ]; then
-                "$WORKDIR"/bin/ansible-galaxy role install "$location$location_version"
+                "$WORKDIR"/bin/ansible-galaxy role install "$galaxy_name$galaxy_version"
             else
-                "$WORKDIR"/bin/ansible-galaxy collection install "$location$location_version"
+                "$WORKDIR"/bin/ansible-galaxy collection install "$galaxy_name$galaxy_version"
             fi
             cat <<EOF > "$workspace/playbook.yml"
 ---

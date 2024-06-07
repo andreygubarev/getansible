@@ -68,19 +68,19 @@ assert_teardown() {
     assert_teardown
 }
 
-# # bats test_tags=playbook,galaxy
-# @test "getansible.sh -- galaxy with collection" {
-#   # skip unsupported ansible releases: 3.0, 4.0 and 5.0
-#   if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5')" ]; then
-#     skip
-#   fi
+# bats test_tags=0007,getansible,galaxy
+@test "0007: getansible.sh -- andreygubarev.core.ping" {
+    # skip unsupported ansible releases: 3.0, 4.0 and 5.0
+    if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5')" ]; then
+        skip
+    fi
 
-#   run getansible.sh -- galaxy://andreygubarev.core.ping
-#   assert_success
-#   assert_output --partial "andreygubarev.core.ping : Ping"
-#   assert_output --partial "failed=0"
-#   assert_teardown
-# }
+    run getansible.sh -- andreygubarev.core.ping
+    assert_success
+    assert_output --partial "andreygubarev.core.ping : Ping"
+    assert_output --partial "failed=0"
+    assert_teardown
+}
 
 # # bats test_tags=playbook,galaxy1
 # @test "getansible.sh -- galaxy with collection with version" {
