@@ -58,6 +58,9 @@ jobs:
           - ANSIBLE_RELEASE: "9.0"
             PYTHON_VERSION: "3.11.9"
             PYTHON_RELEASE: "20240415"
+          - ANSIBLE_RELEASE: "10.0"
+            PYTHON_VERSION: "3.11.9"
+            PYTHON_RELEASE: "20240415"
 
     steps:
       - name: Checkout
