@@ -8,7 +8,7 @@ RUN apt-get update -yq && apt-get install -yq --no-install-recommends \
     curl \
     makeself
 
-ARG ANSIBLE_RELEASE=9.0
+ARG ANSIBLE_RELEASE=10.0
 ENV ANSIBLE_RELEASE=${ANSIBLE_RELEASE}
 
 ARG PYTHON_RELEASE=20240415

@@ -8,237 +8,80 @@ export WORKDIR
 PATH="$WORKDIR/bin:$PATH"
 export PATH
 
-### substitutions #############################################################
+### environment | python ######################################################
+# ensure isolation
+unset PYTHONPATH
+
+# ensure python3 is available
 sed -i "s|#!/usr/bin/env python3|#!$WORKDIR/bin/python3|" "$WORKDIR"/bin/ansible*
 
-### python requirements #######################################################
-PYTHON_REQUIREMENTS="${PYTHON_REQUIREMENTS:-}"
-if [ -n "$PYTHON_REQUIREMENTS" ]; then
+### environment | python pip ##################################################
+PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
+if [ -n "$PIP_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
-    "$WORKDIR"/bin/pip3 install --no-cache-dir $PYTHON_REQUIREMENTS
+    "$WORKDIR"/bin/pip3 install --no-cache-dir $PIP_REQUIREMENTS
 fi
 
-### function | assert ########################################################
-assert_galaxy_support() {
+### environment | ansible #####################################################
+ANSIBLE_HOME="${ANSIBLE_HOME:-$WORKDIR/.ansible}"
+export ANSIBLE_HOME
+mkdir -p "$ANSIBLE_HOME"
+
+if [ -n "${ANSIBLE_ROLES_PATH:-}" ]; then
+    ANSIBLE_ROLES_PATH="$ANSIBLE_HOME/roles:$ANSIBLE_ROLES_PATH"
+else
+    ANSIBLE_ROLES_PATH="$ANSIBLE_HOME/roles"
+fi
+mkdir -p "$ANSIBLE_HOME/roles"
+export ANSIBLE_ROLES_PATH
+
+if [ -n "${ANSIBLE_COLLECTIONS_PATH:-}" ]; then
+    ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_HOME/collections:$ANSIBLE_COLLECTIONS_PATH"
+else
+    ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_HOME/collections"
+fi
+mkdir -p "$ANSIBLE_HOME/collections"
+export ANSIBLE_COLLECTIONS_PATH
+
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+### assert | ansible galaxy compatibility ####################################
+assert_ansible_galaxy() {
     # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
-    version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | cut -d= -f3)
+    version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | awk -F'==' '{print $2}')
+
     version_major=$(echo "$version" | awk -F. '{print $1}')
     version_minor=$(echo "$version" | awk -F. '{print $2}')
     version_patch=$(echo "$version" | awk -F. '{print $3}')
+
     if { [ "$version_major" -lt 2 ]; } || \
-    { [ "$version_major" -eq 2 ] && [ "$version_minor" -lt 13 ]; } || \
-    { [ "$version_major" -eq 2 ] && [ "$version_minor" -eq 13 ] && [ "$version_patch" -lt 9 ]; }
+       { [ "$version_major" -eq 2 ] && [ "$version_minor" -lt 13 ]; } || \
+       { [ "$version_major" -eq 2 ] && [ "$version_minor" -eq 13 ] && [ "$version_patch" -lt 9 ]; }
     then
         echo "ERROR: ansible-core version $version is not supported"
         exit 6
     fi
 }
 
-### function | usage ##########################################################
-usage() {
-    echo "Usage: getansible -- exec|ansible|ansible-* [args]"
-}
-
-### function | main ###########################################################
-main() {
-    url=$1
-    if echo "$url" | grep -q '#'; then
-        url_fragment=$(echo "$url" | cut -d'#' -f2)
-    else
-        url_fragment=""
-    fi
-    if [ -n "$url_fragment" ]; then
-        url=$(echo "$url" | cut -d'#' -f1)
-    fi
-
-    # handler: ==1.0.0
-    if echo "$url" | grep -q '=='; then
-        url_version=$(echo "$url" | awk -F'==' '{print $2}')
-        if [ -n "$url_version" ]; then
-            url=$(echo "$url" | awk -F'==' '{print $1}')
-        fi
-    else
-        url_version=""
-    fi
-
-    url_proto=$(echo "$url" | cut -d':' -f1)
-    # url_host=$(echo "$url" | cut -d':' -f2 | cut -c3-)
-    # url_path=$(echo "$url_host" | cut -d'/' -f2-)
-    # url_host=$(echo "$url_host" | cut -d'/' -f1)
-
-    tmpfile=$(mktemp)
-    case "$url_proto" in
-        http|https)
-            curl -fsSL -o "$tmpfile" "$url"
-            ;;
-        file)
-            fname="${url#file://}"
-            if [ -f "$fname" ]; then
-                cp "$fname" "$tmpfile"
-            elif [ -d "$fname" ]; then
-                tar -C "$fname" -czf "$tmpfile" .
-            else
-                echo "Invalid playbook: $fname"
-                exit 3
-            fi
-            ;;
-        galaxy)
-            assert_galaxy_support
-
-            galaxy_dir=$(mktemp -d)
-            galaxy_name="${url#galaxy://}"
-
-            if [ -n "$url_version" ]; then
-                galaxy_version="==$url_version"
-            else
-                galaxy_version=""
-            fi
-
-            if [ "$(echo "$galaxy_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
-                collection_name=$(echo "$galaxy_name" | cut -d. -f1-2)
-                "$WORKDIR"/bin/ansible-galaxy collection install -p "$galaxy_dir/collections" "$collection_name$galaxy_version"
-            else
-                mkdir -p "$galaxy_dir/roles"
-                "$WORKDIR"/bin/ansible-galaxy role install -p "$galaxy_dir/roles" "$galaxy_name$galaxy_version"
-            fi
-
-            cat <<EOF > "$galaxy_dir/playbook.yml"
----
-- hosts: localhost
-  connection: local
-  gather_facts: true
-  vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
-  roles:
-    - role: $galaxy_name
-EOF
-            pushd "$galaxy_dir" > /dev/null || exit 1
-            tar -czf "$tmpfile" .
-            popd > /dev/null || exit 1
-
-            rm -rf "$galaxy_dir"
-            ;;
-        *)
-            echo "Invalid URL: $url"
-            exit 3
-            ;;
-    esac
-
-    if command -v file > /dev/null; then
-        ftype=$(file --brief --mime-type "$tmpfile")
-    else
-        case "$url_proto" in
-            http|https)
-                case "$url" in
-                    *.tar.gz)
-                        ftype="application/gzip"
-                        ;;
-                    *.zip)
-                        ftype="application/zip"
-                        ;;
-                    *.yml|*.yaml)
-                        ftype="text/plain"
-                        ;;
-                    *)
-                        echo "Invalid playbook file: $url"
-                        exit 4
-                        ;;
-                esac
-                ;;
-            file)
-                fname="${url#file://}"
-                if [ -f "$fname" ]; then
-                    case "$fname" in
-                        *.tar.gz)
-                            ftype="application/gzip"
-                            ;;
-                        *.zip)
-                            ftype="application/zip"
-                            ;;
-                        *.yml|*.yaml)
-                            ftype="text/plain"
-                            ;;
-                        *)
-                            echo "Invalid playbook file: $fname"
-                            exit 4
-                            ;;
-                    esac
-                elif [ -d "$fname" ]; then
-                    ftype="application/gzip"
-                fi
-                ;;
-            galaxy)
-                ftype="application/gzip"
-                ;;
-            *)
-                echo "Invalid playbook URL: $url"
-                exit 3
-                ;;
-        esac
-    fi
-
-    tmpdir=$(mktemp -d)
-    trap 'rm -rf "$tmpdir"' EXIT
-
-    case "$ftype" in
-        application/gzip)
-            tar -C "$tmpdir" -xzf "$tmpfile"
-            ;;
-        application/zip)
-            unzip -d "$tmpdir" "$tmpfile"
-            ;;
-        text/plain)
-            cp "$tmpfile" "$tmpdir/playbook.yml"
-            ;;
-        *)
-            echo "Invalid playbook file type: $ftype"
-            exit 4
-            ;;
-    esac
-    rm -f "$tmpfile"
-
-    if [ -n "$url_fragment" ]; then
-        if [ -d "$tmpdir/$url_fragment" ]; then
-            subdir=$url_fragment
-        else
-            subdir=""
-            echo "Invalid subdirectory: $url_fragment"
-            exit 4
-        fi
-    else
-        subdir=""
-    fi
-
-    playbook "$tmpdir" "$subdir"
-}
-
 ### function | playbook #######################################################
 playbook() {
-    playbook_dir=$1
-    playbook_subdir=$2
+    workspace=$1
 
-    workdir="$playbook_dir"
-    if [ -n "$playbook_subdir" ]; then
-        workdir="$playbook_dir/$playbook_subdir"
-    fi
-
-    pushd "$workdir" > /dev/null || exit 1
-
-    # if there is only one file in the playbook_dir and it is a directory, cd into it
-    if [ "$(find . -maxdepth 1 -type f | wc -l)" -eq 0 ] && [ "$(find . -maxdepth 1 -type d | wc -l)" -eq 2 ]; then
+    pushd "$workspace" > /dev/null || exit 1
+    # change directory if there is only one sub-directory in the workspace
+    if { [ "$(find . -maxdepth 1 -type f | wc -l)" -eq 0 ]; } && \
+       { [ "$(find . -maxdepth 1 -type d | wc -l)" -eq 2 ]; }
+    then
         subdir=$(find . -maxdepth 1 -type d -not -name .)
         popd > /dev/null || exit 1
-        pushd "$workdir/$subdir" > /dev/null || exit 1
+        pushd "$workspace/$subdir" > /dev/null || exit 1
     fi
 
     ANSIBLE_PLAYBOOK_DIR=$(pwd)
     export ANSIBLE_PLAYBOOK_DIR
 
-    if [ ! -f playbook.yml ]; then
-        echo "No playbook.yml found"
-        exit 5
-    fi
-
+    # workspace: dotenv
     if [ -f .env ]; then
         while IFS= read -r var || [[ -n "$var" ]]; do
             if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
@@ -251,8 +94,40 @@ playbook() {
         done < .env
     fi
 
+    # workspace: pip requirements
+    if [ -f requirements.txt ]; then
+        "$WORKDIR"/bin/python3 -m pip install --no-cache-dir -r requirements.txt
+    fi
+
+    # workspace: ansible playbook
+    workspace_playbook=""
+    if [ -f playbook.yml ]; then
+        workspace_playbook="playbook.yml"
+    elif [ -f playbook.yaml ]; then
+        workspace_playbook="playbook.yaml"
+    else
+        echo "ERROR: playbook.yml not found"
+        exit 1
+    fi
+
+    # workspace: ansible roles
+    if [ -d "$ANSIBLE_PLAYBOOK_DIR/roles" ]; then
+        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles:$ANSIBLE_ROLES_PATH"
+    fi
+
+    # workspace: ansible collections
+    if [ -d "$ANSIBLE_PLAYBOOK_DIR/collections" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections:$ANSIBLE_COLLECTIONS_PATH"
+    fi
+
+    # workspace: ansible galaxy
+    if [ -f requirements.yml ]; then
+        "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
+    fi
+
+    # workspace: ansible inventory
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
-        tmphosts=$(mktemp)
+        tmphosts="$WORKDIR/.ansible/hosts.tmp"
 
         if [ -p /dev/stdin ]; then
             cat - > "$tmphosts"
@@ -260,60 +135,180 @@ playbook() {
 
         if [ -s "$tmphosts" ]; then
             if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
-                cp "$tmphosts" "$(pwd)/hosts.yml"
-                ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
+                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
+                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
             else
-                cp "$tmphosts" "$(pwd)/hosts"
-                ANSIBLE_INVENTORY="$(pwd)/hosts"
+                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/hosts"
+                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts"
             fi
         elif [ -f hosts ]; then
-            ANSIBLE_INVENTORY="$(pwd)/hosts"
+            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts"
         elif [ -f hosts.yml ]; then
-            ANSIBLE_INVENTORY="$(pwd)/hosts.yml"
+            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
         fi
 
         export ANSIBLE_INVENTORY
-        rm -rf "$tmphosts"
     fi
 
+    # workspace: ansible inventory (localhost)
     if [ ! -f host_vars/localhost.yml ]; then
         mkdir -p host_vars
         touch host_vars/localhost.yml
     fi
-    if ! grep -q 'ansible_python_interpreter' host_vars/localhost.yml; then
+    if ! grep -qE 'ansible_python_interpreter' host_vars/localhost.yml; then
         echo "ansible_python_interpreter: $WORKDIR/bin/python3" >> host_vars/localhost.yml
     fi
 
-    if [ -f requirements.txt ]; then
-        "$WORKDIR"/bin/pip3 install --no-cache-dir -r requirements.txt
-    fi
-
-    if [ -z "${ANSIBLE_ROLES_PATH:-}" ]; then
-        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles"
-    fi
-    mkdir -p "$ANSIBLE_ROLES_PATH"
-
-    if [ -z "${ANSIBLE_COLLECTIONS_PATH:-}" ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections"
-    fi
-    mkdir -p "$ANSIBLE_COLLECTIONS_PATH"
-
-    if [ -f requirements.yml ]; then
-        "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
-        echo $?
-    fi
-
-    "$WORKDIR"/bin/ansible-playbook playbook.yml
+    # workspace: execute
+    "$WORKDIR"/bin/ansible-playbook "$workspace_playbook"
     rc=$?
 
     popd > /dev/null || exit 1
-    rm -rf "$playbook_dir"
     return $rc
 }
 
-### command line interface ####################################################
-cd "$USER_PWD" || exit 1
+### cli | main ###########################################################
+main() {
+    playbook="$1"
+    playbook_version="${2:-}"
 
+    location=""
+    location_type=""
+
+    # use case 1.1: directory path (relative path to directory with playbook.yml, e.g "myplaybook")
+    if [ -d "$playbook" ] || [ -d "$USER_PWD/$playbook" ]; then
+        if echo "$playbook" | grep -qE '^/'; then
+            location="$playbook"
+        else
+            location="$USER_PWD/$playbook"
+        fi
+        location_type="directory"
+
+    # use case 1.2: file path
+    elif [ -f "$playbook" ] || [ -f "$USER_PWD/$playbook" ]; then
+        if echo "$playbook" | grep -qE '^/'; then
+            location="$playbook"
+        else
+            location="$USER_PWD/$playbook"
+        fi
+
+        # use case 1.2.1: file yaml relative path (relative path to *.yml playbook, e.g "myplaybook/playbook.yml")
+        if echo "$location" | grep -qE '\.ya?ml$'; then
+            location="$(dirname "$location")"
+            location_type="directory"
+
+        # use case 1.2.2: file tarball relative path (relative path to *.tar.gz playbook, e.g "myplaybook.tar.gz")
+        elif echo "$location" | grep -qE '\.tar\.gz$'; then
+            location_type="tarball"
+
+        else
+            echo "Error: unsupported playbook file format '$location'"
+            exit 4
+        fi
+
+    # use case 2.1: ansible galaxy role (e.g "username.rolename")
+    elif echo "$playbook" | grep -qE '^[a-z0-9_]+\.[a-z0-9_]+$'; then
+        location="$playbook"
+        location_type="galaxy_role"
+
+    # use case 2.2: ansible galaxy collection (e.g "username.collectionname.rolename")
+    elif echo "$playbook" | grep -qE '^[a-z0-9_]+\.[a-z0-9_]+\.[a-z0-9_]+$'; then
+        location="$playbook"
+        location_type="galaxy_collection"
+
+    # use case 3.1: http url (e.g "http://example.com/playbook.tar.gz")
+    elif echo "$playbook" | grep -qE '^https?://'; then
+        location="$playbook"
+
+        # use case 3.1.1: http url playbook (e.g "http://example.com/playbook.yml")
+        if echo "$location" | grep -qE '\.ya?ml$'; then
+            location_type="http_playbook"
+
+        # use case 3.1.2: http url tarball (e.g "http://example.com/playbook.tar.gz")
+        elif echo "$location" | grep -qE '\.tar\.gz$'; then
+            location_type="http_tarball"
+        fi
+
+    # use case 4.1: github repository (e.g "github.com/username/repo")
+    elif echo "$playbook" | grep -qE '^github.com/.+/.+$'; then
+        location="$playbook"
+        location_type="github"
+
+    else
+        echo "Error: invalid playbook location '$playbook'"
+        exit 1
+    fi
+
+    workspace="${WORKDIR}/workspace"
+    mkdir -p "$workspace"
+
+    case "$location_type" in
+        directory)
+            workspace="$location"
+            ;;
+        tarball)
+            tar -C "$workspace" -xzf "$location"
+            ;;
+        galaxy_role|galaxy_collection)
+            assert_ansible_galaxy
+
+            if [ "$location_type" = "galaxy_role" ]; then
+                galaxy_name="$location"
+            else
+                galaxy_name="$(echo "$location" | cut -d. -f1,2)"
+            fi
+
+            if [ -n "$playbook_version" ]; then
+                galaxy_version="==$playbook_version"
+            else
+                galaxy_version=""
+            fi
+
+            if [ "$location_type" = "galaxy_role" ]; then
+                "$WORKDIR"/bin/ansible-galaxy role install "$galaxy_name$galaxy_version"
+            else
+                "$WORKDIR"/bin/ansible-galaxy collection install "$galaxy_name$galaxy_version"
+            fi
+            cat <<EOF > "$workspace/playbook.yml"
+---
+- hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+  roles:
+    - role: $location
+EOF
+            ;;
+        http_tarball)
+            tmpfile="$WORKDIR/playbook.tar.gz"
+            curl -fsSL -o "$tmpfile" "$location"
+            tar -C "$workspace" -xzf "$tmpfile"
+            ;;
+        http_playbook)
+            tmpfile="$workspace/playbook.yml"
+            curl -fsSL -o "$tmpfile" "$location"
+            ;;
+        github)
+            tmpfile="$WORKDIR/playbook.tar.gz"
+            if [ -n "$playbook_version" ]; then
+                curl -fsSL -o "$tmpfile" "https://codeload.$location/tar.gz/$playbook_version"
+            else
+                curl -fsSL -o "$tmpfile" "https://codeload.$location/tar.gz/main"
+            fi
+            tar -C "$workspace" -xzf "$tmpfile"
+            ;;
+    esac
+
+    playbook "$workspace"
+}
+
+### cli | usage ###############################################################
+usage() {
+    echo "Usage: getansible -- exec|ansible|ansible-* [args]"
+}
+
+### cli #######################################################################
 if [ $# -eq 0 ]; then
     usage
     exit 2
