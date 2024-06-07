@@ -108,39 +108,38 @@ assert_teardown() {
     assert_teardown
 }
 
-# # bats test_tags=playbook
-# @test "getansible.sh -- file:// with absolute path" {
-#   tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+# bats test_tags=0010,playbook
+@test "0010: getansible.sh -- /opt/001-ping.tar.gz" {
+    tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
 
-#   run getansible.sh -- file:///opt/001-ping.tar.gz
-#   assert_success
-#   assert_output --partial "ok=1"
-#   assert_teardown
-# }
+    run getansible.sh -- /opt/001-ping.tar.gz
+    assert_success
+    assert_output --partial "ok=1"
+    assert_teardown
+}
 
-# # bats test_tags=playbook
-# @test "getansible.sh -- file:// with relative path" {
-#   tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
-#   pushd /opt > /dev/null || exit 1
+# bats test_tags=0011,playbook
+@test "0011: getansible.sh -- 001-ping.tar.gz" {
+    tar -czf /opt/001-ping.tar.gz -C /usr/src/bats/examples/001-ping .
+    pushd /opt > /dev/null || exit 1
 
-#   run getansible.sh -- file://001-ping.tar.gz
-#   assert_success
-#   assert_output --partial "ok=1"
+    run getansible.sh -- 001-ping.tar.gz
+    assert_success
+    assert_output --partial "ok=1"
 
-#   popd > /dev/null || exit 1
-#   assert_teardown
-# }
+    popd > /dev/null || exit 1
+    assert_teardown
+}
 
-# # bats test_tags=playbook
-# @test "getansible.sh -- file:// with requirements.yml" {
-#   tar -czf /opt/002-requirements.tar.gz -C /usr/src/bats/examples/002-requirements .
+# bats test_tags=0012,playbook
+@test "0012: getansible.sh -- /opt/002-requirements.tar.gz" {
+    tar -czf /opt/002-requirements.tar.gz -C /usr/src/bats/examples/002-requirements .
 
-#   run getansible.sh -- file:///opt/002-requirements.tar.gz
-#   echo $output
-#   assert_success
-#   assert_output --partial "ok=1"
-#   assert_teardown
-# }
+    run getansible.sh -- /opt/002-requirements.tar.gz
+    assert_success
+    assert_output --partial "ok=1"
+    assert_teardown
+}
 
 # # bats test_tags=playbook,role
 # @test "getansible.sh -- file:// with roles" {
