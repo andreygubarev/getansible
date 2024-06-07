@@ -242,8 +242,8 @@ EOF
     assert_teardown
 }
 
-bats test_tags=T102,install
-@test "install.sh /opt/T01-ping.tar.gz" {
+# bats test_tags=T102,install
+@test "install.sh /opt/001-ping.tar.gz" {
     tar -czf /opt/T01-ping.tar.gz -C /usr/src/bats/examples/T01-ping .
 
     run install.sh /opt/001-ping.tar.gz
