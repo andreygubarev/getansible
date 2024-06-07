@@ -23,8 +23,25 @@ if [ -n "$PIP_REQUIREMENTS" ]; then
 fi
 
 ### environment | ansible #####################################################
-export ANSIBLE_HOME="$WORKDIR/.ansible"
+ANSIBLE_HOME="${ANSIBLE_HOME:-$WORKDIR/.ansible}"
+export ANSIBLE_HOME
 mkdir -p "$ANSIBLE_HOME"
+
+if [ -n "${ANSIBLE_ROLES_PATH:-}" ]; then
+    ANSIBLE_ROLES_PATH="$ANSIBLE_HOME/roles:$ANSIBLE_ROLES_PATH"
+else
+    ANSIBLE_ROLES_PATH="$ANSIBLE_HOME/roles"
+fi
+mkdir -p "$ANSIBLE_HOME/roles"
+export ANSIBLE_ROLES_PATH
+
+if [ -n "${ANSIBLE_COLLECTIONS_PATH:-}" ]; then
+    ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_HOME/collections:$ANSIBLE_COLLECTIONS_PATH"
+else
+    ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_HOME/collections"
+fi
+mkdir -p "$ANSIBLE_HOME/collections"
+export ANSIBLE_COLLECTIONS_PATH
 
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
@@ -94,21 +111,18 @@ playbook() {
     fi
 
     # workspace: ansible roles
-    if [ -z "${ANSIBLE_ROLES_PATH:-}" ]; then
-        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles"
+    if [ -d "$ANSIBLE_PLAYBOOK_DIR/roles" ]; then
+        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles:$ANSIBLE_ROLES_PATH"
     fi
-    mkdir -p "$ANSIBLE_ROLES_PATH"
 
     # workspace: ansible collections
-    if [ -z "${ANSIBLE_COLLECTIONS_PATH:-}" ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections"
+    if [ -d "$ANSIBLE_PLAYBOOK_DIR/collections" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections:$ANSIBLE_COLLECTIONS_PATH"
     fi
-    mkdir -p "$ANSIBLE_COLLECTIONS_PATH"
 
     # workspace: ansible galaxy
     if [ -f requirements.yml ]; then
         "$WORKDIR"/bin/ansible-galaxy install -r requirements.yml
-        echo $?
     fi
 
     # workspace: ansible inventory
@@ -141,7 +155,7 @@ playbook() {
         mkdir -p host_vars
         touch host_vars/localhost.yml
     fi
-    if ! grep -q 'ansible_python_interpreter' host_vars/localhost.yml; then
+    if ! grep -qE 'ansible_python_interpreter' host_vars/localhost.yml; then
         echo "ansible_python_interpreter: $WORKDIR/bin/python3" >> host_vars/localhost.yml
     fi
 
@@ -163,7 +177,7 @@ main() {
 
     # use case 1.1: directory path (relative path to directory with playbook.yml, e.g "myplaybook")
     if [ -d "$playbook" ] || [ -d "$USER_PWD/$playbook" ]; then
-        if echo "$playbook" | grep -q '^/'; then
+        if echo "$playbook" | grep -qE '^/'; then
             location="$playbook"
         else
             location="$USER_PWD/$playbook"
@@ -172,19 +186,19 @@ main() {
 
     # use case 1.2: file path
     elif [ -f "$playbook" ] || [ -f "$USER_PWD/$playbook" ]; then
-        if echo "$playbook" | grep -q '^/'; then
+        if echo "$playbook" | grep -qE '^/'; then
             location="$playbook"
         else
             location="$USER_PWD/$playbook"
         fi
 
         # use case 1.2.1: file yaml relative path (relative path to *.yml playbook, e.g "myplaybook/playbook.yml")
-        if echo "$location" | grep -q '\.ya?ml$'; then
+        if echo "$location" | grep -qE '\.ya?ml$'; then
             location="$(dirname "$location")"
             location_type="directory"
 
         # use case 1.2.2: file tarball relative path (relative path to *.tar.gz playbook, e.g "myplaybook.tar.gz")
-        elif echo "$location" | grep -q '\.tar\.gz$'; then
+        elif echo "$location" | grep -qE '\.tar\.gz$'; then
             location_type="tarball"
 
         else
@@ -193,30 +207,30 @@ main() {
         fi
 
     # use case 2.1: ansible galaxy role (e.g "username.rolename")
-    elif echo "$playbook" | grep -q '^[a-z0-9_]+\.[a-z0-9_]+$'; then
+    elif echo "$playbook" | grep -qE '^[a-z0-9_]+\.[a-z0-9_]+$'; then
         location="$playbook"
         location_type="galaxy_role"
 
     # use case 2.2: ansible galaxy collection (e.g "username.collectionname.rolename")
-    elif echo "$playbook" | grep -q '^[a-z0-9_]+\.[a-z0-9_]+\.[a-z0-9_]+$'; then
+    elif echo "$playbook" | grep -qE '^[a-z0-9_]+\.[a-z0-9_]+\.[a-z0-9_]+$'; then
         location="$playbook"
         location_type="galaxy_collection"
 
     # use case 3.1: http url (e.g "http://example.com/playbook.tar.gz")
-    elif echo "$playbook" | grep -q '^https?://'; then
+    elif echo "$playbook" | grep -qE '^https?://'; then
         location="$playbook"
 
         # use case 3.1.1: http url playbook (e.g "http://example.com/playbook.yml")
-        if echo "$location" | grep -q '\.ya?ml$'; then
+        if echo "$location" | grep -qE '\.ya?ml$'; then
             location_type="http_playbook"
 
         # use case 3.1.2: http url tarball (e.g "http://example.com/playbook.tar.gz")
-        elif echo "$location" | grep -q '\.tar\.gz$'; then
+        elif echo "$location" | grep -qE '\.tar\.gz$'; then
             location_type="http_tarball"
         fi
 
     # use case 4.1: github repository (e.g "github.com/username/repo")
-    elif echo "$playbook" | grep -q '^github.com/.+/.+$'; then
+    elif echo "$playbook" | grep -qE '^github.com/.+/.+$'; then
         location="$playbook"
         location_type="github"
 
