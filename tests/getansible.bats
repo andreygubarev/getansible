@@ -82,23 +82,31 @@ assert_teardown() {
     assert_teardown
 }
 
-# # bats test_tags=playbook,galaxy1
-# @test "getansible.sh -- galaxy with collection with version" {
-#   # skip unsupported ansible releases: 3.0, 4.0, 5.0, 6.0 and 7.0
-#   if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6\|ansible==7')" ]; then
-#     skip
-#   fi
+# bats test_tags=0008,getansible,galaxy
+@test "0008: getansible.sh -- andreygubarev.core.ping 0.7.3" {
+    # skip unsupported ansible releases: 3.0, 4.0, 5.0, 6.0 and 7.0
+    if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6\|ansible==7')" ]; then
+        skip
+    fi
 
-#   run getansible.sh -- galaxy://andreygubarev.core.ping==0.7.3
-#   assert_success
-#   assert_output --partial "andreygubarev.core.ping : Ping"
-#   assert_output --partial "failed=0"
-#   assert_teardown
+    run getansible.sh -- andreygubarev.core.ping 0.7.3
+    assert_success
+    assert_output --partial "andreygubarev.core.ping : Ping"
+    assert_output --partial "failed=0"
+    assert_teardown
+}
 
-#   run getansible.sh -- galaxy://andreygubarev.core.ping==0.7.0
-#   assert_failure  # version 0.7.0 does not have a ping role
-#   assert_teardown
-# }
+# bats test_tags=0009,getansible,galaxy
+@test "0009: getansible.sh -- andreygubarev.core.ping 0.7.0" {
+    # skip unsupported ansible releases: 3.0, 4.0, 5.0, 6.0 and 7.0
+    if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6\|ansible==7')" ]; then
+        skip
+    fi
+
+    run getansible.sh -- andreygubarev.core.ping 0.7.0
+    assert_failure  # version 0.7.0 does not have a ping role
+    assert_teardown
+}
 
 # # bats test_tags=playbook
 # @test "getansible.sh -- file:// with absolute path" {
