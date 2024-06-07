@@ -28,7 +28,7 @@ export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
 ### assert | ansible galaxy compatibility ####################################
-assert_compat_galaxy() {
+assert_ansible_galaxy() {
     # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
     version=$("${WORKDIR}"/bin/pip3 freeze | grep 'ansible-core' | awk -F'==' '{print $2}')
 
@@ -194,98 +194,54 @@ main() {
         location="$playbook"
         location_type="galaxy_collection"
 
-    # use case 3.1: github repository (e.g "github.com/username/repo")
-    elif echo "$playbook" | grep -q '^github.com'; then
-        location="https://$playbook"
-        location_type="github"
-
-    # use case 3.2: github repository url (e.g "https://github.com/username/repo")
-    elif echo "$playbook" | grep -q '^https://github.com'; then
-        location="$playbook"
-        location_type="github"
-
-    # use case 4.1: http url (e.g "http://example.com/playbook.tar.gz")
+    # use case 3.1: http url (e.g "http://example.com/playbook.tar.gz")
     elif echo "$playbook" | grep -q '^https?://'; then
         location="$playbook"
 
-        # use case 4.1.1: http url playbook (e.g "http://example.com/playbook.yml")
+        # use case 3.1.1: http url playbook (e.g "http://example.com/playbook.yml")
         if echo "$location" | grep -q '\.ya?ml$'; then
             location_type="http_playbook"
 
-        # use case 4.1.2: http url tarball (e.g "http://example.com/playbook.tar.gz")
+        # use case 3.1.2: http url tarball (e.g "http://example.com/playbook.tar.gz")
         elif echo "$location" | grep -q '\.tar\.gz$'; then
             location_type="http_tarball"
         fi
+
+    # use case 4.1: github repository (e.g "github.com/username/repo")
+    elif echo "$playbook" | grep -q '^github.com/.+/.+$'; then
+        location="$playbook"
+        location_type="github"
 
     else
         echo "Error: invalid playbook location '$playbook'"
         exit 1
     fi
 
+    workspace="${WORKDIR}/workspace"
+    mkdir -p "$workspace"
 
-
-    url=$1
-    if echo "$url" | grep -q '#'; then
-        url_fragment=$(echo "$url" | cut -d'#' -f2)
-    else
-        url_fragment=""
-    fi
-    if [ -n "$url_fragment" ]; then
-        url=$(echo "$url" | cut -d'#' -f1)
-    fi
-
-    # handler: ==1.0.0
-    if echo "$url" | grep -q '=='; then
-        url_version=$(echo "$url" | awk -F'==' '{print $2}')
-        if [ -n "$url_version" ]; then
-            url=$(echo "$url" | awk -F'==' '{print $1}')
-        fi
-    else
-        url_version=""
-    fi
-
-    url_proto=$(echo "$url" | cut -d':' -f1)
-    # url_host=$(echo "$url" | cut -d':' -f2 | cut -c3-)
-    # url_path=$(echo "$url_host" | cut -d'/' -f2-)
-    # url_host=$(echo "$url_host" | cut -d'/' -f1)
-
-    tmpfile=$(mktemp)
-    case "$url_proto" in
-        http|https)
-            curl -fsSL -o "$tmpfile" "$url"
+    case "$location_type" in
+        directory)
+            workspace="$location"
             ;;
-        file)
-            fname="${url#file://}"
-            if [ -f "$fname" ]; then
-                cp "$fname" "$tmpfile"
-            elif [ -d "$fname" ]; then
-                tar -C "$fname" -czf "$tmpfile" .
-            else
-                echo "Invalid playbook: $fname"
-                exit 3
-            fi
+        tarball)
+            tar -C "$workspace" -xzf "$location"
             ;;
-        galaxy)
-            assert_compat_galaxy
+        galaxy_role|galaxy_collection)
+            assert_ansible_galaxy
 
-            galaxy_dir=$(mktemp -d)
-            galaxy_name="${url#galaxy://}"
-
-            if [ -n "$url_version" ]; then
-                galaxy_version="==$url_version"
+            if [ -n "$playbook_version" ]; then
+                location_version="==$url_version"
             else
-                galaxy_version=""
+                location_version=""
             fi
 
-            if [ "$(echo "$galaxy_name" | tr -cd '.' | wc -c)" -eq 2 ]; then
-                collection_name=$(echo "$galaxy_name" | cut -d. -f1-2)
-                "$WORKDIR"/bin/ansible-galaxy collection install -p "$galaxy_dir/collections" "$collection_name$galaxy_version"
+            if [ "$location_type" = "galaxy_role" ]; then
+                "$WORKDIR"/bin/ansible-galaxy role install "$location$location_version"
             else
-                mkdir -p "$galaxy_dir/roles"
-                "$WORKDIR"/bin/ansible-galaxy role install -p "$galaxy_dir/roles" "$galaxy_name$galaxy_version"
+                "$WORKDIR"/bin/ansible-galaxy collection install "$location$location_version"
             fi
-
-            cat <<EOF > "$galaxy_dir/playbook.yml"
+            cat <<EOF > "$workspace/playbook.yml"
 ---
 - hosts: localhost
   connection: local
@@ -293,106 +249,30 @@ main() {
   vars:
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
   roles:
-    - role: $galaxy_name
+    - role: $location
 EOF
-            pushd "$galaxy_dir" > /dev/null || exit 1
-            tar -czf "$tmpfile" .
-            popd > /dev/null || exit 1
-
-            rm -rf "$galaxy_dir"
             ;;
-        *)
-            echo "Invalid URL: $url"
-            exit 3
+        http_tarball)
+            tmpfile="$WORKDIR/playbook.tar.gz"
+            curl -fsSL -o "$tmpfile" "$location"
+            tar -C "$workspace" -xzf "$tmpfile"
             ;;
-    esac
-
-    if command -v file > /dev/null; then
-        ftype=$(file --brief --mime-type "$tmpfile")
-    else
-        case "$url_proto" in
-            http|https)
-                case "$url" in
-                    *.tar.gz)
-                        ftype="application/gzip"
-                        ;;
-                    *.zip)
-                        ftype="application/zip"
-                        ;;
-                    *.yml|*.yaml)
-                        ftype="text/plain"
-                        ;;
-                    *)
-                        echo "Invalid playbook file: $url"
-                        exit 4
-                        ;;
-                esac
-                ;;
-            file)
-                fname="${url#file://}"
-                if [ -f "$fname" ]; then
-                    case "$fname" in
-                        *.tar.gz)
-                            ftype="application/gzip"
-                            ;;
-                        *.zip)
-                            ftype="application/zip"
-                            ;;
-                        *.yml|*.yaml)
-                            ftype="text/plain"
-                            ;;
-                        *)
-                            echo "Invalid playbook file: $fname"
-                            exit 4
-                            ;;
-                    esac
-                elif [ -d "$fname" ]; then
-                    ftype="application/gzip"
-                fi
-                ;;
-            galaxy)
-                ftype="application/gzip"
-                ;;
-            *)
-                echo "Invalid playbook URL: $url"
-                exit 3
-                ;;
-        esac
-    fi
-
-    tmpdir=$(mktemp -d)
-    trap 'rm -rf "$tmpdir"' EXIT
-
-    case "$ftype" in
-        application/gzip)
-            tar -C "$tmpdir" -xzf "$tmpfile"
+        http_playbook)
+            tmpfile="$workspace/playbook.yml"
+            curl -fsSL -o "$tmpfile" "$location"
             ;;
-        application/zip)
-            unzip -d "$tmpdir" "$tmpfile"
-            ;;
-        text/plain)
-            cp "$tmpfile" "$tmpdir/playbook.yml"
-            ;;
-        *)
-            echo "Invalid playbook file type: $ftype"
-            exit 4
+        github)
+            tmpfile="$WORKDIR/playbook.tar.gz"
+            if [ -n "$playbook_version" ]; then
+                curl -fsSL -o "$tmpfile" "https://codeload.$location/tar.gz/$playbook_version"
+            else
+                curl -fsSL -o "$tmpfile" "https://codeload.$location/tar.gz/main"
+            fi
+            tar -C "$workspace" -xzf "$tmpfile"
             ;;
     esac
-    rm -f "$tmpfile"
 
-    if [ -n "$url_fragment" ]; then
-        if [ -d "$tmpdir/$url_fragment" ]; then
-            subdir=$url_fragment
-        else
-            subdir=""
-            echo "Invalid subdirectory: $url_fragment"
-            exit 4
-        fi
-    else
-        subdir=""
-    fi
-
-    playbook "$tmpdir" "$subdir"
+    playbook "$workspace"
 }
 
 ### cli | usage ###############################################################
