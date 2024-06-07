@@ -146,6 +146,83 @@ playbook() {
 
 ### cli | main ###########################################################
 main() {
+    playbook="$1"
+
+    location=""
+    location_type=""
+
+    # use case 1.1: directory path (relative path to directory with playbook.yml, e.g "myplaybook")
+    if [ -d "$playbook" ] || [ -d "$USER_PWD/$playbook" ]; then
+        if echo "$playbook" | grep -q '^/'; then
+            location="$playbook"
+        else
+            location="$USER_PWD/$playbook"
+        fi
+        location_type="directory"
+
+    # use case 1.3: file path
+    elif [ -f "$playbook" ] || [ -f "$USER_PWD/$playbook" ]; then
+        if echo "$playbook" | grep -q '^/'; then
+            location="$playbook"
+        else
+            location="$USER_PWD/$playbook"
+        fi
+
+        # use case 1.3.1: file yaml relative path (relative path to *.yml playbook, e.g "myplaybook/playbook.yml")
+        if echo "$location" | grep -q '\.ya?ml$'; then
+            location="$(dirname "$location")"
+            location_type="directory"
+
+        # use case 1.3.2: file tarball relative path (relative path to *.tar.gz playbook, e.g "myplaybook.tar.gz")
+        elif echo "$location" | grep -q '\.tar\.gz$'; then
+            location="$location"
+            location_type="tarball"
+
+        else
+            echo "Error: unsupported playbook file format '$location'"
+            exit 4
+        fi
+
+    # use case 2.1: ansible galaxy role (e.g "username.rolename")
+    elif echo "$playbook" | grep -q '^[a-z0-9_]+\.[a-z0-9_]+$'; then
+        location="$playbook"
+        location_type="galaxy_role"
+
+    # use case 2.2: ansible galaxy collection (e.g "username.collectionname.rolename")
+    elif echo "$playbook" | grep -q '^[a-z0-9_]+\.[a-z0-9_]+\.[a-z0-9_]+$'; then
+        location="$playbook"
+        location_type="galaxy_collection"
+
+    # use case 3.1: github repository (e.g "github.com/username/repo")
+    elif echo "$playbook" | grep -q '^github.com'; then
+        location="https://$playbook"
+        location_type="github"
+
+    # use case 3.2: github repository url (e.g "https://github.com/username/repo")
+    elif echo "$playbook" | grep -q '^https://github.com'; then
+        location="$playbook"
+        location_type="github"
+
+    # use case 4.1: http url (e.g "http://example.com/playbook.tar.gz")
+    elif echo "$playbook" | grep -q '^https?://'; then
+        location="$playbook"
+
+        # use case 4.1.1: http url playbook (e.g "http://example.com/playbook.yml")
+        if echo "$location" | grep -q '\.ya?ml$'; then
+            location_type="http_playbook"
+
+        # use case 4.1.2: http url tarball (e.g "http://example.com/playbook.tar.gz")
+        elif echo "$location" | grep -q '\.tar\.gz$'; then
+            location_type="http_tarball"
+        fi
+
+    else
+        echo "Error: invalid playbook location '$playbook'"
+        exit 1
+    fi
+
+
+
     url=$1
     if echo "$url" | grep -q '#'; then
         url_fragment=$(echo "$url" | cut -d'#' -f2)
@@ -323,8 +400,6 @@ usage() {
 }
 
 ### cli #######################################################################
-cd "$USER_PWD" || exit 1
-
 if [ $# -eq 0 ]; then
     usage
     exit 2
