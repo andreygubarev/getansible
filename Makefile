@@ -36,7 +36,7 @@ build:  ## Build the docker image
 		--build-arg ANSIBLE_RELEASE=$(ANSIBLE_RELEASE) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
 		--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
-		--output $(MAKEFILE_DIR)/dist \
+		--output $(MAKEFILE_DIR)/src/dist \
 		--platform linux/$(ANSIBLE_PLATFORM) \
 		--progress=plain \
 		$(MAKEFILE_DIR)/src
@@ -52,14 +52,14 @@ build-bats:  ## Build the docker image for bats
 .PHONY: shell
 shell:
 	docker run --rm \
-		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
+		-v $(MAKEFILE_DIR)/src/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		debian:bookworm-slim
 
 .PHONY: test
 test:  ## Test getansible.sh
 	docker run --rm \
 		--platform linux/$(ANSIBLE_PLATFORM) \
-		-v $(MAKEFILE_DIR)/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
+		-v $(MAKEFILE_DIR)/src/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
 		bats:latest --filter-tags $(BATS_TAGS) /usr/src/bats/
 
@@ -78,4 +78,4 @@ test-curlpipe:  ## Test https://getansible.sh
 
 .PHONY: clean
 clean:  ## Clean up
-	rm -rf $(MAKEFILE_DIR)/dist
+	rm -rf $(MAKEFILE_DIR)/src/dist

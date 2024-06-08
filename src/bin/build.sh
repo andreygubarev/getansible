@@ -72,4 +72,5 @@ find "${WORKDIR}/getansible/python" -type d -name "tests" -print | xargs rm -rf
     ./entrypoint.sh
 
 chmod 0755 "${WORKDIR}/getansible.sh"
-cp "${WORKDIR}/getansible.sh" "${SOURCEDIR}/../dist/getansible-${ANSIBLE_RELEASE}-${PLATFORM_OS}-${PLATFORM_ARCH}.sh"
+mkdir -p "${SOURCEDIR}/dist"
+cp "${WORKDIR}/getansible.sh" "${SOURCEDIR}/dist/getansible-${ANSIBLE_RELEASE}-${PLATFORM_OS}-${PLATFORM_ARCH}.sh"
