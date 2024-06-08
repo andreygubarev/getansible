@@ -14,7 +14,19 @@ export PATH
 unset PYTHONPATH
 
 # ensure python3 is available
-find "${PATHLOCAL}" -type f -exec sed -i "1s|^#!.*$|#!$PATHLOCAL/python3|" {} \;
+
+case "$(uname -s)" in
+    Darwin)
+        find "${PATHLOCAL}" -type f -exec sed -e -i '' "1s|^#!.*$|#!$PATHLOCAL/python3|" {} \;
+        ;;
+    Linux)
+        find "${PATHLOCAL}" -type f -exec sed -e -i "1s|^#!.*$|#!$PATHLOCAL/python3|" {} \;
+        ;;
+    *)
+        echo "ERROR: unsupported OS"
+        exit 1
+        ;;
+esac
 
 ### environment | python pip ##################################################
 PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
