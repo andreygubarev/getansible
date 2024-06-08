@@ -55,9 +55,10 @@ jobs:
           PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
 
       - name: Smoke Test
+        working-directory: src/dist
         run: |
-          chmod +x src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}
-          src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }} -- ansible --version
+          chmod +x getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh
+          getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh -- ansible --version
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -94,9 +95,10 @@ jobs:
           PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
 
       - name: Smoke Test
+        working-directory: src/dist
         run: |
-          chmod +x src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}
-          src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }} -- ansible --version
+          chmod +x getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh
+          getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh -- ansible --version
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -139,9 +141,10 @@ jobs:
           PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
 
       - name: Smoke Test
+        working-directory: src/dist
         run: |
-          chmod +x src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}
-          src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }} -- ansible --version
+          chmod +x getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh
+          getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh -- ansible --version
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
