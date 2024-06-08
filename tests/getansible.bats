@@ -285,7 +285,7 @@ EOF
 
 # bats test_tags=T202,curlpipe
 @test "T202: curl -sL getansible.sh | bash -s -- install" {
-  run bash -c "curl -sL getansible.sh | bash"
+  run bash -c "curl -sL getansible.sh | bash -s -- install"
   assert_success
   assert_file_exist /usr/local/bin/getansible.sh
   assert_teardown
