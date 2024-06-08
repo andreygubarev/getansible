@@ -236,7 +236,6 @@ jobs:
       - linux-build-amd64
       - linux-build-arm64
       - linux-smoke-test-amd64
-      - linux-smoke-test-arm64
       - test
     if: startsWith(github.ref, 'refs/tags/v')
 
