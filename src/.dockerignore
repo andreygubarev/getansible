@@ -3,6 +3,8 @@
 .gitignore
 .gitmodules
 
+dist
+
 .dockerignore
 Dockerfile
 
