@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ### variables #################################################################
+GETANSIBLE_OS="${GETANSIBLE_OS:-}"
 GETANSIBLE_ARCH="${GETANSIBLE_ARCH:-}"
 GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/getansible.sh}"
 
@@ -51,6 +52,10 @@ case $GETANSIBLE_ARCH in
         ;;
 esac
 
+if [ -z "$GETANSIBLE_OS" ]; then
+    GETANSIBLE_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+fi
+
 ### functions #################################################################
 getansible_install() {
     local ansible_release=$1
@@ -70,7 +75,7 @@ getansible_install() {
     GITHUB_OWNER="andreygubarev"
     GITHUB_REPO="getansible"
     GITHUB_RELEASE=$(curl -s "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-    GITHUB_ARTIFACT="getansible-$ansible_release-$GETANSIBLE_ARCH.sh"
+    GITHUB_ARTIFACT="getansible-$ansible_release-$GETANSIBLE_OS-$GETANSIBLE_ARCH.sh"
     GITHUB_DOWNLOAD_URL="https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/$GITHUB_ARTIFACT"
 
     SHA512SUMS=$(mktemp)
