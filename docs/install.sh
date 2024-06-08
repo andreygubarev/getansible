@@ -83,16 +83,17 @@ getansible_install() {
     GITHUB_ARTIFACT="getansible-$ansible_release-$GETANSIBLE_OS-$GETANSIBLE_ARCH.sh"
     GITHUB_DOWNLOAD_URL="https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/$GITHUB_ARTIFACT"
 
-    SHA512SUMS=$(mktemp)
-    curl -sLo "$SHA512SUMS" "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/SHA512SUMS"
-
     getansible_tempdir=$(mktemp -d)
     curl -sL "$GITHUB_DOWNLOAD_URL" -o "$getansible_tempdir/$GITHUB_ARTIFACT"
 
-    pushd "$getansible_tempdir" > /dev/null
-    sha512sum -c "$SHA512SUMS" --ignore-missing
-    popd > /dev/null
-    rm -f "$SHA512SUMS"
+    if command -v sha512sum > /dev/null; then
+        SHA512SUMS=$(mktemp)
+        curl -sLo "$SHA512SUMS" "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/SHA512SUMS"
+        pushd "$getansible_tempdir" > /dev/null
+        sha512sum -c "$SHA512SUMS" --ignore-missing
+        popd > /dev/null
+        rm -f "$SHA512SUMS"
+    fi
 
     mv "$getansible_tempdir/$GITHUB_ARTIFACT" "$getansible_path"
     chmod +x "$getansible_path"
