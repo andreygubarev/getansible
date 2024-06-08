@@ -150,7 +150,7 @@ case ${1:-} in
                     link_option="true"
                     ;;
                 --short)
-                    GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/gan.sh}"
+                    GETANSIBLE_PATH="/usr/local/bin/gan.sh"
                     ;;
                 *)
                     ;;
