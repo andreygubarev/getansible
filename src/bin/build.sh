@@ -47,4 +47,14 @@ find "${WORKDIR}/getansible/python" -type d -name "tests" -print | xargs rm -rf
     ./entrypoint.sh
 
 chmod 0755 "${WORKDIR}/getansible.sh"
-cp "${WORKDIR}/getansible.sh" "${SOURCEDIR}/../dist/getansible-${ANSIBLE_RELEASE}-darwin-arm64.sh"
+
+PLATFORM_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+PLATFORM_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+if [ "${PLATFORM_ARCH}" = "aarch64" ]; then
+    PLATFORM_ARCH="arm64"
+fi
+if [ "${PLATFORM_ARCH}" = "x86_64" ]; then
+    PLATFORM_ARCH="amd64"
+fi
+
+cp "${WORKDIR}/getansible.sh" "${SOURCEDIR}/../dist/getansible-${ANSIBLE_RELEASE}-${PLATFORM_OS}-${PLATFORM_ARCH}.sh"
