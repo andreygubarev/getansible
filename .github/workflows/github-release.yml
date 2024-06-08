@@ -73,36 +73,26 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Distribution
-        uses: docker/build-push-action@v5
-        with:
-          context: src
-          push: false
-          tags: andreygubarev/getansible:latest
-          build-args: |
-            ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }}
-            PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
-            PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
-          platforms: linux/${{ matrix.platform }}
-          outputs: type=local,dest=dist
+        run: >-
+          make build-docker
+          ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }}
+          ANSIBLE_PLATFORM=${{ matrix.platform }}
+          PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
+          PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
 
       - name: Build BATS
-        uses: docker/build-push-action@v5
-        with:
-          context: tests
-          push: false
-          load: true
-          tags: bats:latest
-          platforms: linux/${{ matrix.platform }}
-
-      - name: Test with BATS
-        run: |
-          make test ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }} ANSIBLE_PLATFORM=${{ matrix.platform }}
+        run: >-
+          make build-docker build-bats test
+          ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }}
+          ANSIBLE_PLATFORM=${{ matrix.platform }}
+          PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
+          PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: getansible-${{ matrix.version.ANSIBLE_RELEASE }}-${{ matrix.platform }}
-          path: "dist/*"
+          path: "src/dist/*"
 
   release:
     runs-on: ubuntu-latest
