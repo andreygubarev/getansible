@@ -78,8 +78,6 @@ jobs:
           context: src
           push: false
           tags: andreygubarev/getansible:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           build-args: |
             ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }}
             PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
@@ -94,8 +92,6 @@ jobs:
           push: false
           load: true
           tags: bats:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           platforms: linux/${{ matrix.platform }}
 
       - name: Test with BATS
