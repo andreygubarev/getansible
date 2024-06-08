@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+set -euxo pipefail
 
 SOURCEDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export SOURCEDIR
