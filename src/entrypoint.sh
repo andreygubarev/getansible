@@ -5,34 +5,29 @@ set -euo pipefail
 WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
 
-PATHLOCAL="$WORKDIR/python/bin"
-PATH="$PATHLOCAL:$PATH"
+PATH_BIN="$WORKDIR/python/bin"
+export PATH_BIN
+
+PATH="$PATH_BIN:$PATH"
 export PATH
 
 ### environment | python ######################################################
 # ensure isolation
 unset PYTHONPATH
 
-# ensure python3 is available
-
-case "$(uname -s)" in
-    Darwin)
-        find "${PATHLOCAL}" -type f -exec sed -i '' '1s|^#!.*|#!'"$PATHLOCAL"'/python3|' {} \;
-        ;;
-    Linux)
-        find "${PATHLOCAL}" -type f -exec sed -i '1s|^#!.*|#!'"$PATHLOCAL"'/python3|' {} \;
-        ;;
-    *)
-        echo "ERROR: unsupported OS"
-        exit 1
-        ;;
-esac
+# ensure python3 interpreter
+SED=command -v sed
+if $SED --version 2>&1 | grep -q 'GNU sed'; then
+    find "${PATH_BIN}" -type f -exec sed -i '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
+else
+    find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
+fi
 
 ### environment | python pip ##################################################
 PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
 if [ -n "$PIP_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
-    "$PATHLOCAL/python3" -m pip install --no-cache-dir $PIP_REQUIREMENTS
+    "$PATH_BIN/python3" -m pip install --no-cache-dir $PIP_REQUIREMENTS
 fi
 
 ### environment | ansible #####################################################
@@ -62,7 +57,7 @@ export ANSIBLE_COLLECTIONS_PATH
 ### assert | ansible galaxy compatibility ####################################
 assert_ansible_galaxy() {
     # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
-    version=$("$PATHLOCAL/python3" -m pip freeze | grep 'ansible-core' | awk -F'==' '{print $2}')
+    version=$("$PATH_BIN/python3" -m pip freeze | grep 'ansible-core' | awk -F'==' '{print $2}')
 
     version_major=$(echo "$version" | awk -F. '{print $1}')
     version_minor=$(echo "$version" | awk -F. '{print $2}')
@@ -109,7 +104,7 @@ playbook() {
 
     # workspace: pip requirements
     if [ -f requirements.txt ]; then
-        "$PATHLOCAL/python3" -m pip install --no-cache-dir -r requirements.txt
+        "$PATH_BIN/python3" -m pip install --no-cache-dir -r requirements.txt
     fi
 
     # workspace: ansible playbook
@@ -135,7 +130,7 @@ playbook() {
 
     # workspace: ansible galaxy
     if [ -f requirements.yml ]; then
-        "$PATHLOCAL/ansible-galaxy" install -r requirements.yml
+        "$PATH_BIN/ansible-galaxy" install -r requirements.yml
     fi
 
     # workspace: ansible inventory
@@ -169,11 +164,11 @@ playbook() {
         touch host_vars/localhost.yml
     fi
     if ! grep -qE 'ansible_python_interpreter' host_vars/localhost.yml; then
-        echo "ansible_python_interpreter: $PATHLOCAL/python3" >> host_vars/localhost.yml
+        echo "ansible_python_interpreter: $PATH_BIN/python3" >> host_vars/localhost.yml
     fi
 
     # workspace: execute
-    "$PATHLOCAL/ansible-playbook" "$workspace_playbook"
+    "$PATH_BIN/ansible-playbook" "$workspace_playbook"
     rc=$?
 
     popd > /dev/null || exit 1
@@ -278,9 +273,9 @@ main() {
             fi
 
             if [ "$location_type" = "galaxy_role" ]; then
-                "$PATHLOCAL/ansible-galaxy" role install "$galaxy_name$galaxy_version"
+                "$PATH_BIN/ansible-galaxy" role install "$galaxy_name$galaxy_version"
             else
-                "$PATHLOCAL/ansible-galaxy" collection install "$galaxy_name$galaxy_version"
+                "$PATH_BIN/ansible-galaxy" collection install "$galaxy_name$galaxy_version"
             fi
             cat <<EOF > "$workspace/playbook.yml"
 ---
@@ -335,7 +330,7 @@ case "${1:-}" in
     ansible|ansible-*)
         command=$1
         shift
-        exec "$PATHLOCAL/$command" "$@"
+        exec "$PATH_BIN/$command" "$@"
         ;;
     help|-h|--help)
         usage
