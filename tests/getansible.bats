@@ -258,6 +258,14 @@ EOF
     assert_teardown
 }
 
+# bats test_tags=T103,install
+@test "T103: install.sh install --short" {
+    run install.sh install --short
+    assert_success
+    assert_file_exist /usr/local/bin/gan.sh
+    assert_teardown
+}
+
 
 # bats test_tags=T200,curlpipe
 @test "T200: curl https://getansible.sh/ | bash" {
