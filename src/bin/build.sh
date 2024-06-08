@@ -53,10 +53,10 @@ PYTHON="${PYTHONBIN}/python3"
 "${PYTHON}" -m pip install --upgrade ansible~="${ANSIBLE_RELEASE}"
 case "$(uname -s)" in
     Darwin)
-        find "${PYTHONBIN}" -type f -exec /usr/bin/sed -i '' '1s|^#!.*|#!/usr/bin/env python3|' {} \;
+        find "${PYTHONBIN}" -type f -exec sed -i '' '1s|^#!.*$|#!/usr/bin/env python3|' {} \;
         ;;
     Linux)
-        find "${PYTHONBIN}" -type f -exec /usr/bin/sed -i '1s|^#!.*$|#!/usr/bin/env python3|' {} \;
+        find "${PYTHONBIN}" -type f -exec sed -i '1s|^#!.*$|#!/usr/bin/env python3|' {} \;
         ;;
     *)
         echo "Unsupported OS: $(uname -s)"

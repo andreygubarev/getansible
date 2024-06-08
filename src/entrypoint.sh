@@ -6,7 +6,6 @@ WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
 
 PATHLOCAL="$WORKDIR/python/bin"
-export PATHLOCAL
 PATH="$PATHLOCAL:$PATH"
 export PATH
 
@@ -18,10 +17,10 @@ unset PYTHONPATH
 
 case "$(uname -s)" in
     Darwin)
-        find "${PATHLOCAL}" -type f -exec /usr/bin/sed -i '' '1s|^#!.*|#!'"$PATHLOCAL"'/python3|' {} \;
+        find "${PATHLOCAL}" -type f -exec sed -i '' '1s|^#!.*|#!'"$PATHLOCAL"'/python3|' {} \;
         ;;
     Linux)
-        find "${PATHLOCAL}" -type f -exec /usr/bin/sed -i '1s|^#!.*|#!'"$PATHLOCAL"'/python3|' {} \;
+        find "${PATHLOCAL}" -type f -exec sed -i '1s|^#!.*|#!'"$PATHLOCAL"'/python3|' {} \;
         ;;
     *)
         echo "ERROR: unsupported OS"
