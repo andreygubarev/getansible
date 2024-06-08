@@ -14,7 +14,7 @@ export PATH
 unset PYTHONPATH
 
 # ensure python3 is available
-sed -i "s|#!/usr/bin/env python3|#!$PATHLOCAL/python3|" "$PATHLOCAL/ansible"*
+find "${PATHLOCAL}" -type f -exec sed -i "1s|^#!.*$|#!$PATHLOCAL/python3|" {} \;
 
 ### environment | python pip ##################################################
 PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
