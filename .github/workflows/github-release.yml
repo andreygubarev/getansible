@@ -54,17 +54,38 @@ jobs:
           PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
           PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
 
-      - name: Smoke Test
-        working-directory: src/dist
-        run: |
-          chmod +x getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh
-          ./getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh -- ansible --version
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}
           path: "src/dist/*"
+
+  smoke-test-darwin:
+    runs-on: macos-latest
+    needs: build-darwin
+
+    strategy:
+      matrix:
+        platform:
+          - arm64
+        version:
+          - ANSIBLE_RELEASE: "9.0"
+            PYTHON_VERSION: "3.11.9"
+            PYTHON_RELEASE: "20240415"
+          - ANSIBLE_RELEASE: "10.0"
+            PYTHON_VERSION: "3.11.9"
+            PYTHON_RELEASE: "20240415"
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}
+
+      - name: Smoke Test
+        run: |
+          chmod +x getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh
+          ./getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh -- ansible --version
 
   build-linux-amd64:
     runs-on: ubuntu-latest
