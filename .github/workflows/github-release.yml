@@ -54,6 +54,11 @@ jobs:
           PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
           PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
 
+      - name: Smoke Test
+        run: |
+          chmod +x src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}
+          src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }} -- ansible --version
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -87,6 +92,11 @@ jobs:
           ANSIBLE_PLATFORM=${{ matrix.platform }}
           PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
           PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
+
+      - name: Smoke Test
+        run: |
+          chmod +x src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}
+          src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }} -- ansible --version
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -127,6 +137,11 @@ jobs:
           ANSIBLE_PLATFORM=${{ matrix.platform }}
           PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
           PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
+
+      - name: Smoke Test
+        run: |
+          chmod +x src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}
+          src/dist/getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }} -- ansible --version
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
