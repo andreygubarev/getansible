@@ -69,20 +69,20 @@ test:  ## Test getansible.sh
 		--platform linux/$(ANSIBLE_PLATFORM) \
 		-v $(MAKEFILE_DIR)/src/dist/getansible-$(ANSIBLE_RELEASE)-linux-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
-		bats:latest --filter-tags $(BATS_TAGS) /usr/src/bats/
+		ghcr.io/andreygubarev/bats:latest --filter-tags $(BATS_TAGS) /usr/src/bats/
 
 .PHONY: test-install
 test-install:  ## Test getansible.sh
 	docker run --rm \
 		-v $(MAKEFILE_DIR)/docs/install.sh:/usr/local/bin/install.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
-		bats:latest --filter-tags install /usr/src/bats/
+		ghcr.io/andreygubarev/bats:latest --filter-tags install /usr/src/bats/
 
 .PHONY: test-curlpipe
 test-curlpipe:  ## Test https://getansible.sh
 	docker run --rm \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
-		bats:latest --filter-tags curlpipe /usr/src/bats/
+		ghcr.io/andreygubarev/bats:latest --filter-tags curlpipe /usr/src/bats/
 
 .PHONY: clean
 clean:  ## Clean up
