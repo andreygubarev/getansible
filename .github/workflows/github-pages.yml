@@ -70,7 +70,7 @@ jobs:
       - name: Smoke test
         run: |
           set -euxo pipefail
-          curl -s https://getansible.sh/ | bash
+          curl -s https://getansible.sh/ | bash -
           test -f /usr/local/bin/gan.sh
 
   linux-smoke-test:
@@ -84,7 +84,7 @@ jobs:
       - name: Smoke test
         run: |
           set -euxo pipefail
-          curl -s https://getansible.sh/ | bash
+          curl -s https://getansible.sh/ | bash -
           test -f /usr/local/bin/gan.sh
 
   linux-test:
