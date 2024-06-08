@@ -97,8 +97,8 @@ jobs:
       - name: Smoke Test
         working-directory: src/dist
         run: |
-          chmod +x getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh
-          getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh -- ansible --version
+          chmod +x getansible-${{ matrix.version.ANSIBLE_RELEASE }}-linux-${{ matrix.platform }}.sh
+          getansible-${{ matrix.version.ANSIBLE_RELEASE }}-linux-${{ matrix.platform }}.sh -- ansible --version
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -143,8 +143,8 @@ jobs:
       - name: Smoke Test
         working-directory: src/dist
         run: |
-          chmod +x getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh
-          getansible-${{ matrix.version.ANSIBLE_RELEASE }}-darwin-${{ matrix.platform }}.sh -- ansible --version
+          chmod +x getansible-${{ matrix.version.ANSIBLE_RELEASE }}-linux-${{ matrix.platform }}.sh
+          getansible-${{ matrix.version.ANSIBLE_RELEASE }}-linux-${{ matrix.platform }}.sh -- ansible --version
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
