@@ -89,7 +89,7 @@ jobs:
 
       - name: Build
         run: >-
-          make build-docker test
+          make build-docker
           ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }}
           ANSIBLE_PLATFORM=${{ matrix.platform }}
           PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
@@ -98,7 +98,7 @@ jobs:
       - name: Test
         if: matrix.platform == 'amd64'
         run: >-
-          make build-docker test
+          make test
           ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }}
           ANSIBLE_PLATFORM=${{ matrix.platform }}
           PYTHON_VERSION=${{ matrix.version.PYTHON_VERSION }}
