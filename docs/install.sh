@@ -29,7 +29,7 @@ if ! command -v uname > /dev/null; then
     exit 1
 fi
 
-if [ "$(uname)" != "Linux" ]; then
+if [ "$(uname)" !~ "(Linux|Darwin)" ]; then
     echo "unsupported operating system: $(uname)"
     exit 1
 fi
