@@ -31,7 +31,15 @@ run:  ## Build the docker image
 	docker run -it --rm getansible:latest
 
 .PHONY: build
-build:  ## Build the docker image
+build: ## Build using local environment
+	cd $(MAKEFILE_DIR)/src && \
+        ANSIBLE_RELEASE=$(ANSIBLE_RELEASE) \
+        PYTHON_RELEASE=$(PYTHON_RELEASE) \
+        PYTHON_VERSION=$(PYTHON_VERSION) \
+        ./bin/build.sh
+
+.PHONY: build
+build-docker:  ## Build using docker
 	docker buildx build \
 		--build-arg ANSIBLE_RELEASE=$(ANSIBLE_RELEASE) \
 		--build-arg PYTHON_RELEASE=$(PYTHON_RELEASE) \
