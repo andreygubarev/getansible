@@ -149,6 +149,9 @@ case ${1:-} in
                 --link|-l)
                     link_option="true"
                     ;;
+                --short)
+                    GETANSIBLE_PATH="${GETANSIBLE_PATH:-/usr/local/bin/gan.sh}"
+                    ;;
                 *)
                     ;;
             esac
