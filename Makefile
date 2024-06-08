@@ -59,15 +59,15 @@ build-bats:  ## Build the docker image for bats
 
 .PHONY: shell
 shell:
-	docker run --rm \
-		-v $(MAKEFILE_DIR)/src/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
+	docker run --rm -it \
+		-v $(MAKEFILE_DIR)/src/dist/getansible-$(ANSIBLE_RELEASE)-linux-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		debian:bookworm-slim
 
 .PHONY: test
 test:  ## Test getansible.sh
 	docker run --rm \
 		--platform linux/$(ANSIBLE_PLATFORM) \
-		-v $(MAKEFILE_DIR)/src/dist/getansible-$(ANSIBLE_RELEASE)-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
+		-v $(MAKEFILE_DIR)/src/dist/getansible-$(ANSIBLE_RELEASE)-linux-$(ANSIBLE_PLATFORM).sh:/usr/local/bin/getansible.sh \
 		-v $(MAKEFILE_DIR)/tests:/usr/src/bats \
 		bats:latest --filter-tags $(BATS_TAGS) /usr/src/bats/
 
