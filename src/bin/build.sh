@@ -4,11 +4,36 @@ set -x
 SOURCEDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export SOURCEDIR
 
-ANSIBLE_RELEASE=10.0
-PYTHON_RELEASE=20240415
-PYTHON_VERSION=3.11.9
-PYTHON_ARCH=aarch64
-PYTHON_OS=apple-darwin
+PLATFORM_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+PLATFORM_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+if [ "${PLATFORM_ARCH}" = "aarch64" ]; then
+    PLATFORM_ARCH="arm64"
+fi
+if [ "${PLATFORM_ARCH}" = "x86_64" ]; then
+    PLATFORM_ARCH="amd64"
+fi
+
+ANSIBLE_RELEASE="${ANSIBLE_RELEASE:-10.0}"
+PYTHON_RELEASE="${PYTHON_RELEASE:-20240415}"
+PYTHON_VERSION="${PYTHON_VERSION:-3.11.9}"
+
+if [ "${PLATFORM_OS}" = "darwin" ]; then
+    PYTHON_OS="apple-darwin"
+elif [ "${PLATFORM_OS}" = "linux" ]; then
+    PYTHON_OS="unknown-linux-gnu"
+else
+    echo "Unsupported OS: ${PLATFORM_OS}"
+    exit 1
+fi
+
+if [ "${PLATFORM_ARCH}" = "amd64" ]; then
+    PYTHON_ARCH="x86_64"
+elif [ "${PLATFORM_ARCH}" = "arm64" ]; then
+    PYTHON_ARCH="aarch64"
+else
+    echo "Unsupported architecture: ${PLATFORM_ARCH}"
+    exit 1
+fi
 
 WORKDIR=$(mktemp -d)
 
@@ -47,14 +72,4 @@ find "${WORKDIR}/getansible/python" -type d -name "tests" -print | xargs rm -rf
     ./entrypoint.sh
 
 chmod 0755 "${WORKDIR}/getansible.sh"
-
-PLATFORM_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-PLATFORM_ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
-if [ "${PLATFORM_ARCH}" = "aarch64" ]; then
-    PLATFORM_ARCH="arm64"
-fi
-if [ "${PLATFORM_ARCH}" = "x86_64" ]; then
-    PLATFORM_ARCH="amd64"
-fi
-
 cp "${WORKDIR}/getansible.sh" "${SOURCEDIR}/../dist/getansible-${ANSIBLE_RELEASE}-${PLATFORM_OS}-${PLATFORM_ARCH}.sh"
