@@ -16,8 +16,7 @@ export PATH
 unset PYTHONPATH
 
 # ensure python3 interpreter
-SED=command -v sed
-if $SED --version 2>&1 | grep -q 'GNU sed'; then
+if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
     find "${PATH_BIN}" -type f -exec sed -i '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
 else
     find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
