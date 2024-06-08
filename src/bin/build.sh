@@ -11,12 +11,14 @@ PYTHON_ARCH=aarch64
 PYTHON_OS=apple-darwin
 
 WORKDIR=$(mktemp -d)
-pushd "${WORKDIR}"
 
+pushd "${WORKDIR}"
 PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-${PYTHON_ARCH}-${PYTHON_OS}-install_only.tar.gz"
 curl -fsSLo "${PYTHON}" "https://github.com/indygreg/python-build-standalone/releases/download/${PYTHON_RELEASE}/${PYTHON}"
 tar xzf "${PYTHON}"
 rm -f "${PYTHON}"
+popd
+
 mkdir "${WORKDIR}/getansible"
 mv "${WORKDIR}/python" "${WORKDIR}/getansible/python"
 
@@ -45,4 +47,4 @@ find "${WORKDIR}/getansible/python" -type d -name "tests" -print | xargs rm -rf
     ./entrypoint.sh
 
 chmod 0755 "${WORKDIR}/getansible.sh"
-cp "${WORKDIR}/getansible.sh" "${SOURCEDIR}/dist/getansible-${ANSIBLE_RELEASE}-${PYTHON_ARCH}-${PYTHON_OS}.sh"
+cp "${WORKDIR}/getansible.sh" "${SOURCEDIR}/../dist/getansible-${ANSIBLE_RELEASE}-darwin-arm64.sh"
