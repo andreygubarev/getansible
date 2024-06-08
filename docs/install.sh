@@ -29,11 +29,6 @@ if ! command -v uname > /dev/null; then
     exit 1
 fi
 
-if [ "$(uname)" !~ "(Linux|Darwin)" ]; then
-    echo "unsupported operating system: $(uname)"
-    exit 1
-fi
-
 if [ -z "$GETANSIBLE_ARCH" ]; then
     GETANSIBLE_ARCH=$(uname -m)
 fi
@@ -51,8 +46,20 @@ case $GETANSIBLE_ARCH in
 esac
 
 if [ -z "$GETANSIBLE_OS" ]; then
-    GETANSIBLE_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+    GETANSIBLE_OS=$(uname -s)
 fi
+case $GETANSIBLE_OS in
+    Linux)
+        GETANSIBLE_OS="linux"
+        ;;
+    Darwin)
+        GETANSIBLE_OS="darwin"
+        ;;
+    *)
+        echo "unsupported OS: $GETANSIBLE_OS"
+        exit 1
+        ;;
+esac
 
 ### functions #################################################################
 getansible_install() {
