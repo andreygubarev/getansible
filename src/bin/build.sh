@@ -51,7 +51,7 @@ PYTHONBIN="${WORKDIR}/getansible/python/bin"
 PYTHON="${PYTHONBIN}/python3"
 
 "${PYTHON}" -m pip install --upgrade ansible~="${ANSIBLE_RELEASE}"
-find "${PYTHONBIN}" -type f -exec sed -i '1s|^.*$|#!/usr/bin/env python3|' {} \;
+find "${PYTHONBIN}" -type f -exec sed -i '1s|^#!.*$|#!/usr/bin/env python3|' {} \;
 
 cp "${SOURCEDIR}/entrypoint.sh" "${WORKDIR}/getansible/entrypoint.sh"
 chmod 0755 "${WORKDIR}/getansible/entrypoint.sh"
