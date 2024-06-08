@@ -51,7 +51,7 @@ PYTHONBIN="${WORKDIR}/getansible/python/bin"
 PYTHON="${PYTHONBIN}/python3"
 
 "${PYTHON}" -m pip install --upgrade ansible~="${ANSIBLE_RELEASE}"
-sed -i "s|#!|#!/usr/bin/env python3|" "${PYTHONBIN}/"*
+sed -i '1s|^.*$|#!/usr/bin/env python3|' "${PYTHONBIN}/"*
 cp "${SOURCEDIR}/entrypoint.sh" "${WORKDIR}/getansible/entrypoint.sh"
 chmod 0755 "${WORKDIR}/getansible/entrypoint.sh"
 rm -r "${WORKDIR}/getansible/python/share/"
