@@ -101,7 +101,6 @@ jobs:
     strategy:
       matrix:
         platform:
-          - amd64
           - arm64
         version:
           - ANSIBLE_RELEASE: "9.0"
