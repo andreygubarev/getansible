@@ -268,21 +268,31 @@ EOF
 
 
 # bats test_tags=T200,curlpipe
-@test "T200: curl https://getansible.sh/ | bash" {
+@test "T200: curl -s https://getansible.sh/ | bash" {
   run bash -c "curl -s https://getansible.sh/ | bash"
   assert_success
+  assert_file_exist /usr/local/bin/gan.sh
   assert_teardown
 }
 
 # bats test_tags=T201,curlpipe
-@test "T201: curl https://getansible.sh/ | bash -" {
-  run bash -c "curl -s https://getansible.sh/ | bash -"
+@test "T201: curl -sL getansible.sh | bash" {
+  run bash -c "curl -sL getansible.sh | bash"
   assert_success
+  assert_file_exist /usr/local/bin/gan.sh
   assert_teardown
 }
 
 # bats test_tags=T202,curlpipe
-@test "T202: curl https://getansible.sh/ | bash -s -- install --link" {
+@test "T202: curl -sL getansible.sh | bash -s -- install" {
+  run bash -c "curl -sL getansible.sh | bash"
+  assert_success
+  assert_file_exist /usr/local/bin/getansible.sh
+  assert_teardown
+}
+
+# bats test_tags=T203,curlpipe
+@test "T203: curl https://getansible.sh/ | bash -s -- install --link" {
   run bash -c "curl -s https://getansible.sh/ | bash -s -- install --link"
   assert_success
   assert_file_exist /usr/local/bin/ansible
