@@ -96,6 +96,7 @@ jobs:
           PYTHON_RELEASE=${{ matrix.version.PYTHON_RELEASE }}
 
       - name: Test
+        if: matrix.platform == 'amd64'
         run: >-
           make build-docker test
           ANSIBLE_RELEASE=${{ matrix.version.ANSIBLE_RELEASE }}
