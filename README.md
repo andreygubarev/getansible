@@ -5,7 +5,7 @@
 ## Quick Start
 
 ```bash
-curl -sL getansible.sh | bash -
+curl -s https://getansible.sh | bash -
 ```
 
 ## Usage
