@@ -182,6 +182,8 @@ main() {
     location=""
     location_type=""
 
+    workspace_path=""
+
     # use case 1.1: directory path (relative path to directory with playbook.yml, e.g "myplaybook")
     if [ -d "$playbook" ] || [ -d "$USER_PWD/$playbook" ]; then
         if echo "$playbook" | grep -qE '^/'; then
@@ -240,6 +242,24 @@ main() {
     elif echo "$playbook" | grep -qE '^github.com/.+/.+$'; then
         location="$playbook"
         location_type="github"
+
+    # use case 5.1: actions (@)
+    elif echo "$playbook" | grep -qE '^@'; then
+        location="$(echo "$playbook" | awk -F@ '{print $2}')"
+        location_type="github"
+
+        # use case 5.1.1: github.com/<owner>/ansible-collection-actions//<path>
+        repo_owner="$(echo "$location" | awk -F/ '{print $1}')"
+        repo_path="$(echo "$location" | awk -F/ '{print $2}')"
+
+        # use case 5.1.2: github.com/getansible/ansible-collection-actions//<path>
+        if [ -z "$repo_path" ]; then
+            repo_path="$repo_owner"
+            repo_owner="getansible"
+        fi
+
+        location="github.com/$location_owner/ansible-collection-actions"
+        workspace_path="$repo_path"
 
     else
         echo "Error: invalid playbook location '$playbook'"
@@ -306,6 +326,13 @@ EOF
             tar -C "$workspace" -xzf "$tmpfile"
             ;;
     esac
+
+    if [ -d "${workspace}/${workspace_path}" ]; then
+        workspace="${workspace}/${workspace_path}"
+    else
+        echo "Error: playbook not found in path '$workspace/${workspace_path}'"
+        exit 3
+    fi
 
     playbook "$workspace"
 }
