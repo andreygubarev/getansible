@@ -168,7 +168,7 @@ playbook() {
     fi
 
     # workspace: execute
-    "$PATH_BIN/ansible-playbook" "$workspace_playbook"
+    "$PATH_BIN/ansible-runner" run "$ANSIBLE_PLAYBOOK_DIR" -p "$workspace_playbook"
     rc=$?
 
     popd > /dev/null || exit 1
