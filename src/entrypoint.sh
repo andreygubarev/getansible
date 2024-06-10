@@ -123,8 +123,8 @@ playbook() {
     fi
 
     # workspace: ansible collections
-    if [ -d "$ANSIBLE_PLAYBOOK_DIR/collections" ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections:$ANSIBLE_COLLECTIONS_PATH"
+    if [ -d "$ANSIBLE_PLAYBOOK_DIR/collections/ansible_collections" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections/ansible_collections:$ANSIBLE_COLLECTIONS_PATH"
     fi
 
     # workspace: ansible galaxy
