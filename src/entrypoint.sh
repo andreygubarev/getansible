@@ -258,7 +258,7 @@ main() {
             repo_owner="getansible"
         fi
 
-        location="github.com/$location_owner/ansible-collection-actions"
+        location="github.com/$repo_owner/ansible-collection-actions"
         workspace_path="$repo_path"
 
     else
