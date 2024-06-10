@@ -141,17 +141,18 @@ playbook() {
         fi
 
         if [ -s "$tmphosts" ]; then
+            mkdir -p "$ANSIBLE_PLAYBOOK_DIR/inventory"
             if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
-                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
-                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
+                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/inventory/hosts.yml"
+                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/inventory/hosts.yml"
             else
-                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/hosts"
-                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts"
+                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/inventory/hosts"
+                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/inventory/hosts"
             fi
         elif [ -f hosts ]; then
-            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts"
+            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/inventory/hosts"
         elif [ -f hosts.yml ]; then
-            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
+            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/inventory/hosts.yml"
         fi
 
         export ANSIBLE_INVENTORY
