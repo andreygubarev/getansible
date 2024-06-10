@@ -50,7 +50,7 @@ mv "${WORKDIR}/python" "${WORKDIR}/getansible/python"
 PYTHONBIN="${WORKDIR}/getansible/python/bin"
 PYTHON="${PYTHONBIN}/python3"
 
-"${PYTHON}" -m pip install --upgrade ansible~="${ANSIBLE_RELEASE}"
+"${PYTHON}" -m pip install --upgrade ansible~="${ANSIBLE_RELEASE}" ansible-runner~=2.0
 if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
     find "${PYTHONBIN}" -type f -exec sed -i '1s|^#!.*$|#!/usr/bin/env python3|' {} \;
 else
