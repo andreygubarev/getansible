@@ -118,13 +118,13 @@ playbook() {
     fi
 
     # workspace: ansible roles
-    if [ -d "$ANSIBLE_PLAYBOOK_DIR/roles" ]; then
-        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles:$ANSIBLE_ROLES_PATH"
+    if [ -d "$ANSIBLE_PLAYBOOK_DIR/project/roles" ]; then
+        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/project/roles:$ANSIBLE_ROLES_PATH"
     fi
 
     # workspace: ansible collections
-    if [ -d "$ANSIBLE_PLAYBOOK_DIR/collections" ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections:$ANSIBLE_COLLECTIONS_PATH"
+    if [ -d "$ANSIBLE_PLAYBOOK_DIR/project/collections" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/project/collections:$ANSIBLE_COLLECTIONS_PATH"
     fi
 
     # workspace: ansible galaxy
