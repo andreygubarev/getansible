@@ -74,6 +74,7 @@ assert_ansible_galaxy() {
 ### function | playbook #######################################################
 playbook() {
     workspace=$1
+    workspace_playbook="${2:-playbook.yml}"
 
     pushd "$workspace" > /dev/null || exit 1
     # change directory if there is only one sub-directory in the workspace
@@ -82,10 +83,11 @@ playbook() {
     then
         subdir=$(find . -maxdepth 1 -type d -not -name .)
         popd > /dev/null || exit 1
-        pushd "$workspace/$subdir" > /dev/null || exit 1
+        workspace="$workspace/$subdir"
+        pushd "$workspace" > /dev/null || exit 1
     fi
 
-    ANSIBLE_PLAYBOOK_DIR=$(pwd)
+    ANSIBLE_PLAYBOOK_DIR=$(dirname "$workspace/$workspace_playbook")
     export ANSIBLE_PLAYBOOK_DIR
 
     # workspace: dotenv
@@ -107,24 +109,19 @@ playbook() {
     fi
 
     # workspace: ansible playbook
-    workspace_playbook=""
-    if [ -f playbook.yml ]; then
-        workspace_playbook="playbook.yml"
-    elif [ -f playbook.yaml ]; then
-        workspace_playbook="playbook.yaml"
-    else
-        echo "ERROR: playbook.yml not found"
+    if [ ! -f "$workspace_playbook" ]; then
+        echo "ERROR: playbook not found: $workspace_playbook"
         exit 1
     fi
 
     # workspace: ansible roles
-    if [ -d "$ANSIBLE_PLAYBOOK_DIR/roles" ]; then
-        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles:$ANSIBLE_ROLES_PATH"
+    if [ -d "$workspace/roles" ]; then
+        export ANSIBLE_ROLES_PATH="$workspace/roles:$ANSIBLE_ROLES_PATH"
     fi
 
     # workspace: ansible collections
-    if [ -d "$ANSIBLE_PLAYBOOK_DIR/collections" ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections:$ANSIBLE_COLLECTIONS_PATH"
+    if [ -d "$workspace/collections" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$workspace/collections:$ANSIBLE_COLLECTIONS_PATH"
     fi
 
     # workspace: ansible galaxy
@@ -142,16 +139,16 @@ playbook() {
 
         if [ -s "$tmphosts" ]; then
             if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
-                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
-                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
+                cp "$tmphosts" "$workspace/hosts.yml"
+                ANSIBLE_INVENTORY="$workspace/hosts.yml"
             else
-                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/hosts"
-                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts"
+                cp "$tmphosts" "$workspace/hosts"
+                ANSIBLE_INVENTORY="$workspace/hosts"
             fi
         elif [ -f hosts ]; then
-            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts"
+            ANSIBLE_INVENTORY="$workspace/hosts"
         elif [ -f hosts.yml ]; then
-            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
+            ANSIBLE_INVENTORY="$workspace/hosts.yml"
         fi
 
         export ANSIBLE_INVENTORY
@@ -182,7 +179,7 @@ main() {
     location=""
     location_type=""
 
-    workspace_path=""
+    workspace_playbook="playbook.yml"
 
     # use case 1.1: directory path (relative path to directory with playbook.yml, e.g "myplaybook")
     if [ -d "$playbook" ] || [ -d "$USER_PWD/$playbook" ]; then
@@ -248,18 +245,18 @@ main() {
         location="$(echo "$playbook" | awk -F@ '{print $2}')"
         location_type="github"
 
-        # use case 5.1.1: github.com/<owner>/ansible-collection-actions//<path>
+        # use case 5.1.1: @owner/playbook ~ github.com/<owner>/ansible-collection-actions//playbooks/<playbook>.yml
         repo_owner="$(echo "$location" | awk -F/ '{print $1}')"
-        repo_path="$(echo "$location" | awk -F/ '{print $2}')"
+        repo_playbook="$(echo "$location" | awk -F/ '{print $2}')"
 
-        # use case 5.1.2: github.com/getansible/ansible-collection-actions//<path>
-        if [ -z "$repo_path" ]; then
-            repo_path="$repo_owner"
+        # use case 5.1.2: @playbook ~ github.com/getansible/ansible-collection-actions//playbooks/<playbook>.yml
+        if [ -z "$repo_playbook" ]; then
+            repo_playbook="$repo_owner"
             repo_owner="getansible"
         fi
 
         location="github.com/$repo_owner/ansible-collection-actions"
-        workspace_path="$repo_path"
+        workspace_playbook="playbooks/$repo_playbook.yml"
 
     else
         echo "Error: invalid playbook location '$playbook'"
@@ -327,14 +324,7 @@ EOF
             ;;
     esac
 
-    if [ -d "${workspace}/${workspace_path}" ]; then
-        workspace="${workspace}/${workspace_path}"
-    else
-        echo "Error: playbook not found in path '$workspace/${workspace_path}'"
-        exit 3
-    fi
-
-    playbook "$workspace"
+    playbook "$workspace" "$workspace_playbook"
 }
 
 ### cli | usage ###############################################################
