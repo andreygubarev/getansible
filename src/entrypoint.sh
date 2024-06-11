@@ -74,7 +74,7 @@ assert_ansible_galaxy() {
 ### function | playbook #######################################################
 playbook() {
     workspace=$1
-    workspace_playbook="${2:-playbook.yml}}"
+    workspace_playbook="${2:-playbook.yml}"
 
     pushd "$workspace" > /dev/null || exit 1
     # change directory if there is only one sub-directory in the workspace
@@ -83,7 +83,8 @@ playbook() {
     then
         subdir=$(find . -maxdepth 1 -type d -not -name .)
         popd > /dev/null || exit 1
-        pushd "$workspace/$subdir" > /dev/null || exit 1
+        workspace="$workspace/$subdir"
+        pushd "$workspace" > /dev/null || exit 1
     fi
 
     ANSIBLE_PLAYBOOK_DIR=$(dirname "$workspace/$workspace_playbook")
@@ -119,8 +120,8 @@ playbook() {
     fi
 
     # workspace: ansible collections
-    if [ -d "$workspace/collections/ansible_collections" ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$workspace/collections/ansible_collections:$ANSIBLE_COLLECTIONS_PATH"
+    if [ -d "$workspace/collections" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$workspace/collections:$ANSIBLE_COLLECTIONS_PATH"
     fi
 
     # workspace: ansible galaxy
@@ -255,7 +256,7 @@ main() {
         fi
 
         location="github.com/$repo_owner/ansible-collection-actions"
-        workspace_playbook="playbooks/$repo_playbook"
+        workspace_playbook="playbooks/$repo_playbook.yml"
 
     else
         echo "Error: invalid playbook location '$playbook'"

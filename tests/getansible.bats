@@ -204,6 +204,14 @@ EOF
     assert_teardown
 }
 
+# bats test_tags=T019,getansible,playbook
+@test "T019: getansible.sh -- @andreygubarev/ping" {
+    run getansible.sh -- @andreygubarev/ping
+    assert_success
+    assert_output --partial "andreygubarev.actions.ping : Ping"
+    assert_teardown
+}
+
 # bats test_tags=T100,install
 @test "T100: install.sh install" {
     run install.sh install
