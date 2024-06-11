@@ -73,41 +73,26 @@ assert_teardown() {
 }
 
 # bats test_tags=T007,getansible,galaxy
-@test "T007: getansible.sh -- andreygubarev.core.ping" {
-    # skip unsupported ansible releases: 3.0, 4.0 and 5.0
-    if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5')" ]; then
-        skip
-    fi
-
-    run getansible.sh -- andreygubarev.core.ping
+@test "T007: getansible.sh -- andreygubarev.actions.ping" {
+    run getansible.sh -- andreygubarev.actions.ping
     assert_success
-    assert_output --partial "andreygubarev.core.ping : Ping"
+    assert_output --partial "andreygubarev.actions.ping : Ping"
     assert_output --partial "failed=0"
     assert_teardown
 }
 
 # bats test_tags=T008,getansible,galaxy
-@test "T008: getansible.sh -- andreygubarev.core.ping 0.7.3" {
-    # skip unsupported ansible releases: 3.0, 4.0, 5.0, 6.0 and 7.0
-    if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6\|ansible==7')" ]; then
-        skip
-    fi
-
-    run getansible.sh -- andreygubarev.core.ping 0.7.3
+@test "T008: getansible.sh -- andreygubarev.actions.ping 0.8.1" {
+    run getansible.sh -- andreygubarev.actions.ping 0.8.1
     assert_success
-    assert_output --partial "andreygubarev.core.ping : Ping"
+    assert_output --partial "andreygubarev.actions.ping : Ping"
     assert_output --partial "failed=0"
     assert_teardown
 }
 
 # bats test_tags=T009,getansible,galaxy
-@test "T009: getansible.sh -- andreygubarev.core.ping 0.7.0" {
-    # skip unsupported ansible releases: 3.0, 4.0, 5.0, 6.0 and 7.0
-    if [ -n "$(getansible.sh -- exec pip3 freeze | grep 'ansible==3\|ansible==4\|ansible==5\|ansible==6\|ansible==7')" ]; then
-        skip
-    fi
-
-    run getansible.sh -- andreygubarev.core.ping 0.7.0
+@test "T009: getansible.sh -- andreygubarev.actions.ping 0.7.0" {
+    run getansible.sh -- andreygubarev.actions.ping 0.7.0
     assert_failure  # version 0.7.0 does not have a ping role
     assert_teardown
 }
