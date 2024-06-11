@@ -86,7 +86,7 @@ playbook() {
         pushd "$workspace/$subdir" > /dev/null || exit 1
     fi
 
-    ANSIBLE_PLAYBOOK_DIR=$(pwd)
+    ANSIBLE_PLAYBOOK_DIR=$(dirname "$workspace/$workspace_playbook")
     export ANSIBLE_PLAYBOOK_DIR
 
     # workspace: dotenv
@@ -114,13 +114,13 @@ playbook() {
     fi
 
     # workspace: ansible roles
-    if [ -d "$ANSIBLE_PLAYBOOK_DIR/roles" ]; then
-        export ANSIBLE_ROLES_PATH="$ANSIBLE_PLAYBOOK_DIR/roles:$ANSIBLE_ROLES_PATH"
+    if [ -d "$workspace/roles" ]; then
+        export ANSIBLE_ROLES_PATH="$workspace/roles:$ANSIBLE_ROLES_PATH"
     fi
 
     # workspace: ansible collections
-    if [ -d "$ANSIBLE_PLAYBOOK_DIR/collections/ansible_collections" ]; then
-        export ANSIBLE_COLLECTIONS_PATH="$ANSIBLE_PLAYBOOK_DIR/collections/ansible_collections:$ANSIBLE_COLLECTIONS_PATH"
+    if [ -d "$workspace/collections/ansible_collections" ]; then
+        export ANSIBLE_COLLECTIONS_PATH="$workspace/collections/ansible_collections:$ANSIBLE_COLLECTIONS_PATH"
     fi
 
     # workspace: ansible galaxy
@@ -138,16 +138,16 @@ playbook() {
 
         if [ -s "$tmphosts" ]; then
             if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
-                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
-                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
+                cp "$tmphosts" "$workspace/hosts.yml"
+                ANSIBLE_INVENTORY="$workspace/hosts.yml"
             else
-                cp "$tmphosts" "$ANSIBLE_PLAYBOOK_DIR/hosts"
-                ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts"
+                cp "$tmphosts" "$workspace/hosts"
+                ANSIBLE_INVENTORY="$workspace/hosts"
             fi
         elif [ -f hosts ]; then
-            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts"
+            ANSIBLE_INVENTORY="$workspace/hosts"
         elif [ -f hosts.yml ]; then
-            ANSIBLE_INVENTORY="$ANSIBLE_PLAYBOOK_DIR/hosts.yml"
+            ANSIBLE_INVENTORY="$workspace/hosts.yml"
         fi
 
         export ANSIBLE_INVENTORY
@@ -255,7 +255,7 @@ main() {
         fi
 
         location="github.com/$repo_owner/ansible-collection-actions"
-        workspace_playbook="$repo_playbook"
+        workspace_playbook="playbooks/$repo_playbook"
 
     else
         echo "Error: invalid playbook location '$playbook'"
