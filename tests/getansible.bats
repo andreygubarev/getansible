@@ -208,7 +208,7 @@ EOF
 @test "T019: getansible.sh -- @andreygubarev/ping" {
     run getansible.sh -- @andreygubarev/ping
     assert_success
-    assert_output --partial "andreygubarev.actions.ping : Ping"
+    assert_output --partial "ping : Ping"
     assert_teardown
 }
 
