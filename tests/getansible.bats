@@ -60,11 +60,6 @@ assert_teardown() {
 
 # bats test_tags=T006,getansible,galaxy
 @test "T006: getansible.sh -- geerlingguy.apache" {
-    # skip unsupported ansible releases: 3.0, 4.0 and 5.0
-    if [ -n "$(getansible.sh -- exec pip freeze | grep 'ansible==3\|ansible==4\|ansible==5')" ]; then
-        skip
-    fi
-
     run getansible.sh -- geerlingguy.apache
     assert_success
     assert_output --partial "geerlingguy.apache"
@@ -264,7 +259,7 @@ EOF
 @test "T200: curl -s https://getansible.sh/ | bash" {
   run bash -c "curl -s https://getansible.sh/ | bash"
   assert_success
-  assert_file_exist /usr/local/bin/gan.sh
+  assert_file_exist /usr/local/bin/getansible.sh
   assert_teardown
 }
 
@@ -272,7 +267,7 @@ EOF
 @test "T201: curl -sL getansible.sh | bash" {
   run bash -c "curl -sL getansible.sh | bash"
   assert_success
-  assert_file_exist /usr/local/bin/gan.sh
+  assert_file_exist /usr/local/bin/getansible.sh
   assert_teardown
 }
 

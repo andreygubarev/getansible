@@ -149,7 +149,7 @@ getansible() {
 
 ### main ######################################################################
 if [ "$#" -eq 0 ]; then
-    getansible_install "$ANSIBLE_RELEASE" "/usr/local/bin/gan.sh" "false"
+    getansible_install "$ANSIBLE_RELEASE" "/usr/local/bin/getansible.sh" "false"
     exit 0
 fi
 
