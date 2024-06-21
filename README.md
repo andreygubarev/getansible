@@ -14,7 +14,6 @@ Install `getansible.sh` using `curl`:
 curl -sL getansible.sh | bash -
 ```
 
-
 After that run Ansible playbooks directly:
 ```bash
 getansible.sh -- geerlingguy.docker
@@ -22,7 +21,7 @@ getansible.sh -- geerlingguy.docker
 
 ### Prerequisites
 
-`getansible.sh` requires `bash`, `curl`, `sed` and `tar` to be installed on the system. Ansible requires `locale` to be installed and configued.
+`getansible.sh` requires `bash`, `curl`, `sed` and `tar` to be installed on the system. Ansible requires locale to be installed and configued.
 
 
 ```bash
@@ -32,14 +31,25 @@ apt-get update && apt-get install -yq --no-install-recommends \
     locales-all
 ```
 
-## Support Ansible Galaxy and Ansible Collections
+## Support Ansible Galaxy and Ansible Collections sources
+
+`getansible.sh` supports Ansible Galaxy sources:
+```bash
+# Ansible Role: https://galaxy.ansible.com/ui/standalone/roles/geerlingguy/docker/
+getansible.sh -- geerlingguy.docker
+
+# Ansible Role from Collection: https://galaxy.ansible.com/ui/repo/published/andreygubarev/actions/content/role/ssh/
+getansible.sh -- andreygubarev.actions.ssh
+```
+
+## Support Github sources
+
+`getansible.sh` supports Github sources:
+```bash
+getansible.sh -- github.com/geerlingguy/ansible-role-docker
+```
 
 ## Support local directory
-
-You can specify inline Python requirements needed for your playbook:
-```bash
-PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
-```
 
 For tarball sources, use following file structure is expected inside the tarball:
 ```
