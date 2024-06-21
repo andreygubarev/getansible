@@ -4,26 +4,21 @@
 
 ## Quick Start
 
+Use `getansible.sh` to run Ansible playbooks:
 ```bash
-curl -s https://getansible.sh | bash -
+curl -sL getansible.sh | bash -s -- @andreygubarev/setup-ssh
 ```
 
-## Usage
+## Getting started
 
-Use Ansible commands with curl piping:
+Install `getansible.sh` using `curl`:
 ```bash
-curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
+curl -sL getansible.sh | bash -
 ```
 
-Or use `getansible.sh` as a wrapper for Ansible commands (after [installing](#Installation) it):
+So you can run Ansible playbooks directly
 ```bash
-getansible.sh -- ansible-playbook playbook.yml
-```
-
-Additionally, tarball sources (`file://`, `http://` or `https://`) are supported:
-
-```bash
-curl -sL https://getansible.sh/ | bash -s -- https://example.com/playbook.tar.gz
+getansible.sh -- @andreygubarev/setup-ssh
 ```
 
 ### Advanced Usage
