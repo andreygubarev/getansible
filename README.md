@@ -6,12 +6,12 @@
 
 Use `getansible.sh` to run Ansible playbooks:
 ```bash
-sh <(curl -sL getansible.sh) geerlingguy.docker
+sh <(curl -s https://getansible.sh) geerlingguy.docker
 ```
 
 Install `getansible.sh` using `curl`:
 ```bash
-sh <(curl -sL getansible.sh)
+sh <(curl -s https://getansible.sh)
 ```
 
 After that run Ansible roles directly:
