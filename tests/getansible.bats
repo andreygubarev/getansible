@@ -256,35 +256,51 @@ EOF
 
 
 # bats test_tags=T200,curlpipe
-@test "T200: curl -s https://getansible.sh/ | bash" {
-  run bash -c "curl -s https://getansible.sh/ | bash"
+@test "T200: curl -s https://getansible.sh/ | sh" {
+  run sh -c "curl -s https://getansible.sh/ | sh"
   assert_success
   assert_file_exist /usr/local/bin/getansible.sh
   assert_teardown
 }
 
 # bats test_tags=T201,curlpipe
-@test "T201: curl -sL getansible.sh | bash" {
-  run bash -c "curl -sL getansible.sh | bash"
+@test "T201: curl -sL getansible.sh | sh" {
+  run sh -c "curl -sL getansible.sh | sh"
   assert_success
   assert_file_exist /usr/local/bin/getansible.sh
   assert_teardown
 }
 
 # bats test_tags=T202,curlpipe
-@test "T202: curl -sL getansible.sh | bash -s -- install" {
-  run bash -c "curl -sL getansible.sh | bash -s -- install"
+@test "T202: curl -sL getansible.sh | sh -s -- install" {
+  run sh -c "curl -sL getansible.sh | sh -s -- install"
   assert_success
   assert_file_exist /usr/local/bin/getansible.sh
   assert_teardown
 }
 
 # bats test_tags=T203,curlpipe
-@test "T203: curl https://getansible.sh/ | bash -s -- install --link" {
-  run bash -c "curl -s https://getansible.sh/ | bash -s -- install --link"
+@test "T203: curl https://getansible.sh/ | sh -s -- install --link" {
+  run sh -c "curl -s https://getansible.sh/ | sh -s -- install --link"
   assert_success
   assert_file_exist /usr/local/bin/ansible
   assert_file_exist /usr/local/bin/ansible-galaxy
   assert_file_exist /usr/local/bin/ansible-playbook
+  assert_teardown
+}
+
+# bats test_tags=T204,curlpipe
+@test "T204: sh <(curl -sL getansible.sh)" {
+  run sh <(curl -sL getansible.sh)
+  assert_success
+  assert_file_exist /usr/local/bin/getansible.sh
+  assert_teardown
+}
+
+# bats test_tags=T205,curlpipe
+@test "T205: sh <(curl -sL getansible.sh) " {
+  run sh <(curl -sL getansible.sh) @andreygubarev/ping
+  assert_success
+  assert_file_exist /usr/local/bin/getansible.sh
   assert_teardown
 }
