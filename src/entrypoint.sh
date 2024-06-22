@@ -132,27 +132,11 @@ playbook() {
 
     # workspace: ansible inventory
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
-        tmphosts="$WORKDIR/.ansible/hosts.tmp"
-
-        if [ -p /dev/stdin ]; then
-            cat - > "$tmphosts"
-        fi
-
-        if [ -s "$tmphosts" ]; then
-            if [ "$(head -n 1 "$tmphosts")" = "---" ]; then
-                cp "$tmphosts" "$workspace/hosts.yml"
-                ANSIBLE_INVENTORY="$workspace/hosts.yml"
-            else
-                cp "$tmphosts" "$workspace/hosts"
-                ANSIBLE_INVENTORY="$workspace/hosts"
-            fi
-        elif [ -f hosts ]; then
-            ANSIBLE_INVENTORY="$workspace/hosts"
+        if [ -f hosts ]; then
+            export ANSIBLE_INVENTORY="$workspace/hosts"
         elif [ -f hosts.yml ]; then
-            ANSIBLE_INVENTORY="$workspace/hosts.yml"
+            export ANSIBLE_INVENTORY="$workspace/hosts.yml"
         fi
-
-        export ANSIBLE_INVENTORY
     fi
 
     # workspace: ansible inventory (localhost)
