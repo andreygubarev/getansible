@@ -50,10 +50,7 @@ Supported Platforms:
 `getansible.sh` requires `bash`, `curl`, `sed` and `tar` to be installed on the system. Ansible requires locale to be installed and configued.
 
 ```bash
-apt-get update && apt-get install -yq --no-install-recommends \
-    ca-certificates \
-    curl \
-    locales-all
+apt-get update && apt-get install -yq --no-install-recommends ca-certificates curl locales-all
 ```
 
 `getansible.sh` requires at least 1GB of free space in the temporary directory. You may need to change default `TMPDIR` if you have limited space in `/tmp`.
@@ -69,7 +66,7 @@ apt-get update && apt-get install -yq --no-install-recommends \
 getansible.sh -- geerlingguy.docker
 
 # Ansible Role from Collection: https://galaxy.ansible.com/ui/repo/published/andreygubarev/actions/content/role/ssh/
-getansible.sh -- andreygubarev.actions.ssh
+getansible.sh -- andreygubarev.actions.ping
 ```
 
 ### Github sources
@@ -79,7 +76,7 @@ getansible.sh -- andreygubarev.actions.ssh
 
 ```bash
 # https://github.com/andreygubarev/ansible-collection-actions/blob/main/playbooks/setup-ssh.yml
-getansible.sh -- @andreygubarev/setup-ssh
+getansible.sh -- @andreygubarev/ping
 ```
 
 ## Local sources
