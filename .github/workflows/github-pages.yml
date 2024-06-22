@@ -71,7 +71,7 @@ jobs:
         run: |
           set -euxo pipefail
           curl -s https://getansible.sh/ | bash -
-          test -f /usr/local/bin/gan.sh
+          test -f /usr/local/bin/getansible.sh
 
   linux-smoke-test:
     runs-on: ubuntu-latest
@@ -85,7 +85,7 @@ jobs:
         run: |
           set -euxo pipefail
           curl -s https://getansible.sh/ | bash -
-          test -f /usr/local/bin/gan.sh
+          test -f /usr/local/bin/getansible.sh
 
   linux-test:
     runs-on: ubuntu-latest
