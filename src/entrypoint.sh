@@ -92,14 +92,17 @@ playbook() {
 
     # workspace: dotenv
     if [ -f .env ]; then
-        while IFS= read -r var || [ -n "$var" ]; do
-            case "$var" in
+        while IFS= read -r line || [ -n "$line" ]; do
+            case "$line" in
                 "#"*) continue ;;
                 "") continue ;;
                 *)
-                    var_name=${var%%=*}
-                    echo "$var_name"
-                    eval "export $var"
+                    var=${line%%=*}
+                    if [ -n "${var:-}" ]; then
+                        continue
+                    fi
+                    value=${line#*=}
+                    export "$var"="$value"
                     ;;
             esac
         done < .env
