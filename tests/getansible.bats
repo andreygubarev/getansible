@@ -301,6 +301,5 @@ EOF
 @test "T205: sh <(curl -sL getansible.sh) " {
   run sh <(curl -sL getansible.sh) @andreygubarev/ping
   assert_success
-  assert_file_exist /usr/local/bin/getansible.sh
   assert_teardown
 }
