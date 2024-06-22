@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env sh
+set -eu
 
 ### environment ###############################################################
 WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
@@ -76,15 +76,15 @@ playbook() {
     workspace=$1
     workspace_playbook="${2:-playbook.yml}"
 
-    pushd "$workspace" > /dev/null || exit 1
+    cd "$workspace" > /dev/null || exit 1
     # change directory if there is only one sub-directory in the workspace
     if { [ "$(find . -maxdepth 1 -type f | wc -l)" -eq 0 ]; } && \
        { [ "$(find . -maxdepth 1 -type d | wc -l)" -eq 2 ]; }
     then
         subdir=$(find . -maxdepth 1 -type d -not -name .)
-        popd > /dev/null || exit 1
+        cd - > /dev/null || exit 1
         workspace="$workspace/$subdir"
-        pushd "$workspace" > /dev/null || exit 1
+        cd "$workspace" > /dev/null || exit 1
     fi
 
     ANSIBLE_PLAYBOOK_DIR=$(dirname "$workspace/$workspace_playbook")
@@ -92,14 +92,15 @@ playbook() {
 
     # workspace: dotenv
     if [ -f .env ]; then
-        while IFS= read -r var || [[ -n "$var" ]]; do
-            if [[ ! "$var" == "" ]] && [[ ! "$var" == \#* ]]; then
-                var_name=${var%%=*}
-                echo "$var_name"
-                if ! declare -p "$var_name" > /dev/null 2>&1; then
-                    export "${var?}"
-                fi
-            fi
+        while IFS= read -r line || [ -n "$line" ]; do
+            case "$line" in
+                "#"*) continue ;;
+                "") continue ;;
+                *)
+                    var=${line%%=*}
+                    eval "export ${var}=\${${var}:-${line#*=}}"
+                    ;;
+            esac
         done < .env
     fi
 
@@ -138,7 +139,7 @@ playbook() {
         fi
 
         if [ -s "$tmphosts" ]; then
-            if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
+            if [ "$(head -n 1 "$tmphosts")" = "---" ]; then
                 cp "$tmphosts" "$workspace/hosts.yml"
                 ANSIBLE_INVENTORY="$workspace/hosts.yml"
             else
@@ -167,7 +168,7 @@ playbook() {
     "$PATH_BIN/ansible-playbook" "$workspace_playbook"
     rc=$?
 
-    popd > /dev/null || exit 1
+    cd - > /dev/null || exit 1
     return $rc
 }
 

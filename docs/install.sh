@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env sh
+set -eu
 
 ### variables #################################################################
 GETANSIBLE_OS="${GETANSIBLE_OS:-}"
@@ -63,9 +63,9 @@ esac
 
 ### functions #################################################################
 getansible_install() {
-    local ansible_release=$1
-    local getansible_path=$2
-    local link_option="$3"
+    ansible_release="$1"
+    getansible_path="$2"
+    link_option="$3"
 
     if [ -e "$getansible_path" ]; then
         if [ ! -w "$getansible_path" ]; then
@@ -89,9 +89,9 @@ getansible_install() {
     if command -v sha512sum > /dev/null; then
         SHA512SUMS=$(mktemp)
         curl -sLo "$SHA512SUMS" "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/SHA512SUMS"
-        pushd "$getansible_tempdir" > /dev/null
+        cd "$getansible_tempdir" > /dev/null
         sha512sum -c "$SHA512SUMS" --ignore-missing
-        popd > /dev/null
+        cd - > /dev/null
         rm -f "$SHA512SUMS"
     fi
 
@@ -105,7 +105,7 @@ getansible_install() {
 }
 
 getansible_link() {
-    local getansible_path=$1
+    getansible_path="$1"
 
     cat > /usr/local/bin/ansible <<EOF
 #!/usr/bin/env bash
@@ -128,7 +128,7 @@ EOF
 }
 
 getansible_uninstall() {
-    local getansible_path=$1
+    getansible_path="$1"
     rm -f "$getansible_path"
 }
 
