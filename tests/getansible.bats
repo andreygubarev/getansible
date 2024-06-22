@@ -173,13 +173,18 @@ assert_teardown() {
 @test "T017: getansible.sh -- /opt/006-inventory.tar.gz" {
     tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
 
-    run getansible.sh -- /opt/006-inventory.tar.gz <<-EOF
+    export ANSIBLE_INVENTORY=$(mktemp --suffix=.yml) && cat <<-EOF > ${ANSIBLE_INVENTORY}
 ---
 ungrouped:
   hosts:
     localhost:
       foo: bar
 EOF
+    run getansible.sh -- /opt/006-inventory.tar.gz
+
+    rm -f ${ANSIBLE_INVENTORY}
+    unset ANSIBLE_INVENTORY
+
     assert_success
     assert_output --partial "foo=bar"
     assert_output --partial "ok=1"
@@ -190,9 +195,14 @@ EOF
 @test "T018: getansible.sh -- /opt/006-inventory.tar.gz" {
     tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
 
-    run getansible.sh -- /opt/006-inventory.tar.gz <<-EOF
+    export ANSIBLE_INVENTORY=$(mktemp) && cat <<-EOF > ${ANSIBLE_INVENTORY}
 localhost foo=bar
 EOF
+    run getansible.sh -- /opt/006-inventory.tar.gz
+
+    rm -f ${ANSIBLE_INVENTORY}
+    unset ANSIBLE_INVENTORY
+
     assert_success
     assert_output --partial "foo=bar"
     assert_output --partial "ok=1"
@@ -204,6 +214,24 @@ EOF
     run getansible.sh -- @andreygubarev/ping
     assert_success
     assert_output --partial "ping : Ping"
+    assert_teardown
+}
+
+# bats test_tags=T020,playbook,inventory
+@test "T020: getansible.sh -- /opt/006-inventory.tar.gz" {
+    tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
+
+    export ANSIBLE_INVENTORY=inventory && cat <<-EOF > ${ANSIBLE_INVENTORY}
+localhost foo=bar
+EOF
+    run getansible.sh -- /opt/006-inventory.tar.gz
+
+    rm -f ${ANSIBLE_INVENTORY}
+    unset ANSIBLE_INVENTORY
+
+    assert_success
+    assert_output --partial "foo=bar"
+    assert_output --partial "ok=1"
     assert_teardown
 }
 
