@@ -28,7 +28,7 @@ Supported Ansible Versions:
 | Release | Ansible | Ansible Core | Python |
 |---------|---------|--------------|--------|
 | 9.0     | 9.5.1   | 2.16.6       | 3.11.9 |
-| 10.0    | 10.1.0  | 2.17.0       | 3.11.9 |
+| 10.0    | 10.1.0  | 2.17.1       | 3.11.9 |
 
 Supported Linux with GLIBC 2.17 or later:
 
