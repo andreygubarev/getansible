@@ -119,7 +119,7 @@ curl -sL getansible.sh | GETANSIBLE_PATH=/opt/getansible.sh sh -s -- install
 curl -sL getansible.sh | ANSIBLE_RELEASE=9.0 sh -s -- install
 ```
 
-`PYTHON_REQUIREMENTS` - Python requirements needed for your playbook (default: `''`):
+`PIP_REQUIREMENTS` - Python requirements needed for your playbook (default: `''`):
 ```bash
 curl -sL getansible.sh | PIP_REQUIREMENTS='boto3 botocore' sh -s -- ansible --version
 ```
