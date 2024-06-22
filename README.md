@@ -14,10 +14,36 @@ Install `getansible.sh` using `curl`:
 curl -sL getansible.sh | bash -
 ```
 
-After that run Ansible playbooks directly:
+After that run Ansible roles directly:
 ```bash
 getansible.sh -- geerlingguy.docker
 ```
+
+### Overview
+
+`getansible.sh` is a shell script that contains a self-extracting archive of Ansible (including dependencies) and Python interpreter. It is designed to be executed on any Linux machine without the need to install packages or dependencies.
+
+Supported Ansible Versions:
+
+| Release | Ansible | Ansible Core | Python |
+|---------|---------|--------------|--------|
+| 9.0     | 9.5.1   | 2.16.6       | 3.11.9 |
+| 10.0    | 10.1.0  | 2.17.0       | 3.11.9 |
+
+Supported Linux with GLIBC 2.17 or later:
+
+- `Debian` starting from `8` (`jessie`)
+- `Ubuntu` starting from `14.04` (`trusty`)
+- `Fedora` starting from `21`
+- `openSUSE` starting from `13.2`
+- `RHEL` or `CentOS` starting from `7`
+
+Note: Linux distributions with MUSL (e.g. `Alpine`) are not supported.
+
+Supported Platforms:
+
+- `amd64`
+- `arm64`
 
 ### Prerequisites
 
@@ -30,10 +56,12 @@ apt-get update && apt-get install -yq --no-install-recommends \
     locales-all
 ```
 
+`getansible.sh` requires at least 1GB of free space in the temporary directory. You may need to change default `TMPDIR` if you have limited space in `/tmp`.
+
 ## Support for Ansible sources
 `getansible.sh` supports multiple sources for Ansible playbooks and roles.
 
-### Support Ansible Galaxy and Ansible Collections sources
+### Ansible Galaxy sources
 
 `getansible.sh` supports Ansible Galaxy sources:
 ```bash
@@ -44,7 +72,7 @@ getansible.sh -- geerlingguy.docker
 getansible.sh -- andreygubarev.actions.ssh
 ```
 
-### Support Github repository
+### Github sources
 
 `getansible.sh` supports Github repositories with special naming convention:
 `<user>/ansible-collection-actions` (e.g https://github.com/andreygubarev/ansible-collection-actions) and support shortcut syntax for playbooks execution:
@@ -54,7 +82,7 @@ getansible.sh -- andreygubarev.actions.ssh
 getansible.sh -- @andreygubarev/setup-ssh
 ```
 
-## Support local directory
+## Local sources
 
 For tarball sources, use following file structure is expected inside the tarball:
 ```
@@ -80,7 +108,7 @@ Where:
 - `requirements.yml` - Ansible Galaxy requirements file
 - `roles` - Directory with roles
 
-### Configuration
+## Configuration
 
 You can configure the following environment variables:
 
@@ -103,32 +131,6 @@ curl -sL https://getansible.sh/ | PYTHON_REQUIREMENTS='boto3 botocore' bash -s -
 ```bash
 curl -sL https://getansible.sh/ | TMPDIR=/opt/ bash
 ```
-`getansible.sh` requires at least 1GB of free space in the temporary directory. You may need to change default `TMPDIR` if you have limited space in `/tmp`.
-
-## Overview
-
-`getansible.sh` is a shell script that contains a self-extracting archive of Ansible (including dependencies) and Python interpreter. It is designed to be executed on any Linux machine without the need to install packages or dependencies.
-
-Supported Ansible Versions:
-
-| Release | Ansible | Ansible Core | Python |
-|---------|---------|--------------|--------|
-| 9.0     | 9.5.1   | 2.16.6       | 3.11.9 |
-
-Supported Linux with GLIBC 2.17 or later:
-
-- `Debian` starting from `8` (`jessie`)
-- `Ubuntu` starting from `14.04` (`trusty`)
-- `Fedora` starting from `21`
-- `openSUSE` starting from `13.2`
-- `RHEL` or `CentOS` starting from `7`
-
-Note: Linux distributions with MUSL (e.g. `Alpine`) are not supported.
-
-Supported Platforms:
-
-- `amd64`
-- `arm64`
 
 ## Motivation
 
