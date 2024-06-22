@@ -2,36 +2,54 @@
 
 [![Release - getansible.sh](https://github.com/andreygubarev/getansible/actions/workflows/github-release.yml/badge.svg?branch=main)](https://github.com/andreygubarev/getansible/actions/workflows/github-release.yml)
 
-## Quick Start
+## Getting started
 
+Use `getansible.sh` to run Ansible playbooks:
 ```bash
-curl -s https://getansible.sh | bash -
+curl -sL getansible.sh | bash -s -- geerlingguy.docker
 ```
 
-## Usage
-
-Use Ansible commands with curl piping:
+Install `getansible.sh` using `curl`:
 ```bash
-curl -sL https://getansible.sh/ | bash -s -- ansible-playbook playbook.yml
+curl -sL getansible.sh | bash -
 ```
 
-Or use `getansible.sh` as a wrapper for Ansible commands (after [installing](#Installation) it):
+After that run Ansible playbooks directly:
 ```bash
-getansible.sh -- ansible-playbook playbook.yml
+getansible.sh -- geerlingguy.docker
 ```
 
-Additionally, tarball sources (`file://`, `http://` or `https://`) are supported:
+### Prerequisites
+
+`getansible.sh` requires `bash`, `curl`, `sed` and `tar` to be installed on the system. Ansible requires locale to be installed and configued.
+
 
 ```bash
-curl -sL https://getansible.sh/ | bash -s -- https://example.com/playbook.tar.gz
+apt-get update && apt-get install -yq --no-install-recommends \
+    ca-certificates \
+    curl \
+    locales-all
 ```
 
-### Advanced Usage
+## Support Ansible Galaxy and Ansible Collections sources
 
-You can specify inline Python requirements needed for your playbook:
+`getansible.sh` supports Ansible Galaxy sources:
 ```bash
-PYTHON_REQUIREMENTS='boto3 botocore' getansible.sh -- ansible-playbook playbook.yml
+# Ansible Role: https://galaxy.ansible.com/ui/standalone/roles/geerlingguy/docker/
+getansible.sh -- geerlingguy.docker
+
+# Ansible Role from Collection: https://galaxy.ansible.com/ui/repo/published/andreygubarev/actions/content/role/ssh/
+getansible.sh -- andreygubarev.actions.ssh
 ```
+
+## Support Github sources
+
+`getansible.sh` supports Github sources:
+```bash
+getansible.sh -- github.com/geerlingguy/ansible-role-docker
+```
+
+## Support local directory
 
 For tarball sources, use following file structure is expected inside the tarball:
 ```
@@ -56,39 +74,6 @@ Where:
 - `requirements.txt` - Python requirements file
 - `requirements.yml` - Ansible Galaxy requirements file
 - `roles` - Directory with roles
-
-## Installation
-
-You can use `install.sh` to download and install `getansible.sh`:
-```bash
-curl -sL https://getansible.sh/ | bash
-```
-
-Optionally, you can specify the Ansible release to install (e.g. `9.0`):
-```bash
-curl -sL https://getansible.sh/ | ANSIBLE_RELEASE=9.0 bash
-```
-
-Also, you can create system-wide symlinks for Ansible commands (e.g. `ansible-playbook`):
-```bash
-curl -sL https://getansible.sh/ | bash -s -- install --link
-```
-
-### No Internet Access
-
-You can download distribution of `getansible.sh` from the [releases page](https://github.com/andreygubarev/getansible/releases):
-```bash
-curl -fsSL https://github.com/andreygubarev/getansible/releases/download/v0.3.7/getansible-9.0-amd64.sh -o /usr/local/bin/getansible.sh
-chmod +x /usr/local/bin/getansible.sh
-```
-
-### Prerequisites
-
-`getansible.sh` requires `bash`, `sed` and `tar` to be installed on the system.
-
-Additionally, if you are using curl piping, you need:
-- `curl` to download the script, and CA certificates to verify the download
-
 
 ### Configuration
 
@@ -123,12 +108,6 @@ Supported Ansible Versions:
 
 | Release | Ansible | Ansible Core | Python |
 |---------|---------|--------------|--------|
-| 3.0     | 3.4.0   | 2.10.17      | 3.8.19 |
-| 4.0     | 4.10.0  | 2.11.12      | 3.8.19 |
-| 5.0     | 5.10.0  | 2.12.10      | 3.8.19 |
-| 6.0     | 6.7.0   | 2.13.13      | 3.8.19 |
-| 7.0     | 7.7.0   | 2.14.16      | 3.11.9 |
-| 8.0     | 8.7.0   | 2.15.11      | 3.11.9 |
 | 9.0     | 9.5.1   | 2.16.6       | 3.11.9 |
 
 Supported Linux with GLIBC 2.17 or later:
