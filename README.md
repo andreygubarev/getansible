@@ -5,13 +5,13 @@
 ## Getting started
 
 Use `getansible.sh` to run Ansible playbooks:
-```bash
-sh <(curl -s https://getansible.sh) geerlingguy.docker
+```sh
+curl -s https://getansible.sh | sh -s -- geerlingguy.docker
 ```
 
 Install `getansible.sh` using `curl`:
-```bash
-sh <(curl -s https://getansible.sh)
+```sh
+curl -s https://getansible.sh | sh
 ```
 
 After that run Ansible roles directly:
@@ -114,22 +114,22 @@ You can configure the following environment variables:
 
 `GETANSIBLE_PATH` - Path to install `getansible.sh` (default: `/usr/local/bin/getansible.sh`):
 ```bash
-GETANSIBLE_PATH=/opt/getansible.sh sh <(curl -sL getansible.sh) install
+curl -sL getansible.sh | GETANSIBLE_PATH=/opt/getansible.sh sh -s -- install
 ```
 
 `ANSIBLE_RELEASE` - Ansible release to install (default: `9.0`):
 ```bash
-ANSIBLE_RELEASE=9.0 sh <(curl -sL getansible.sh) install
+curl -sL getansible.sh | ANSIBLE_RELEASE=9.0 sh -s -- install
 ```
 
 `PYTHON_REQUIREMENTS` - Python requirements needed for your playbook (default: `''`):
 ```bash
-PIP_REQUIREMENTS='boto3 botocore' sh <(curl -sL getansible.sh) ansible --version
+curl -sL getansible.sh | PIP_REQUIREMENTS='boto3 botocore' sh -s -- ansible --version
 ```
 
 `TMPDIR` - Temporary directory to extract Ansible (default: `/tmp`):
 ```bash
-TMPDIR=/opt/ sh <(curl -sL getansible.sh) ansible --version
+curl -sL getansible.sh | TMPDIR=/opt/ sh -s -- ansible --version
 ```
 
 ## Motivation
