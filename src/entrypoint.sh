@@ -132,11 +132,15 @@ playbook() {
 
     # workspace: ansible inventory
     if [ -z "${ANSIBLE_INVENTORY:-}" ]; then
-        if [ -f hosts ]; then
+        if [ -f "$workspace/hosts" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts"
-        elif [ -f hosts.yml ]; then
+        elif [ -f "$workspace/hosts.yml" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts.yml"
         fi
+    elif [ -f "$ANSIBLE_INVENTORY" ]; then
+        export ANSIBLE_INVENTORY
+    elif [ -f "$USER_PWD/$ANSIBLE_INVENTORY" ]; then
+        export ANSIBLE_INVENTORY="$USER_PWD/$ANSIBLE_INVENTORY"
     fi
 
     # workspace: ansible inventory (localhost)

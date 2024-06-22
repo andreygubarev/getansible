@@ -217,6 +217,24 @@ EOF
     assert_teardown
 }
 
+# bats test_tags=T020,playbook,inventory
+@test "T020: getansible.sh -- /opt/006-inventory.tar.gz" {
+    tar -czf /opt/006-inventory.tar.gz -C /usr/src/bats/examples/006-inventory .
+
+    export ANSIBLE_INVENTORY=inventory && cat <<-EOF > ${ANSIBLE_INVENTORY}
+localhost foo=bar
+EOF
+    run getansible.sh -- /opt/006-inventory.tar.gz
+
+    rm -f ${ANSIBLE_INVENTORY}
+    unset ANSIBLE_INVENTORY
+
+    assert_success
+    assert_output --partial "foo=bar"
+    assert_output --partial "ok=1"
+    assert_teardown
+}
+
 # bats test_tags=T100,install
 @test "T100: install.sh install" {
     run install.sh install

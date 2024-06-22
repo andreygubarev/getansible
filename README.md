@@ -105,7 +105,15 @@ Where:
 - `requirements.yml` - Ansible Galaxy requirements file
 - `roles` - Directory with roles
 
-## Configuration
+## Ansible Configuration
+
+`getansible.sh` supports `ANSIBLE_INVENTORY` environment variable to specify the inventory file:
+```bash
+export ANSIBLE_INVENTORY=hosts.yml
+curl -sL getansible.sh | sh -s -- @andreygubarev/ping
+```
+
+### Settings
 
 You can configure the following environment variables:
 
