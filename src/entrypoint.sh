@@ -98,11 +98,7 @@ playbook() {
                 "") continue ;;
                 *)
                     var=${line%%=*}
-                    if [ -n "${var:-}" ]; then
-                        continue
-                    fi
-                    value=${line#*=}
-                    export "$var"="$value"
+                    eval "export ${var}=\${${var}:-${line#*=}}"
                     ;;
             esac
         done < .env
@@ -143,7 +139,7 @@ playbook() {
         fi
 
         if [ -s "$tmphosts" ]; then
-            if [ "$(head -n 1 "$tmphosts")" == "---" ]; then
+            if [ "$(head -n 1 "$tmphosts")" = "---" ]; then
                 cp "$tmphosts" "$workspace/hosts.yml"
                 ANSIBLE_INVENTORY="$workspace/hosts.yml"
             else
