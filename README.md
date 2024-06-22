@@ -23,7 +23,6 @@ getansible.sh -- geerlingguy.docker
 
 `getansible.sh` requires `bash`, `curl`, `sed` and `tar` to be installed on the system. Ansible requires locale to be installed and configued.
 
-
 ```bash
 apt-get update && apt-get install -yq --no-install-recommends \
     ca-certificates \
@@ -31,7 +30,10 @@ apt-get update && apt-get install -yq --no-install-recommends \
     locales-all
 ```
 
-## Support Ansible Galaxy and Ansible Collections sources
+## Support for Ansible sources
+`getansible.sh` supports multiple sources for Ansible playbooks and roles.
+
+### Support Ansible Galaxy and Ansible Collections sources
 
 `getansible.sh` supports Ansible Galaxy sources:
 ```bash
@@ -42,11 +44,14 @@ getansible.sh -- geerlingguy.docker
 getansible.sh -- andreygubarev.actions.ssh
 ```
 
-## Support Github sources
+### Support Github repository
 
-`getansible.sh` supports Github sources:
+`getansible.sh` supports Github repositories with special naming convention:
+`<user>/ansible-collection-actions` (e.g https://github.com/andreygubarev/ansible-collection-actions) and support shortcut syntax for playbooks execution:
+
 ```bash
-getansible.sh -- github.com/geerlingguy/ansible-role-docker
+# https://github.com/andreygubarev/ansible-collection-actions/blob/main/playbooks/setup-ssh.yml
+getansible.sh -- @andreygubarev/setup-ssh
 ```
 
 ## Support local directory
