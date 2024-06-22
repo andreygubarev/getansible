@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env sh
+set -eu
 
 ### variables #################################################################
 GETANSIBLE_OS="${GETANSIBLE_OS:-}"
@@ -89,9 +89,9 @@ getansible_install() {
     if command -v sha512sum > /dev/null; then
         SHA512SUMS=$(mktemp)
         curl -sLo "$SHA512SUMS" "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/SHA512SUMS"
-        pushd "$getansible_tempdir" > /dev/null
+        cd "$getansible_tempdir" > /dev/null
         sha512sum -c "$SHA512SUMS" --ignore-missing
-        popd > /dev/null
+        cd - > /dev/null
         rm -f "$SHA512SUMS"
     fi
 
