@@ -63,9 +63,9 @@ esac
 
 ### functions #################################################################
 getansible_install() {
-    local ansible_release=$1
-    local getansible_path=$2
-    local link_option="$3"
+    ansible_release="$1"
+    getansible_path="$2"
+    link_option="$3"
 
     if [ -e "$getansible_path" ]; then
         if [ ! -w "$getansible_path" ]; then
@@ -105,7 +105,7 @@ getansible_install() {
 }
 
 getansible_link() {
-    local getansible_path=$1
+    getansible_path="$1"
 
     cat > /usr/local/bin/ansible <<EOF
 #!/usr/bin/env bash
@@ -128,7 +128,7 @@ EOF
 }
 
 getansible_uninstall() {
-    local getansible_path=$1
+    getansible_path="$1"
     rm -f "$getansible_path"
 }
 
