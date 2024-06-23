@@ -50,6 +50,14 @@ mv "${WORKDIR}/python" "${WORKDIR}/getansible/python"
 PYTHONBIN="${WORKDIR}/getansible/python/bin"
 PYTHON="${PYTHONBIN}/python3"
 
+rm "${PYTHONBIN}/python"
+cat > "${PYTHONBIN}/python" <<EOF
+#!/bin/sh
+exec "\${0%/*}/python3" -B "\$@"
+EOF
+
+chmod 0755 "${PYTHONBIN}/python"
+
 "${PYTHON}" -m pip install --upgrade \
     ansible~="${ANSIBLE_RELEASE}" \
     dnspython~=2.0 \
