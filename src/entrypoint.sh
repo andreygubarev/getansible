@@ -22,6 +22,9 @@ else
     find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
 fi
 
+# ensure no pyc files
+export PYTHONDONTWRITEBYTECODE=1
+
 ### environment | python pip ##################################################
 PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
 if [ -n "$PIP_REQUIREMENTS" ]; then
