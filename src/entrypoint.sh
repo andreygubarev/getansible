@@ -17,10 +17,13 @@ unset PYTHONPATH
 
 # ensure python3 interpreter
 if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
-    find "${PATH_BIN}" -type f -exec sed -i '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
+    find "${PATH_BIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!/usr/bin/env '"$PATH_BIN"'/python3|' {} \;
 else
-    find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
+    find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*python.*$|#!/usr/bin/env '"$PATH_BIN"'/python3|' {} \;
 fi
+
+# ensure no pyc files
+export PYTHONDONTWRITEBYTECODE=1
 
 ### environment | python pip ##################################################
 PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
@@ -136,6 +139,11 @@ playbook() {
             export ANSIBLE_INVENTORY="$workspace/hosts"
         elif [ -f "$workspace/hosts.yml" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts.yml"
+        else
+            cat <<EOF > "$workspace/hosts"
+localhost ansible_connection=local
+EOF
+            export ANSIBLE_INVENTORY="$workspace/hosts"
         fi
     elif [ -f "$ANSIBLE_INVENTORY" ]; then
         export ANSIBLE_INVENTORY
@@ -288,7 +296,7 @@ main() {
   connection: local
   gather_facts: true
   vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ansible_python_interpreter: "$PATH_BIN/python3"
   roles:
     - role: $location
 EOF
