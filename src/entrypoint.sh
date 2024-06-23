@@ -139,6 +139,11 @@ playbook() {
             export ANSIBLE_INVENTORY="$workspace/hosts"
         elif [ -f "$workspace/hosts.yml" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts.yml"
+        else
+            cat <<EOF > "$workspace/hosts"
+localhost ansible_connection=local
+EOF
+            export ANSIBLE_INVENTORY="$workspace/hosts"
         fi
     elif [ -f "$ANSIBLE_INVENTORY" ]; then
         export ANSIBLE_INVENTORY
