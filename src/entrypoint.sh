@@ -146,9 +146,22 @@ EOF
             export ANSIBLE_INVENTORY="$workspace/hosts"
         fi
     elif [ -f "$ANSIBLE_INVENTORY" ]; then
-        export ANSIBLE_INVENTORY
+        # if ansible inventory is a file, and starts with `---`, then it is a yaml file
+        if head -n 1 "$ANSIBLE_INVENTORY" | grep -qE '^---'; then
+            cp "$ANSIBLE_INVENTORY" "$workspace/hosts.yml"
+            export ANSIBLE_INVENTORY="$workspace/hosts.yml"
+        else
+            cp "$ANSIBLE_INVENTORY" "$workspace/hosts"
+            export ANSIBLE_INVENTORY="$workspace/hosts"
+        fi
     elif [ -f "$USER_PWD/$ANSIBLE_INVENTORY" ]; then
-        export ANSIBLE_INVENTORY="$USER_PWD/$ANSIBLE_INVENTORY"
+        if head -n 1 "$USER_PWD/$ANSIBLE_INVENTORY" | grep -qE '^---'; then
+            cp "$USER_PWD/$ANSIBLE_INVENTORY" "$workspace/hosts.yml"
+            export ANSIBLE_INVENTORY="$workspace/hosts.yml"
+        else
+            cp "$USER_PWD/$ANSIBLE_INVENTORY" "$workspace/hosts"
+            export ANSIBLE_INVENTORY="$workspace/hosts"
+        fi
     fi
 
     # workspace: ansible inventory (localhost)
