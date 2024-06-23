@@ -48,15 +48,8 @@ mkdir "${WORKDIR}/getansible"
 mv "${WORKDIR}/python" "${WORKDIR}/getansible/python"
 
 PYTHONBIN="${WORKDIR}/getansible/python/bin"
-PYTHON="${PYTHONBIN}/python3"
-
-rm "${PYTHONBIN}/python"
-cat > "${PYTHONBIN}/python" <<EOF
-#!/bin/sh
-exec "\${0%/*}/python3" -B "\$@"
-EOF
-
-chmod 0755 "${PYTHONBIN}/python"
+PYTHON_MAJOR_VERSION=$(echo "${PYTHON_VERSION}" | cut -d. -f1-2)
+PYTHON="${PYTHONBIN}/python${PYTHON_MAJOR_VERSION}"
 
 "${PYTHON}" -m pip install --upgrade \
     ansible~="${ANSIBLE_RELEASE}" \
@@ -66,10 +59,20 @@ chmod 0755 "${PYTHONBIN}/python"
     PyYAML~=6.0
 
 if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
-    find "${PYTHONBIN}" -type f -exec sed -i '1s|^#!.*$|#!/usr/bin/env python3|' {} \;
+    find "${PYTHONBIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!/usr/bin/env python3|' {} \;
 else
-    find "${PYTHONBIN}" -type f -exec sed -i '' '1s|^#!.*$|#!/usr/bin/env python3|' {} \;
+    find "${PYTHONBIN}" -type f -exec sed -i '' '1s|^#!.*python.*$|#!/usr/bin/env python3|' {} \;
 fi
+
+rm "${PYTHONBIN}/python"
+cat > "${PYTHONBIN}/python" <<EOF
+#!/bin/sh
+exec "\${0%/*}/python${PYTHON_MAJOR_VERSION}" -B "\$@"
+EOF
+chmod 0755 "${PYTHONBIN}/python"
+
+cp "${PYTHONBIN}/python" "${PYTHONBIN}/python3"
+chmod 0755 "${PYTHONBIN}/python3"
 
 cp "${SOURCEDIR}/entrypoint.sh" "${WORKDIR}/getansible/entrypoint.sh"
 chmod 0755 "${WORKDIR}/getansible/entrypoint.sh"

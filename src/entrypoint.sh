@@ -17,9 +17,9 @@ unset PYTHONPATH
 
 # ensure python3 interpreter
 if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
-    find "${PATH_BIN}" -type f -exec sed -i '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
+    find "${PATH_BIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!'"$PATH_BIN"'/python3|' {} \;
 else
-    find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
+    find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*python.*$|#!'"$PATH_BIN"'/python3|' {} \;
 fi
 
 # ensure no pyc files
@@ -29,7 +29,7 @@ export PYTHONDONTWRITEBYTECODE=1
 PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
 if [ -n "$PIP_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
-    "$PATH_BIN/python" -m pip install --no-cache-dir $PIP_REQUIREMENTS
+    "$PATH_BIN/python3" -m pip install --no-cache-dir $PIP_REQUIREMENTS
 fi
 
 ### environment | ansible #####################################################
@@ -59,7 +59,7 @@ export ANSIBLE_COLLECTIONS_PATH
 ### assert | ansible galaxy compatibility ####################################
 assert_ansible_galaxy() {
     # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
-    version=$("$PATH_BIN/python" -m pip freeze | grep 'ansible-core' | awk -F'==' '{print $2}')
+    version=$("$PATH_BIN/python3" -m pip freeze | grep 'ansible-core' | awk -F'==' '{print $2}')
 
     version_major=$(echo "$version" | awk -F. '{print $1}')
     version_minor=$(echo "$version" | awk -F. '{print $2}')
@@ -109,7 +109,7 @@ playbook() {
 
     # workspace: pip requirements
     if [ -f requirements.txt ]; then
-        "$PATH_BIN/python" -m pip install --no-cache-dir -r requirements.txt
+        "$PATH_BIN/python3" -m pip install --no-cache-dir -r requirements.txt
     fi
 
     # workspace: ansible playbook
@@ -152,7 +152,7 @@ playbook() {
         touch host_vars/localhost.yml
     fi
     if ! grep -qE 'ansible_python_interpreter' host_vars/localhost.yml; then
-        echo "ansible_python_interpreter: $PATH_BIN/python" >> host_vars/localhost.yml
+        echo "ansible_python_interpreter: $PATH_BIN/python3" >> host_vars/localhost.yml
     fi
 
     # workspace: execute
@@ -291,7 +291,7 @@ main() {
   connection: local
   gather_facts: true
   vars:
-    ansible_python_interpreter: "$PATH_BIN/python"
+    ansible_python_interpreter: "$PATH_BIN/python3"
   roles:
     - role: $location
 EOF
