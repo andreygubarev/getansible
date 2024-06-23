@@ -17,9 +17,9 @@ unset PYTHONPATH
 
 # ensure python3 interpreter
 if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
-    find "${PATH_BIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!'"$PATH_BIN"'/python3|' {} \;
+    find "${PATH_BIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!/usr/bin/env '"$PATH_BIN"'/python3|' {} \;
 else
-    find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*python.*$|#!'"$PATH_BIN"'/python3|' {} \;
+    find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*python.*$|#!/usr/bin/env '"$PATH_BIN"'/python3|' {} \;
 fi
 
 # ensure no pyc files
