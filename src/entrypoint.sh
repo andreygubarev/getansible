@@ -149,7 +149,7 @@ playbook() {
         touch host_vars/localhost.yml
     fi
     if ! grep -qE 'ansible_python_interpreter' host_vars/localhost.yml; then
-        echo "ansible_python_interpreter: \"$PATH_BIN/python3 -B\"" >> host_vars/localhost.yml
+        echo "ansible_python_interpreter: $PATH_BIN/python3" >> host_vars/localhost.yml
     fi
 
     # workspace: execute
@@ -288,7 +288,7 @@ main() {
   connection: local
   gather_facts: true
   vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }} -B"
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
   roles:
     - role: $location
 EOF
