@@ -22,10 +22,6 @@ else
     find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
 fi
 
-if [ -d "$WORKDIR/python/lib/python3.*/" ]; then
-    find "$WORKDIR/python/lib/python3.*/" -name '*.py' -exec "$PATH_BIN/python3" -m compileall {} \;
-fi
-
 ### environment | python pip ##################################################
 PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
 if [ -n "$PIP_REQUIREMENTS" ]; then
@@ -153,7 +149,7 @@ playbook() {
         touch host_vars/localhost.yml
     fi
     if ! grep -qE 'ansible_python_interpreter' host_vars/localhost.yml; then
-        echo "ansible_python_interpreter: $PATH_BIN/python3" >> host_vars/localhost.yml
+        echo "ansible_python_interpreter: \"$PATH_BIN/python3 -B\"" >> host_vars/localhost.yml
     fi
 
     # workspace: execute
@@ -292,7 +288,7 @@ main() {
   connection: local
   gather_facts: true
   vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    ansible_python_interpreter: "{{ ansible_playbook_python }} -B"
   roles:
     - role: $location
 EOF
