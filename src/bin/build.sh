@@ -71,7 +71,11 @@ exec "\${0%/*}/python${PYTHON_MAJOR_VERSION}" -B "\$@"
 EOF
 chmod 0755 "${PYTHONBIN}/python"
 
-cp "${PYTHONBIN}/python" "${PYTHONBIN}/python3"
+rm "${PYTHONBIN}/python3"
+cat > "${PYTHONBIN}/python3" <<EOF
+#!/bin/sh
+exec "\${0%/*}/python${PYTHON_MAJOR_VERSION}" -B "\$@"
+EOF
 chmod 0755 "${PYTHONBIN}/python3"
 
 cp "${SOURCEDIR}/entrypoint.sh" "${WORKDIR}/getansible/entrypoint.sh"
