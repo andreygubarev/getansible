@@ -64,19 +64,13 @@ else
     find "${PYTHONBIN}" -type f -exec sed -i '' '1s|^#!.*python.*$|#!/usr/bin/env python3|' {} \;
 fi
 
-rm "${PYTHONBIN}/python"
+rm "${PYTHONBIN}/python" "${PYTHONBIN}/python3"
 cat > "${PYTHONBIN}/python" <<EOF
 #!/bin/sh
 exec "\${0%/*}/python${PYTHON_MAJOR_VERSION}" -B "\$@"
 EOF
 chmod 0755 "${PYTHONBIN}/python"
-
-rm "${PYTHONBIN}/python3"
-cat > "${PYTHONBIN}/python3" <<EOF
-#!/bin/sh
-exec "\${0%/*}/python${PYTHON_MAJOR_VERSION}" -B "\$@"
-EOF
-chmod 0755 "${PYTHONBIN}/python3"
+cp "${PYTHONBIN}/python" "${PYTHONBIN}/python3"
 
 cp "${SOURCEDIR}/entrypoint.sh" "${WORKDIR}/getansible/entrypoint.sh"
 chmod 0755 "${WORKDIR}/getansible/entrypoint.sh"
