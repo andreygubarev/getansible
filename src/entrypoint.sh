@@ -22,6 +22,10 @@ else
     find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*|#!'"$PATH_BIN"'/python3|' {} \;
 fi
 
+if [ -d "$WORKDIR/python/lib/python3.*/" ]; then
+    find "$WORKDIR/python/lib/python3.*/" -name '*.py' -exec "$PATH_BIN/python3" -m compileall {} \;
+fi
+
 ### environment | python pip ##################################################
 PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
 if [ -n "$PIP_REQUIREMENTS" ]; then
