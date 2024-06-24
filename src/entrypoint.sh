@@ -139,6 +139,14 @@ playbook() {
             export ANSIBLE_INVENTORY="$workspace/hosts"
         elif [ -f "$workspace/hosts.yml" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts.yml"
+        elif [ -f "/etc/ansible/hosts" ]; then
+            if head -n 1 "/etc/ansible/hosts" | grep -qE '^---'; then
+                cp "/etc/ansible/hosts" "$workspace/hosts.yml"
+                export ANSIBLE_INVENTORY="$workspace/hosts.yml"
+            else
+                cp "/etc/ansible/hosts" "$workspace/hosts"
+                export ANSIBLE_INVENTORY="$workspace/hosts"
+            fi
         else
             cat <<EOF > "$workspace/hosts"
 localhost ansible_connection=local
