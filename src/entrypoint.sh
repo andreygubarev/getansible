@@ -75,6 +75,19 @@ assert_ansible_galaxy() {
 }
 
 ### function | playbook #######################################################
+playbook_inventory() {
+    workspace=$1
+    inventory=$2
+
+    if head -n 1 "$inventory" | grep -qE '^---'; then
+        cp "$$inventory" "$workspace/hosts.yml"
+        echo "$workspace/hosts.yml"
+    else
+        cp "$inventory" "$workspace/hosts"
+        echo "$workspace/hosts"
+    fi
+}
+
 playbook() {
     workspace=$1
     workspace_playbook="${2:-playbook.yml}"
@@ -140,13 +153,7 @@ playbook() {
         elif [ -f "$workspace/hosts.yml" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts.yml"
         elif [ -f "/etc/ansible/hosts" ]; then
-            if head -n 1 "/etc/ansible/hosts" | grep -qE '^---'; then
-                cp "/etc/ansible/hosts" "$workspace/hosts.yml"
-                export ANSIBLE_INVENTORY="$workspace/hosts.yml"
-            else
-                cp "/etc/ansible/hosts" "$workspace/hosts"
-                export ANSIBLE_INVENTORY="$workspace/hosts"
-            fi
+            export ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "/etc/ansible/hosts")
         else
             cat <<EOF > "$workspace/hosts"
 localhost ansible_connection=local
@@ -155,21 +162,9 @@ EOF
         fi
     elif [ -f "$ANSIBLE_INVENTORY" ]; then
         # if ansible inventory is a file, and starts with `---`, then it is a yaml file
-        if head -n 1 "$ANSIBLE_INVENTORY" | grep -qE '^---'; then
-            cp "$ANSIBLE_INVENTORY" "$workspace/hosts.yml"
-            export ANSIBLE_INVENTORY="$workspace/hosts.yml"
-        else
-            cp "$ANSIBLE_INVENTORY" "$workspace/hosts"
-            export ANSIBLE_INVENTORY="$workspace/hosts"
-        fi
+        export ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "$ANSIBLE_INVENTORY")
     elif [ -f "$USER_PWD/$ANSIBLE_INVENTORY" ]; then
-        if head -n 1 "$USER_PWD/$ANSIBLE_INVENTORY" | grep -qE '^---'; then
-            cp "$USER_PWD/$ANSIBLE_INVENTORY" "$workspace/hosts.yml"
-            export ANSIBLE_INVENTORY="$workspace/hosts.yml"
-        else
-            cp "$USER_PWD/$ANSIBLE_INVENTORY" "$workspace/hosts"
-            export ANSIBLE_INVENTORY="$workspace/hosts"
-        fi
+        export ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "$USER_PWD/$ANSIBLE_INVENTORY")
     fi
 
     # workspace: ansible inventory (localhost)
