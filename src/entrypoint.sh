@@ -80,7 +80,7 @@ playbook_inventory() {
     inventory=$2
 
     if head -n 1 "$inventory" | grep -qE '^---'; then
-        cp "$$inventory" "$workspace/hosts.yml"
+        cp "$inventory" "$workspace/hosts.yml"
         echo "$workspace/hosts.yml"
     else
         cp "$inventory" "$workspace/hosts"
