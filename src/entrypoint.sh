@@ -153,7 +153,8 @@ playbook() {
         elif [ -f "$workspace/hosts.yml" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts.yml"
         elif [ -f "/etc/ansible/hosts" ]; then
-            export ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "/etc/ansible/hosts")
+            ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "/etc/ansible/hosts")
+            export ANSIBLE_INVENTORY
         else
             cat <<EOF > "$workspace/hosts"
 localhost ansible_connection=local
@@ -162,9 +163,11 @@ EOF
         fi
     elif [ -f "$ANSIBLE_INVENTORY" ]; then
         # if ansible inventory is a file, and starts with `---`, then it is a yaml file
-        export ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "$ANSIBLE_INVENTORY")
+        ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "$ANSIBLE_INVENTORY")
+        export ANSIBLE_INVENTORY
     elif [ -f "$USER_PWD/$ANSIBLE_INVENTORY" ]; then
-        export ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "$USER_PWD/$ANSIBLE_INVENTORY")
+        ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "$USER_PWD/$ANSIBLE_INVENTORY")
+        export ANSIBLE_INVENTORY
     fi
 
     # workspace: ansible inventory (localhost)
