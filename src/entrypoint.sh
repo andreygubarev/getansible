@@ -171,12 +171,13 @@ EOF
     fi
 
     # workspace: ansible inventory (localhost)
-    if [ ! -f host_vars/localhost.yml ]; then
-        mkdir -p host_vars
-        touch host_vars/localhost.yml
+    ansible_inventory=$(dirname "$ANSIBLE_INVENTORY")
+    if [ ! -f "${ansible_inventory}/host_vars/localhost.yml" ]; then
+        mkdir -p "${ansible_inventory}/host_vars"
+        touch "${ansible_inventory}/host_vars/localhost.yml"
     fi
-    if ! grep -qE 'ansible_python_interpreter' host_vars/localhost.yml; then
-        echo "ansible_python_interpreter: $PATH_BIN/python3" >> host_vars/localhost.yml
+    if ! grep -qE 'ansible_python_interpreter' "${ansible_inventory}/host_vars/localhost.yml"; then
+        echo "ansible_python_interpreter: $PATH_BIN/python3" >> "${ansible_inventory}/host_vars/localhost.yml"
     fi
 
     # workspace: execute
