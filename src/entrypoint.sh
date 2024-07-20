@@ -153,7 +153,7 @@ playbook() {
         elif [ -f "$workspace/hosts.yml" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts.yml"
         elif [ -f "/etc/ansible/hosts" ]; then
-            ANSIBLE_INVENTORY="/etc/ansible/hosts"
+            ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "/etc/ansible/hosts")
             export ANSIBLE_INVENTORY
         else
             cat <<EOF > "$workspace/hosts"
