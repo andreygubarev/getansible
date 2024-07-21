@@ -86,6 +86,14 @@ playbook_inventory() {
         cp "$inventory" "$workspace/hosts"
         echo "$workspace/hosts"
     fi
+
+    if [ -d "$(dirname "$inventory")/group_vars" ]; then
+        cp -r "$(dirname "$inventory")/group_vars" "$workspace"
+    fi
+
+    if [ -d "$(dirname "$inventory")/host_vars" ]; then
+        cp -r "$(dirname "$inventory")/host_vars" "$workspace"
+    fi
 }
 
 playbook() {
