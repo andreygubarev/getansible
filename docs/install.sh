@@ -79,16 +79,16 @@ getansible_install() {
 
     GITHUB_OWNER="andreygubarev"
     GITHUB_REPO="getansible"
-    GITHUB_RELEASE=$(curl -s "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    GITHUB_RELEASE=$(curl --connect-timeout 10 -s "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     GITHUB_ARTIFACT="getansible-$ansible_release-$GETANSIBLE_OS-$GETANSIBLE_ARCH.sh"
     GITHUB_DOWNLOAD_URL="https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/$GITHUB_ARTIFACT"
 
     getansible_tempdir=$(mktemp -d)
-    curl -sL "$GITHUB_DOWNLOAD_URL" -o "$getansible_tempdir/$GITHUB_ARTIFACT"
+    curl --connect-timeout 10 -sLo "$getansible_tempdir/$GITHUB_ARTIFACT" "$GITHUB_DOWNLOAD_URL"
 
     if command -v sha512sum > /dev/null; then
         SHA512SUMS=$(mktemp)
-        curl -sLo "$SHA512SUMS" "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/SHA512SUMS"
+        curl --connect-timeout 10 -sLo "$SHA512SUMS" "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$GITHUB_RELEASE/SHA512SUMS"
         cd "$getansible_tempdir" > /dev/null
         sha512sum -c "$SHA512SUMS" --ignore-missing
         cd - > /dev/null
