@@ -77,8 +77,8 @@ assert_teardown() {
 }
 
 # bats test_tags=T008,getansible,galaxy
-@test "T008: getansible.sh -- andreygubarev.actions.ping 0.8.1" {
-    run getansible.sh -- andreygubarev.actions.ping 0.8.1
+@test "T008: getansible.sh -- andreygubarev.actions.ping==0.8.1" {
+    run getansible.sh -- andreygubarev.actions.ping==0.8.1
     assert_success
     assert_output --partial "andreygubarev.actions.ping : Ping"
     assert_output --partial "failed=0"
@@ -86,8 +86,8 @@ assert_teardown() {
 }
 
 # bats test_tags=T009,getansible,galaxy
-@test "T009: getansible.sh -- andreygubarev.actions.ping 0.7.0" {
-    run getansible.sh -- andreygubarev.actions.ping 0.7.0
+@test "T009: getansible.sh -- andreygubarev.actions.ping==0.7.0" {
+    run getansible.sh -- andreygubarev.actions.ping==0.7.0
     assert_failure  # version 0.7.0 does not have a ping role
     assert_teardown
 }

@@ -189,7 +189,11 @@ EOF
     fi
 
     # workspace: execute
-    "$PATH_BIN/ansible-playbook" "$workspace_playbook_extra_vars" "$workspace_playbook"
+    if [ -n "$workspace_playbook_extra_vars" ]; then
+        "$PATH_BIN/ansible-playbook" "$workspace_playbook_extra_vars" "$workspace_playbook"
+    else
+        "$PATH_BIN/ansible-playbook" "$workspace_playbook"
+    fi
     rc=$?
 
     cd - > /dev/null || exit 1
@@ -203,6 +207,7 @@ main() {
 
     if echo "$playbook" | grep -q "=="; then
         playbook_version=$(echo "$playbook" | cut -d'=' -f2-)
+        playbook_version=$(echo "$playbook_version" | cut -d'=' -f2-)
         playbook=$(echo "$playbook" | cut -d'=' -f1)
     else
         playbook_version=""
