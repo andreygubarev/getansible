@@ -266,6 +266,7 @@ EOF
     assert_teardown
 }
 
+# bats test_tags=T023,getansible,galaxy
 @test "T023: getansible.sh -- andreygubarev.actions.ping==0.9.3" {
     run getansible.sh -- andreygubarev.actions.ping==0.9.3
     assert_success
