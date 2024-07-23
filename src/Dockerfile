@@ -19,7 +19,7 @@ ENV PYTHON_VERSION=${PYTHON_VERSION}
 
 WORKDIR /usr/local/src
 COPY . .
-RUN bash ./bin/build.sh
+RUN --mount=type=cache,target=/root/.cache/pip bash ./bin/build.sh
 
 FROM scratch AS release
 ARG ANSIBLE_RELEASE

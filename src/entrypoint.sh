@@ -99,6 +99,7 @@ playbook_inventory() {
 playbook() {
     workspace=$1
     workspace_playbook="${2:-playbook.yml}"
+    workspace_playbook_extra_vars="${3:-}"
 
     cd "$workspace" > /dev/null || exit 1
     # change directory if there is only one sub-directory in the workspace
@@ -188,7 +189,11 @@ EOF
     fi
 
     # workspace: execute
-    "$PATH_BIN/ansible-playbook" "$workspace_playbook"
+    if [ -n "$workspace_playbook_extra_vars" ]; then
+        "$PATH_BIN/ansible-playbook" --extra-vars="$workspace_playbook_extra_vars" "$workspace_playbook"
+    else
+        "$PATH_BIN/ansible-playbook" "$workspace_playbook"
+    fi
     rc=$?
 
     cd - > /dev/null || exit 1
@@ -198,7 +203,42 @@ EOF
 ### cli | main ###########################################################
 main() {
     playbook="$1"
-    playbook_version="${2:-}"
+    shift
+
+    if echo "$playbook" | grep -q "=="; then
+        playbook_version=$(echo "$playbook" | cut -d'=' -f2-)
+        playbook_version=$(echo "$playbook_version" | cut -d'=' -f2-)
+        playbook=$(echo "$playbook" | cut -d'=' -f1)
+    else
+        playbook_version=""
+    fi
+
+    playbook_extra_vars=""
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --*)
+                # Remove leading '--' and replace '-' with '_'
+                key=$(echo "$1" | sed 's/^--//' | sed 's/-/_/g')
+
+                # If there's an '=' in the variable, split it
+                case "$key" in
+                    *=*)
+                        value=$(echo "$key" | cut -d'=' -f2-)
+                        key=$(echo "$key" | cut -d'=' -f1)
+                        playbook_extra_vars="$playbook_extra_vars $key=$value"
+                        ;;
+                    *)
+                        # If there's no '=', assume the next argument is the value
+                        shift
+                        value="$1"
+                        playbook_extra_vars="$playbook_extra_vars $key=$value"
+                        ;;
+                esac
+                ;;
+        esac
+        shift
+    done
+    playbook_extra_vars=$(echo "$playbook_extra_vars" | sed 's/^ *//')
 
     location=""
     location_type=""
@@ -348,7 +388,7 @@ EOF
             ;;
     esac
 
-    playbook "$workspace" "$workspace_playbook"
+    playbook "$workspace" "$workspace_playbook" "$playbook_extra_vars"
 }
 
 ### cli | usage ###############################################################
