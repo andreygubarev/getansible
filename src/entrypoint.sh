@@ -190,7 +190,7 @@ EOF
 
     # workspace: execute
     if [ -n "$workspace_playbook_extra_vars" ]; then
-        "$PATH_BIN/ansible-playbook" "$workspace_playbook_extra_vars" "$workspace_playbook"
+        "$PATH_BIN/ansible-playbook" --extra-vars="$workspace_playbook_extra_vars" "$workspace_playbook"
     else
         "$PATH_BIN/ansible-playbook" "$workspace_playbook"
     fi
@@ -238,11 +238,7 @@ main() {
         esac
         shift
     done
-
     playbook_extra_vars=$(echo "$playbook_extra_vars" | sed 's/^ *//')
-    if [ -n "$playbook_extra_vars" ]; then
-        playbook_extra_vars="--extra-vars=\"$playbook_extra_vars\""
-    fi
 
     location=""
     location_type=""

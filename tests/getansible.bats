@@ -258,6 +258,21 @@ EOF
     assert_teardown
 }
 
+# bats test_tags=T022,getansible,galaxy
+@test "T022: getansible.sh -- andreygubarev.actions.ping==0.9.3 --ping-message=ping" {
+    run getansible.sh -- andreygubarev.actions.ping==0.9.3 --ping-message=ping
+    assert_success
+    assert_output --partial '"msg": "ping"'
+    assert_teardown
+}
+
+@test "T023: getansible.sh -- andreygubarev.actions.ping==0.9.3" {
+    run getansible.sh -- andreygubarev.actions.ping==0.9.3
+    assert_success
+    assert_output --partial '"msg": "pong"'
+    assert_teardown
+}
+
 # bats test_tags=T100,install
 @test "T100: install.sh install" {
     run install.sh install
