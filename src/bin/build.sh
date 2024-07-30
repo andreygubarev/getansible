@@ -38,7 +38,7 @@ fi
 WORKDIR=$(mktemp -d)
 
 pushd "${WORKDIR}"
-PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-${PYTHON_ARCH}-${PYTHON_OS}-install_only.tar.gz"
+PYTHON="cpython-${PYTHON_VERSION}+${PYTHON_RELEASE}-${PYTHON_ARCH}-${PYTHON_OS}-install_only_stripped.tar.gz"
 curl -fsSLo "${PYTHON}" "https://github.com/indygreg/python-build-standalone/releases/download/${PYTHON_RELEASE}/${PYTHON}"
 tar xzf "${PYTHON}"
 rm -f "${PYTHON}"
