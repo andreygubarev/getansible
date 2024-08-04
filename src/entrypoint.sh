@@ -230,16 +230,16 @@ main() {
                 key=$(echo "$1" | sed 's/^--//' | sed 's/-/_/g')
 
                 # if key has =, then it's a key=value pair
-                if [ $(echo "$key" | grep -c '=') -gt 0 ]; then
+                if [ "$(echo "$key" | grep -c '=')" -gt 0 ]; then
                     value=$(echo "$key" | cut -d'=' -f2-)
-                    if [ $(echo "$value" | grep -c '^[0-9]*$') -gt 0 ]; then
-                        value="$value"
-                    elif [ $(echo "$value" | grep -c '^[0-9]*\.[0-9]*$') -gt 0 ]; then
-                        value="$value"
+                    if [ "$(echo "$value" | grep -c '^[0-9]*$')" -gt 0 ]; then
+                        :
+                    elif [ "$(echo "$value" | grep -c '^[0-9]*\.[0-9]*$')" -gt 0 ]; then
+                        :
                     elif [ "$value" = "null" ]; then
                         value="null"
                     elif [ "$value" = "true" ] || [ "$value" = "false" ]; then
-                        value="$value"
+                        :
                     else
                         value="\"$value\""
                     fi
@@ -255,14 +255,14 @@ main() {
                 # if key is not empty, then it's a value
                 if [ -n "$key" ]; then
                     value="$1"
-                    if [ $(echo "$value" | grep -c '^[0-9]*$') -gt 0 ]; then
-                        value="$value"
-                    elif [ $(echo "$value" | grep -c '^[0-9]*\.[0-9]*$') -gt 0 ]; then
-                        value="$value"
+                    if [ "$(echo "$value" | grep -c '^[0-9]*$')" -gt 0 ]; then
+                        :
+                    elif [ "$(echo "$value" | grep -c '^[0-9]*\.[0-9]*$')" -gt 0 ]; then
+                        :
                     elif [ "$value" = "null" ]; then
                         value="null"
                     elif [ "$value" = "true" ] || [ "$value" = "false" ]; then
-                        value="$value"
+                        :
                     else
                         value="\"$value\""
                     fi
