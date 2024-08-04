@@ -220,14 +220,14 @@ main() {
     value=""
     while [ $# -gt 0 ]; do
         case "$1" in
-            --*)
-                # if key is not empty and next key starts with --, then it's a flag
+            -*)
+                # if key is not empty and next key starts with -, then it's a flag
                 if [ -n "$key" ]; then
                     vars="$vars \"$key\": true, "
                     key=""
                 fi
 
-                key=$(echo "$1" | sed 's/^--//' | sed 's/-/_/g')
+                key=$(echo "$1" | sed 's/^-\+//' | sed 's/-/_/g')
 
                 # if key has =, then it's a key=value pair
                 if [ "$(echo "$key" | grep -c '=')" -gt 0 ]; then

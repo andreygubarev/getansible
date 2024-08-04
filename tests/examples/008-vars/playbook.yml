@@ -3,7 +3,7 @@
   connection: local
   gather_facts: false
   tasks:
-    - debug: var=var6
+    - debug: var=var1
     - ansible.builtin.assert:
         that:
           - "var1 == True"
@@ -13,3 +13,8 @@
           - "var6 == None"
           - "var7 == 1"
           - "var8 == 1.0"
+          - "var9 == True"
+          - "var10 == 10"
+          - "a == True"
+          - "b == True"
+          - "c == 'valueC'"

@@ -278,7 +278,7 @@ EOF
 @test "T024: getansible.sh -- andreygubarev.actions.ping==0.9.3" {
     tar -czf /opt/008-vars.tar.gz -C /usr/src/bats/examples/008-vars .
 
-    run getansible.sh -- /opt/008-vars.tar.gz value0 --var1 --var2=value2 --var3 value3 value4 --var5=value5 --var6= --var7=1 --var8=1.0
+    run getansible.sh -- /opt/008-vars.tar.gz value0 --var1 --var2=value2 --var3 value3 value4 --var5=value5 --var6= --var7=1 --var8=1.0 -var9 -var10=10 -a -b -c valueC valueD
     assert_success
     assert_teardown
 }
