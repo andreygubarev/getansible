@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - debug: var=var6
+    - ansible.builtin.assert:
+        that:
+          - "var1 == True"
+          - "var2 == 'value2'"
+          - "var3 == 'value3'"
+          - "var5 == 'value5'"
+          - "var6 == None"
+          - "var7 == 1"
+          - "var8 == 1.0"
