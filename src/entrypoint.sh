@@ -214,31 +214,75 @@ main() {
     fi
 
     playbook_extra_vars=""
+
+    vars="{"
+    key=""
+    value=""
     while [ $# -gt 0 ]; do
         case "$1" in
             --*)
-                # Remove leading '--' and replace '-' with '_'
+                # if key is not empty and next key starts with --, then it's a flag
+                if [ -n "$key" ]; then
+                    vars="$vars \"$key\": true, "
+                    key=""
+                fi
+
                 key=$(echo "$1" | sed 's/^--//' | sed 's/-/_/g')
 
-                # If there's an '=' in the variable, split it
-                case "$key" in
-                    *=*)
-                        value=$(echo "$key" | cut -d'=' -f2-)
-                        key=$(echo "$key" | cut -d'=' -f1)
-                        playbook_extra_vars="$playbook_extra_vars $key=$value"
-                        ;;
-                    *)
-                        # If there's no '=', assume the next argument is the value
-                        shift
-                        value="$1"
-                        playbook_extra_vars="$playbook_extra_vars $key=$value"
-                        ;;
-                esac
+                # if key has =, then it's a key=value pair
+                if [ "$(echo "$key" | grep -c '=')" -gt 0 ]; then
+                    value=$(echo "$key" | cut -d'=' -f2-)
+                    if [ "$(echo "$value" | grep -c '^[0-9]*$')" -gt 0 ]; then
+                        :
+                    elif [ "$(echo "$value" | grep -c '^[0-9]*\.[0-9]*$')" -gt 0 ]; then
+                        :
+                    elif [ "$value" = "null" ]; then
+                        value="null"
+                    elif [ "$value" = "true" ] || [ "$value" = "false" ]; then
+                        :
+                    else
+                        value="\"$value\""
+                    fi
+
+                    key=$(echo "$key" | cut -d'=' -f1)
+                    vars="$vars \"$key\": $value, "
+
+                    key=""
+                    value=""
+                fi
+                ;;
+            *)
+                # if key is not empty, then it's a value
+                if [ -n "$key" ]; then
+                    value="$1"
+                    if [ "$(echo "$value" | grep -c '^[0-9]*$')" -gt 0 ]; then
+                        :
+                    elif [ "$(echo "$value" | grep -c '^[0-9]*\.[0-9]*$')" -gt 0 ]; then
+                        :
+                    elif [ "$value" = "null" ]; then
+                        value="null"
+                    elif [ "$value" = "true" ] || [ "$value" = "false" ]; then
+                        :
+                    else
+                        value="\"$value\""
+                    fi
+
+                    vars="$vars \"$key\": $value, "
+
+                    key=""
+                    value=""
+                fi
                 ;;
         esac
         shift
     done
-    playbook_extra_vars=$(echo "$playbook_extra_vars" | sed 's/^ *//')
+
+    if [ -n "$key" ]; then
+        vars="$vars \"$key\": true, "
+    fi
+    vars="$vars}"
+
+    playbook_extra_vars="$vars"
 
     location=""
     location_type=""
