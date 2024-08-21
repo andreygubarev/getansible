@@ -287,11 +287,11 @@ EOF
 @test "T025: getansible.sh -- /opt/009-vars-command" {
     tar -czf /opt/009-vars-command.tar.gz -C /usr/src/bats/examples/009-vars-command .
 
-    run getansible.sh -- /opt/009-vars-command.tar.gz install --var1 --var2=value2
+    run getansible.sh -- /opt/009-vars-command.tar.gz install --var1 --var2=value2 --command=cmd
     assert_success
     assert_teardown
 
-    run getansible.sh -- /opt/009-vars-command.tar.gz install cmd1 cmd2 --var1 --var2=value2
+    run getansible.sh -- /opt/009-vars-command.tar.gz install cmd1 cmd2 --var1 --var2=value2 --command=cmd
     assert_success
     assert_teardown
 

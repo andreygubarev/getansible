@@ -6,6 +6,7 @@
     - debug: var=command
     - ansible.builtin.assert:
         that:
-          - "command == 'install'"
+          - "_command == 'install'"
           - "var1 == True"
           - "var2 == 'value2'"
+          - "command == 'cmd'"
