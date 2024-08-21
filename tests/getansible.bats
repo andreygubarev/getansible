@@ -275,11 +275,28 @@ EOF
 }
 
 # bats test_tags=T024,getansible
-@test "T024: getansible.sh -- andreygubarev.actions.ping==0.9.3" {
+@test "T024: getansible.sh -- /opt/008-vars" {
     tar -czf /opt/008-vars.tar.gz -C /usr/src/bats/examples/008-vars .
 
-    run getansible.sh -- /opt/008-vars.tar.gz value0 --var1 --var2=value2 --var3 value3 value4 --var5=value5 --var6= --var7=1 --var8=1.0 -var9 -var10=10 -a -b -c valueC valueD
+    run getansible.sh -- /opt/008-vars.tar.gz --var1 --var2=value2 --var3 value3 value4 --var5=value5 --var6= --var7=1 --var8=1.0 -var9 -var10=10 -a -b -c valueC valueD
     assert_success
+    assert_teardown
+}
+
+# bats test_tags=T025,getansible
+@test "T025: getansible.sh -- /opt/009-vars-command" {
+    tar -czf /opt/009-vars-command.tar.gz -C /usr/src/bats/examples/009-vars-command .
+
+    run getansible.sh -- /opt/009-vars-command.tar.gz install --var1 --var2=value2
+    assert_success
+    assert_teardown
+
+    run getansible.sh -- /opt/009-vars-command.tar.gz install cmd1 cmd2 --var1 --var2=value2
+    assert_success
+    assert_teardown
+
+    run getansible.sh -- /opt/009-vars-command.tar.gz cmd1
+    assert_failure
     assert_teardown
 }
 
