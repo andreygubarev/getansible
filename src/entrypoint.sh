@@ -218,6 +218,18 @@ main() {
     vars="{"
     key=""
     value=""
+
+    if [ $# -gt 0 ]; then
+        if [ "$(echo "$1" | grep -c '^-')" -eq 0 ] && [ "$(echo "$1" | grep -c '=')" -eq 0 ]; then
+            key="_command"
+            value="$1"
+            vars="$vars \"$key\": \"$value\", "
+            key=""
+            value=""
+            shift
+        fi
+    fi
+
     while [ $# -gt 0 ]; do
         case "$1" in
             -*)

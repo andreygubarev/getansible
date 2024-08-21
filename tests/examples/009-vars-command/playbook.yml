@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - debug: var=command
+    - ansible.builtin.assert:
+        that:
+          - "_command == 'install'"
+          - "var1 == True"
+          - "var2 == 'value2'"
+          - "command == 'cmd'"
