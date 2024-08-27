@@ -74,6 +74,10 @@ cp "${PYTHONBIN}/python" "${PYTHONBIN}/python3"
 
 cp "${SOURCEDIR}/entrypoint.sh" "${WORKDIR}/getansible/entrypoint.sh"
 chmod 0755 "${WORKDIR}/getansible/entrypoint.sh"
+
+cp -R "${SOURCEDIR}/lib" "${WORKDIR}/getansible/lib"
+chmod -R 0755 "${WORKDIR}/getansible/lib"
+
 rm -r "${WORKDIR}/getansible/python/share/"
 find "${WORKDIR}/getansible/python" -type d -name "__pycache__" -print | xargs rm -rf
 find "${WORKDIR}/getansible/python" -type d -name "tests" -print | xargs rm -rf
