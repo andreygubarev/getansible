@@ -57,6 +57,8 @@ export ANSIBLE_COLLECTIONS_PATH
 # export LC_ALL=C.UTF-8
 
 ### function | playbook #######################################################
+
+# shellcheck source=src/lib/workspace.sh
 . "$WORKDIR/lib/workspace.sh"
 
 playbook() {
