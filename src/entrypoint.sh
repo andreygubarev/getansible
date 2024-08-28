@@ -82,6 +82,11 @@ playbook() {
         exit 1
     fi
 
+    # workspace: ansible config
+    if [ -f "$workspace/ansible.cfg" ]; then
+        export ANSIBLE_CONFIG="$workspace/ansible.cfg"
+    fi
+
     # workspace: ansible roles
     if [ -d "$workspace/roles" ]; then
         export ANSIBLE_ROLES_PATH="$workspace/roles:$ANSIBLE_ROLES_PATH"
@@ -90,6 +95,11 @@ playbook() {
     # workspace: ansible collections
     if [ -d "$workspace/collections" ]; then
         export ANSIBLE_COLLECTIONS_PATH="$workspace/collections:$ANSIBLE_COLLECTIONS_PATH"
+    fi
+
+    # workspace: ansible modules
+    if [ -d "$workspace/plugins/modules" ]; then
+        export ANSIBLE_LIBRARY="$workspace/plugins/modules"
     fi
 
     # workspace: ansible galaxy
