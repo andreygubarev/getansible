@@ -111,7 +111,6 @@ EOF
             export ANSIBLE_INVENTORY="$workspace/hosts"
         fi
     elif [ -f "$ANSIBLE_INVENTORY" ]; then
-        # if ansible inventory is a file, and starts with `---`, then it is a yaml file
         ANSIBLE_INVENTORY=$(workspace_clone_inventory "$workspace" "$ANSIBLE_INVENTORY")
         export ANSIBLE_INVENTORY
     elif [ -f "$USER_PWD/$ANSIBLE_INVENTORY" ]; then
