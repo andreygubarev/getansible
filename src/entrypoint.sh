@@ -90,8 +90,10 @@ playbook() {
     fi
 
     # workspace: ansible callback
-    if ! grep -qE 'callbacks_enabled' "$ANSIBLE_CONFIG"; then
-        export ANSIBLE_CALLBACKS_ENABLED="community.general.opentelemetry"
+    if [ -f "${ANSIBLE_CONFIG:-}" ]; then
+        if ! grep -qE 'callbacks_enabled' "$ANSIBLE_CONFIG"; then
+            export ANSIBLE_CALLBACKS_ENABLED="community.general.opentelemetry"
+        fi
     fi
 
     # workspace: ansible roles
