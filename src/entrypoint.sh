@@ -5,10 +5,10 @@ set -eu
 WORKDIR=$(CDPATH="cd -- $(dirname -- "$0")" && pwd -P)
 export WORKDIR
 
-PATH_BIN="$WORKDIR/python/bin"
-export PATH_BIN
+PYTHON_BIN="$WORKDIR/python/bin"
+export PYTHON_BIN
 
-PATH="$PATH_BIN:$PATH"
+PATH="$PYTHON_BIN:$PATH"
 export PATH
 
 ### environment | python ######################################################
@@ -17,9 +17,9 @@ unset PYTHONPATH
 
 # ensure python3 interpreter
 if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
-    find "${PATH_BIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!/usr/bin/env '"$PATH_BIN"'/python3|' {} \;
+    find "${PYTHON_BIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!/usr/bin/env '"$PYTHON_BIN"'/python3|' {} \;
 else
-    find "${PATH_BIN}" -type f -exec sed -i '' '1s|^#!.*python.*$|#!/usr/bin/env '"$PATH_BIN"'/python3|' {} \;
+    find "${PYTHON_BIN}" -type f -exec sed -i '' '1s|^#!.*python.*$|#!/usr/bin/env '"$PYTHON_BIN"'/python3|' {} \;
 fi
 
 # ensure no pyc files
@@ -29,7 +29,7 @@ export PYTHONDONTWRITEBYTECODE=1
 PIP_REQUIREMENTS="${PIP_REQUIREMENTS:-}"
 if [ -n "$PIP_REQUIREMENTS" ]; then
     # shellcheck disable=SC2086
-    "$PATH_BIN/python3" -m pip install --no-cache-dir $PIP_REQUIREMENTS
+    "$PYTHON_BIN/python3" -m pip install --no-cache-dir $PIP_REQUIREMENTS
 fi
 
 ### environment | ansible #####################################################
@@ -94,7 +94,7 @@ playbook() {
 
     # workspace: pip requirements
     if [ -f requirements.txt ]; then
-        "$PATH_BIN/python3" -m pip install --no-cache-dir -r requirements.txt
+        "$PYTHON_BIN/python3" -m pip install --no-cache-dir -r requirements.txt
     fi
 
     # workspace: ansible playbook
@@ -115,7 +115,7 @@ playbook() {
 
     # workspace: ansible galaxy
     if [ -f requirements.yml ]; then
-        "$PATH_BIN/ansible-galaxy" install -r requirements.yml
+        "$PYTHON_BIN/ansible-galaxy" install -r requirements.yml
     fi
 
     # workspace: ansible inventory
@@ -148,14 +148,14 @@ EOF
         touch host_vars/localhost.yml
     fi
     if ! grep -qE 'ansible_python_interpreter' host_vars/localhost.yml; then
-        echo "ansible_python_interpreter: $PATH_BIN/python3" >> host_vars/localhost.yml
+        echo "ansible_python_interpreter: $PYTHON_BIN/python3" >> host_vars/localhost.yml
     fi
 
     # workspace: execute
     if [ -n "$workspace_playbook_extra_vars" ]; then
-        "$PATH_BIN/ansible-playbook" --extra-vars="$workspace_playbook_extra_vars" "$workspace_playbook"
+        "$PYTHON_BIN/ansible-playbook" --extra-vars="$workspace_playbook_extra_vars" "$workspace_playbook"
     else
-        "$PATH_BIN/ansible-playbook" "$workspace_playbook"
+        "$PYTHON_BIN/ansible-playbook" "$workspace_playbook"
     fi
     rc=$?
 
@@ -370,9 +370,9 @@ main() {
             fi
 
             if [ "$location_type" = "galaxy_role" ]; then
-                "$PATH_BIN/ansible-galaxy" role install "$galaxy_name$galaxy_version"
+                "$PYTHON_BIN/ansible-galaxy" role install "$galaxy_name$galaxy_version"
             else
-                "$PATH_BIN/ansible-galaxy" collection install "$galaxy_name$galaxy_version"
+                "$PYTHON_BIN/ansible-galaxy" collection install "$galaxy_name$galaxy_version"
             fi
             cat <<EOF > "$workspace/playbook.yml"
 ---
@@ -380,7 +380,7 @@ main() {
   connection: local
   gather_facts: true
   vars:
-    ansible_python_interpreter: "$PATH_BIN/python3"
+    ansible_python_interpreter: "$PYTHON_BIN/python3"
   roles:
     - role: $location
 EOF
@@ -427,7 +427,7 @@ case "${1:-}" in
     ansible|ansible-*)
         command=$1
         shift
-        exec "$PATH_BIN/$command" "$@"
+        exec "$PYTHON_BIN/$command" "$@"
         ;;
     help|-h|--help)
         usage
