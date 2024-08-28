@@ -38,10 +38,10 @@ jobs:
         version:
           - ANSIBLE_RELEASE: "9.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
           - ANSIBLE_RELEASE: "10.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,10 +71,10 @@ jobs:
         version:
           - ANSIBLE_RELEASE: "9.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
           - ANSIBLE_RELEASE: "10.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
 
     steps:
       - name: Download Artifact
@@ -98,10 +98,10 @@ jobs:
         version:
           - ANSIBLE_RELEASE: "9.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
           - ANSIBLE_RELEASE: "10.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
 
     steps:
       - name: Checkout
@@ -132,10 +132,10 @@ jobs:
         version:
           - ANSIBLE_RELEASE: "9.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
           - ANSIBLE_RELEASE: "10.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
 
     steps:
       - name: Checkout
@@ -172,10 +172,10 @@ jobs:
         version:
           - ANSIBLE_RELEASE: "9.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
           - ANSIBLE_RELEASE: "10.0"
             PYTHON_VERSION: "3.11.9"
-            PYTHON_RELEASE: "20240726"
+            PYTHON_RELEASE: "20240814"
 
     steps:
       - name: Checkout
