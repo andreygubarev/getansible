@@ -61,13 +61,13 @@ export ANSIBLE_COLLECTIONS_PATH
 
 playbook() {
     workspace=$1
-    workspace_playbook="${2:-playbook.yml}"
-    workspace_playbook_extra_vars="${3:-}"
-
     workspace_open "$workspace"
 
+    workspace_playbook="${2:-playbook.yml}"
     ANSIBLE_PLAYBOOK_DIR=$(dirname "$workspace/$workspace_playbook")
     export ANSIBLE_PLAYBOOK_DIR
+
+    workspace_playbook_extra_vars="${3:-}"
 
     # workspace: dotenv
     if [ -f .env ]; then
