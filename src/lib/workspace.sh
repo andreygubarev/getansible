@@ -15,6 +15,22 @@ workspace_open() {
     fi
 }
 
+workspace_dotenv() {
+    workspace=$1
+    if [ -f "${workspace}/.env" ]; then
+        while IFS= read -r line || [ -n "$line" ]; do
+            case "$line" in
+                "#"*) continue ;;
+                "") continue ;;
+                *)
+                    var=${line%%=*}
+                    eval "export ${var}=\${${var}:-${line#*=}}"
+                    ;;
+            esac
+        done < "${workspace}/.env"
+    fi
+}
+
 workspace_clone_inventory() {
     workspace=$1
     inventory=$2
