@@ -101,6 +101,8 @@ playbook() {
             export ANSIBLE_INVENTORY="$workspace/hosts"
         elif [ -f "$workspace/hosts.yml" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts.yml"
+        elif [ -f "$workspace/hosts.yaml" ]; then
+            export ANSIBLE_INVENTORY="$workspace/hosts.yaml"
         elif [ -f "/etc/ansible/hosts" ] && [ -r "/etc/ansible/hosts" ]; then
             ANSIBLE_INVENTORY=$(workspace_clone_inventory "$workspace" "/etc/ansible/hosts")
             export ANSIBLE_INVENTORY
