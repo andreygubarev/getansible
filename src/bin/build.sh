@@ -14,7 +14,7 @@ if [ "${PLATFORM_ARCH}" = "x86_64" ]; then
 fi
 
 ANSIBLE_RELEASE="${ANSIBLE_RELEASE:-10.0}"
-PYTHON_RELEASE="${PYTHON_RELEASE:-20240726}"
+PYTHON_RELEASE="${PYTHON_RELEASE:-20240814}"
 PYTHON_VERSION="${PYTHON_VERSION:-3.11.9}"
 
 if [ "${PLATFORM_OS}" = "darwin" ]; then
@@ -56,7 +56,11 @@ PYTHON="${PYTHONBIN}/python${PYTHON_MAJOR_VERSION}"
     dnspython~=2.0 \
     kubernetes~=29.0 \
     netaddr~=1.0 \
-    PyYAML~=6.0
+    opentelemetry-api~=1.0 \
+    opentelemetry-sdk~=1.0 \
+    python-consul~=1.0 \
+    PyYAML~=6.0 \
+    requests~=2.0
 
 if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
     find "${PYTHONBIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!/usr/bin/env python3|' {} \;
@@ -74,6 +78,10 @@ cp "${PYTHONBIN}/python" "${PYTHONBIN}/python3"
 
 cp "${SOURCEDIR}/entrypoint.sh" "${WORKDIR}/getansible/entrypoint.sh"
 chmod 0755 "${WORKDIR}/getansible/entrypoint.sh"
+
+cp -R "${SOURCEDIR}/lib" "${WORKDIR}/getansible/lib"
+chmod -R 0755 "${WORKDIR}/getansible/lib"
+
 rm -r "${WORKDIR}/getansible/python/share/"
 find "${WORKDIR}/getansible/python" -type d -name "__pycache__" -print | xargs rm -rf
 find "${WORKDIR}/getansible/python" -type d -name "tests" -print | xargs rm -rf
