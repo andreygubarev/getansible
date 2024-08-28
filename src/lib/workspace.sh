@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-playbook_inventory() {
+workspace_clone_inventory() {
     workspace=$1
     inventory=$2
 

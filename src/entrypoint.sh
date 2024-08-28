@@ -57,7 +57,7 @@ export ANSIBLE_COLLECTIONS_PATH
 # export LC_ALL=C.UTF-8
 
 ### function | playbook #######################################################
-. "$WORKDIR/lib/playbook_inventory.sh"
+. "$WORKDIR/lib/workspace.sh"
 
 playbook() {
     workspace=$1
@@ -125,7 +125,7 @@ playbook() {
         elif [ -f "$workspace/hosts.yml" ]; then
             export ANSIBLE_INVENTORY="$workspace/hosts.yml"
         elif [ -f "/etc/ansible/hosts" ] && [ -r "/etc/ansible/hosts" ]; then
-            ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "/etc/ansible/hosts")
+            ANSIBLE_INVENTORY=$(workspace_clone_inventory "$workspace" "/etc/ansible/hosts")
             export ANSIBLE_INVENTORY
         else
             cat <<EOF > "$workspace/hosts"
@@ -135,10 +135,10 @@ EOF
         fi
     elif [ -f "$ANSIBLE_INVENTORY" ]; then
         # if ansible inventory is a file, and starts with `---`, then it is a yaml file
-        ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "$ANSIBLE_INVENTORY")
+        ANSIBLE_INVENTORY=$(workspace_clone_inventory "$workspace" "$ANSIBLE_INVENTORY")
         export ANSIBLE_INVENTORY
     elif [ -f "$USER_PWD/$ANSIBLE_INVENTORY" ]; then
-        ANSIBLE_INVENTORY=$(playbook_inventory "$workspace" "$USER_PWD/$ANSIBLE_INVENTORY")
+        ANSIBLE_INVENTORY=$(workspace_clone_inventory "$workspace" "$USER_PWD/$ANSIBLE_INVENTORY")
         export ANSIBLE_INVENTORY
     fi
 
