@@ -56,7 +56,9 @@ PYTHON="${PYTHONBIN}/python${PYTHON_MAJOR_VERSION}"
     dnspython~=2.0 \
     kubernetes~=29.0 \
     netaddr~=1.0 \
-    PyYAML~=6.0
+    PyYAML~=6.0 \
+    opentelemetry-api~=1.0 \
+    opentelemetry-sdk~=1.0
 
 if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
     find "${PYTHONBIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!/usr/bin/env python3|' {} \;
