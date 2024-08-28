@@ -56,24 +56,6 @@ export ANSIBLE_COLLECTIONS_PATH
 # TODO: handle locales
 # export LC_ALL=C.UTF-8
 
-### assert | ansible galaxy compatibility ####################################
-assert_ansible_galaxy() {
-    # ansible galaxy supports ansible-core 2.13.9+ (ansible 6.0.0+)
-    version=$("$PATH_BIN/python3" -m pip freeze | grep 'ansible-core' | awk -F'==' '{print $2}')
-
-    version_major=$(echo "$version" | awk -F. '{print $1}')
-    version_minor=$(echo "$version" | awk -F. '{print $2}')
-    version_patch=$(echo "$version" | awk -F. '{print $3}')
-
-    if { [ "$version_major" -lt 2 ]; } || \
-       { [ "$version_major" -eq 2 ] && [ "$version_minor" -lt 13 ]; } || \
-       { [ "$version_major" -eq 2 ] && [ "$version_minor" -eq 13 ] && [ "$version_patch" -lt 9 ]; }
-    then
-        echo "ERROR: ansible-core version $version is not supported"
-        exit 6
-    fi
-}
-
 ### function | playbook #######################################################
 . "$WORKDIR/lib/playbook_inventory.sh"
 
@@ -375,8 +357,6 @@ main() {
             tar -C "$workspace" -xzf "$location"
             ;;
         galaxy_role|galaxy_collection)
-            assert_ansible_galaxy
-
             if [ "$location_type" = "galaxy_role" ]; then
                 galaxy_name="$location"
             else
