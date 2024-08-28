@@ -1,5 +1,20 @@
 #!/usr/bin/env sh
 
+workspace_open() {
+    workspace=$1
+    cd "$workspace" > /dev/null || exit 1
+
+    # change directory if there is only one sub-directory in the workspace
+    if { [ "$(find . -maxdepth 1 -type f | wc -l)" -eq 0 ]; } && \
+       { [ "$(find . -maxdepth 1 -type d | wc -l)" -eq 2 ]; }
+    then
+        subdir=$(find . -maxdepth 1 -type d -not -name . )
+        cd - > /dev/null || exit 1
+        workspace="$workspace/$subdir"
+        cd "$workspace" > /dev/null || exit 1
+    fi
+}
+
 workspace_clone_inventory() {
     workspace=$1
     inventory=$2
