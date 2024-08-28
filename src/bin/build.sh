@@ -58,7 +58,9 @@ PYTHON="${PYTHONBIN}/python${PYTHON_MAJOR_VERSION}"
     netaddr~=1.0 \
     PyYAML~=6.0 \
     opentelemetry-api~=1.0 \
-    opentelemetry-sdk~=1.0
+    opentelemetry-sdk~=1.0 \
+    python-consul~=1.0 \
+    requests~=2.0
 
 if $(command -v sed) --version 2>&1 | grep -q 'GNU sed'; then
     find "${PYTHONBIN}" -type f -exec sed -i '1s|^#!.*python.*$|#!/usr/bin/env python3|' {} \;
