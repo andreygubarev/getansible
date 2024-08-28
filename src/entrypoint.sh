@@ -64,9 +64,6 @@ playbook() {
     workspace_open "$workspace"
 
     workspace_playbook="${2:-playbook.yml}"
-    ANSIBLE_PLAYBOOK_DIR=$(dirname "$workspace/$workspace_playbook")
-    export ANSIBLE_PLAYBOOK_DIR
-
     workspace_playbook_extra_vars="${3:-}"
 
     # workspace: dotenv
