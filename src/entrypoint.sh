@@ -109,7 +109,11 @@ playbook() {
         if grep -qE 'callbacks_enabled' "$ANSIBLE_CONFIG"; then
             :
         else
-            export ANSIBLE_CALLBACKS_ENABLED="community.general.opentelemetry"
+            if [ -n "${OTEL_EXPORTER_OTLP_ENDPOINT:-}" ]; then
+                export ANSIBLE_CALLBACKS_ENABLED="community.general.opentelemetry"
+            else
+                :
+            fi
         fi
     fi
 
