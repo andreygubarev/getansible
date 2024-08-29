@@ -51,3 +51,12 @@ workspace_clone_inventory() {
         cp -r "$(dirname "$inventory")/host_vars" "$workspace"
     fi
 }
+
+workspace_clone_config() {
+    workspace=$1
+    config=$2
+
+    if [ -f "$config" ]; then
+        cp "$config" "$workspace/ansible.cfg"
+    fi
+}
