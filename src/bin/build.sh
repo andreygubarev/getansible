@@ -57,6 +57,7 @@ PYTHON="${PYTHONBIN}/python${PYTHON_MAJOR_VERSION}"
     kubernetes~=29.0 \
     netaddr~=1.0 \
     opentelemetry-api~=1.0 \
+    opentelemetry-exporter-otlp~=1.0 \
     opentelemetry-sdk~=1.0 \
     python-consul~=1.0 \
     PyYAML~=6.0 \
