@@ -83,15 +83,32 @@ playbook() {
     fi
 
     # workspace: ansible config
-    if [ -z "${ANSIBLE_CONFIG:-}" ]; then
-        if [ -f "$workspace/ansible.cfg" ]; then
+
+    if [ -n "${ANSIBLE_CONFIG:-}" ]; then
+        if [ -f "$ANSIBLE_CONFIG" ]; then
+            ANSIBLE_CONFIG=$(workspace_clone_config "$workspace" "$ANSIBLE_CONFIG")
             export ANSIBLE_CONFIG="$workspace/ansible.cfg"
+        elif [ -f "$USER_PWD/$ANSIBLE_CONFIG" ]; then
+            ANSIBLE_CONFIG=$(workspace_clone_config "$workspace" "$USER_PWD/$ANSIBLE_CONFIG")
+            export ANSIBLE_CONFIG="$workspace/ansible.cfg"
+        else
+            echo "ERROR: config not found: $ANSIBLE_CONFIG"
+            exit 1
         fi
+    elif [ -f "$workspace/ansible.cfg" ]; then
+        export ANSIBLE_CONFIG="$workspace/ansible.cfg"
+    else
+        touch "$workspace/ansible.cfg"
+        export ANSIBLE_CONFIG="$workspace/ansible.cfg"
     fi
 
     # workspace: ansible callback
-    if [ -f "${ANSIBLE_CONFIG:-}" ]; then
-        if ! grep -qE 'callbacks_enabled' "$ANSIBLE_CONFIG"; then
+    if [ -n "${ANSIBLE_CALLBACKS_ENABLED:-}" ]; then
+        export ANSIBLE_CALLBACKS_ENABLED
+    else
+        if grep -qE 'callbacks_enabled' "$ANSIBLE_CONFIG"; then
+            :
+        else
             export ANSIBLE_CALLBACKS_ENABLED="community.general.opentelemetry"
         fi
     fi
