@@ -204,7 +204,7 @@ main() {
 
     if [ $# -gt 0 ]; then
         if [ "$(echo "$1" | grep -c '^-')" -eq 0 ] && [ "$(echo "$1" | grep -c '=')" -eq 0 ]; then
-            key="_command"
+            key="COMMAND"
             value="$1"
             vars="$vars \"$key\": \"$value\", "
             key=""
